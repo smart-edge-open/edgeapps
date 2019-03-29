@@ -53,7 +53,7 @@ var _ = Describe("Acceptance: Agent", func() {
 		})
 
 		It("Should say hello on gRPC request", func() {
-			conn, err := grpc.Dial(":1337", grpc.WithInsecure())
+			conn, err := grpc.Dial("localhost:1337", grpc.WithInsecure())
 			Expect(err).NotTo(HaveOccurred())
 			defer conn.Close()
 
