@@ -51,7 +51,8 @@ func (service *esa2ServiceImpl) Hello(ctx context.Context, msg *pb.EhloMessage) 
 }
 
 // Run function is responsible for starting Edge Lifecycle Agent gRPC server
-func Run(parentCtx context.Context) error {
+func Run(parentCtx context.Context, cfgPath string) error {
+	Info.Printf("Starting with %s", cfgPath)
 	ctx, cancel := context.WithCancel(parentCtx)
 	defer cancel()
 
