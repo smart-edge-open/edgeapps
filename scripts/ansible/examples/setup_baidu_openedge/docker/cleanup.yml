@@ -1,0 +1,53 @@
+# Copyright 2019 Intel Corporation and Smart-Edge.com, Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: Check Docker service
+  shell: systemctl status docker
+  ignore_errors: true
+  args:
+    warn: false
+  register: docker_service_status
+
+- name: Check BaiduEdge DockerCompose
+  shell: docker-compose ps -a 
+  args:
+    chdir: "{{ my_composefile_path }}"
+  register: docker_containers_running
+  when: docker_service_status.rc == 0
+
+- name: Remove Docker containers
+  shell: "docker-compose stop && docker-compose rm -f -s"
+  args:
+    chdir: "{{ my_composefile_path }}"
+  ignore_errors: true
+  when: 
+    - docker_service_status.rc == 0
+    - docker_containers_running.stdout != ""
+
+- name: Check Docker images
+  shell: "docker images | grep baidu"
+  args:
+    chdir: "{{ my_composefile_path }}"
+  register: docker_images_present
+  ignore_errors: true
+  when: docker_service_status.rc == 0
+    
+- name: Remove Docker images  
+  shell: docker rmi -f composefile_baidu_edge
+  args:
+    chdir: "{{ my_composefile_path }}"
+  when: 
+    - docker_service_status.rc == 0
+    - docker_images_present.stdout != ''
