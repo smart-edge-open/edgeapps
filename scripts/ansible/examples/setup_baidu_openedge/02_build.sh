@@ -14,5 +14,5 @@
 # limitations under the License.
 
 source ../../common/scripts/ansible-precheck.sh
-source ../../common/vars/task_log_file
+source ../../common/vars/task_log_file.sh
 ansible-playbook ./tasks/build_main.yml -i ../../common/vars/hosts --connection=local
