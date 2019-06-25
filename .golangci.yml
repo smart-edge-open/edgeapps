@@ -51,3 +51,11 @@ linters-settings:
   lll:
     line-length: 80
     tab-width: 4
+
+issues:
+  exclude-use-default: false
+  exclude-rules:
+  - path: _test\.go
+    linters:
+      - errcheck
+      - gosec
