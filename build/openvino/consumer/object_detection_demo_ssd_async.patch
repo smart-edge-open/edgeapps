@@ -1,0 +1,22 @@
+--- main.cpp	2019-05-27 23:39:30.488261000 +0100
++++ main1.cpp	2019-05-28 00:19:19.014773772 +0100
+@@ -80,6 +80,10 @@
+         const size_t width  = (size_t) cap.get(cv::CAP_PROP_FRAME_WIDTH);
+         const size_t height = (size_t) cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+ 
++        cv::Size outputFrameSize(width, height);
++        cv::VideoWriter video;
++        video.open("vidfifo.mjpeg", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 24, outputFrameSize, true);
++
+         // read input (video) frame
+         cv::Mat curr_frame;  cap >> curr_frame;
+         cv::Mat next_frame;
+@@ -314,7 +318,7 @@
+                     }
+                 }
+             }
+-            cv::imshow("Detection results", curr_frame);
++            video.write(curr_frame);
+ 
+             t1 = std::chrono::high_resolution_clock::now();
+             ocv_render_time = std::chrono::duration_cast<ms>(t1 - t0).count();

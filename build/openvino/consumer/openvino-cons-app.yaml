@@ -1,0 +1,67 @@
+#########################################################
+# Copyright 2019 Intel Corporation. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#########################################################
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: openvino-cons-app
+  namespace: default
+  labels:
+    app: openvino-cons-app
+spec:
+  containers:
+  - name: openvino-cons-app
+    image: library/openvino-cons-app:v1
+    imagePullPolicy: IfNotPresent
+    env:
+    - name: DISPLAY
+      value: ":1"
+    - name: QT_X11_NO_MITSHM
+      value: "1"
+    stdin: true
+    tty: true
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    command:
+      - sleep
+      - infinity
+    volumeMounts:
+      - mountPath: /root/.Xauthority
+        name: xauth
+        readOnly: false
+    volumeMounts:
+      - mountPath: /tmp/.X11-unix
+        name: xterm
+        readOnly: false
+    volumeMounts:
+      - mountPath: /root/vidfifo.mjpeg
+        name: vidfifo
+        readOnly: false
+    ports:
+    - containerPort: 22
+  volumes:
+    - name: xauth
+      hostPath:
+        path: /root/.Xauthority
+  volumes:
+    - name: xterm
+      hostPath:
+        path: /tmp/.X11-unix
+  volumes:
+    - name: vidfifo
+      hostPath:
+        path: /tmp/vidfifo.mjpeg
