@@ -1,9 +1,0 @@
-V=0
-o=- 0 0 IN IP4 127.0.0.1
-s=No Name
-c=IN IP4 172.17.0.1
-t=0 0
-a=tool:libavformat 56.40.101
-m=video 9999 RTP/AVP 26
-b=AS:50000
-

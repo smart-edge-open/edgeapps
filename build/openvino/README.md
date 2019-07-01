@@ -36,146 +36,74 @@ OpenVINO consumer application executes object detection on the received video st
 
 When the consumer application commences execution, it handshakes with EAA in a proces that involves (a) authentication, (b) websocket connection establishment, (c) service discovery, and (d) service subscription. Websocket connection retains a channel for EAA to forward notifications to the consumer application whenever a notification is received from the producer application over HTTPS REST API. Only subscribed-to notifications are forwarded on to the websocket.
 
-### Execution flow between producer-EAA-consumer
+### Execution Flow Between EAA, Producer & Consumer
 
 The simplified execution flow of the consumer & producer applications with EAA is depicted in the sequence diagram below.
 
 ![Figure caption \label{Execution Flow}](exec.flow.png)
 
-## Pre-requisites
+### Build & Deployment of OpenVINO Applications
 
-The following prerequisites must be installed on the platform for a successful execution:
+## Docker Images Creation
 
-1. Docker
-2. Go Programming Language (Golang)
-3. FFmpeg (on the video visualization platform)
-
-> **IMPORTANT:** The Internet access is required to execute the following steps successfully. If you have access to the Internet through the proxy server only, please make sure that it is configured in your environment.
-
-> **NOTE:** If you are using Docker behind a proxy, you will need to configure your Docker client and services to use proxy settings for successfull installation and execution. Follow [Configuring Docker For Use With a Proxy](https://movidius.github.io/ncsdk/docker_proxy.html) from NCSDK Documentation.
-
-## X.509 Certificates Generation
-
-In order for the consumer & producer applications to work with OpenNESS edge platform over Transport Layer Security (TLS), they need to authenticate first using X.509 digital certificates.
-
-EAA certificates should have been generated in `<appliance-parent-directory>/certs/` before building the applications docker images. The build scripts look in that directory and copy the root Certificate Authority (rootCA) key and certificate files (`rootCA.key`, `rootCA.pem`) in order to generate the key-pairs and certificates for the applications. These key-pairs and certifcates are copied into the docker images.
-
-## Execution
-
-Before going forward with exectution, build the docker containers first for `clientsim`, `producer` and `consumer`.
+Applications are deployed on OpenNESS Edge Node as docker containers. Building
+docker containers for `clientsim`, `producer` and `consumer` can be achieved as
+following:
 
 * Client Simulator
 
     ```shell
-    cd <appliance-parent-directory>/build/openvino/clientsim
+    cd <appliance-ce-directory>/build/openvino/clientsim
     ./build-image.sh
     ```
 
 * Producer application
 
     ```shell
-    cd <appliance-parent-directory>/build/openvino/producer
+    cd <appliance-ce-directory>/build/openvino/producer
     ./build-image.sh
     ```
 
 * Consumer application
 
     ```shell
-    cd <appliance-parent-directory>/build/openvino/consumer
+    cd <appliance-ce-directory>/build/openvino/consumer
     ./build-image.sh
     ```
 
-Now, the docker images should have been built successfully and ready to start. Images can be listed by executing this command:
+Now, the docker images should have been built successfully and ready to start.
+Images can be listed by executing this command:
 
 ```shell
 docker image list
 ```
 
-The 3 docker images should be printed as below,
+The 3 docker images should be printed out as below,
 
 ```shell
-library/openvino-cons-app       v1
-library/openvino-prod-app       v1
-library/client-sim              v1
+openvino-cons-app       1.0
+openvino-prod-app       1.0
+client-sim              1.0
 ```
 
-1. Initiate the OpenNESS applicance
+## Applications Deployment
 
-    ```shell
-    cd <appliance-parent-directory>
-    go run cmd/appliance/main.go
-    ```
+Deploy OpenVINO Producer and Consumer applications through the OpenNESS
+Controller as detailed in **OpenNESS How to guide** section
+**Deploying Applications**.
 
-    This will bring up the appliance and EAA to listen and serve HTTPS REST API calls. This API is used by the OpenVINO edge applications to communicate with OpenNESS and initiate their operations.
+## Streaming & Displaying the Augmented Video
 
-2. Start OpenVINO producer container
+The OpenVINO edge application accepts a UDP video stream. This video stream can
+be from any video source like an IP camera. The Client Simulator provided in
+this project uses a sample mp4 video file to continuosly transmitting the video
+stream to the OpenNESS Edge Node. Object detection is executed on this video
+transmission and sent back to the client for further analysis.
 
-    ```shell
-    cd <appliance-parent-directory>/build/openvino/consumer
-    ./run-docker.sh
-    ```
+The `client-sim` docker container performs the operations:
+1. Transmitting the video, using the Linux free tool `FFmpeg`
+2. Visualizing the augmented video, using the FFmpeg-based `ffplay`
+   media player.
 
-    The producer application handshakes with EAA over HTTPS and commences sending the periodic `openvino-model` notification. This notification is registered with the namespace `openvino`.
-
-3. Start OpenVINO consumer container
-
-    The hostname of the `analytics.openness` is defined in `run-docker.sh` to map for the IP address of the platfrom where the annotated video will be visualized. If it is required to route it back to the client simulator, the IP address of it should be set in `run-docker.sh` before execution.
-
-    ```shell
-    cd <appliance-parent-directory>/build/openvino/consumer
-    ./run-docker.sh
-    ```
-
-    The consumer application handshakes with EAA over HTTPS, discovers available services in `openvino` namespace and establishes a secure websocket connection to receive notifications.
-
-    The annotated video is streamed over to the `analytics.openness` host.
-
-4. Start client simulator
-
-    By knowing the IP address of OpenVINO consumer container, the `openvino.openness` hostname in the `run-docker.sh` must be updated accordingly with this IP before starting. Then run:
-
-    ```shell
-    cd <appliance-parent-directory>/build/openvino/clientsim
-    ./run-docker.sh
-    ```
-
-    The client simulator will start immediately to transmit the video feed.
-
-5. Visualize the annotated video
-
-    > **NOTE:** The platform where the video is to be visualized must have FFmpeg installed and an OS with a graphic support.
-
-    Copy `rx-openvino-video.sdp` file and edit the line of `c=IN IP4` by adding the IP address of the platform where the video is visualized. This IP address should be exactly the same as it is of the `analytics.openness` hostname.
-
-    Execute the below command to display the annotated video:
-
-    ```shell
-    ffplay -i rx-openvino-video.sdp
-    ```
-
-## Acceleration using Intel® Neural Compute Stick 2 (Intel® NCS 2)
-
-> **NOTE:** Docker support is only available with Intel® Movidius™ Neural Compute SDK 2.x.
-
-OpenVINO consumer application in its current shape, supports working working with CPU and MYRIAD plugins, but it does not automatically detect if MYRIAD device is available for use. By default, the application executes inference on CPU. In order to accelerate inference using Intel® NCS 2, the following piece of code in `<appliance-parent-directory>/build/openvino/consumer/cmd/object_detection.go` should be modified as follows:
-
-From,
-```go
-cmd = exec.Command("/root/inference_engine_samples_build/intel64/Release/object_detection_demo_ssd_async",
-    "-i", "udp://@:10001?overrun_nonfatal=1",
-    "-m", (modelName + "/FP32/" + modelName + ".xml"))
-```
-
-To,
-```go
-cmd = exec.Command("/root/inference_engine_samples_build/intel64/Release/object_detection_demo_ssd_async", "-d", "MYRIAD",
-    "-i", "udp://@:10001?overrun_nonfatal=1",
-    "-m", (modelName + "/FP16/" + modelName + ".xml"))
-```
-
-After changing the file, rebuild the docker image using `build-image.sh` script to copy the modified program. Now, run the consumer application as normal.
-
-```shell
-cd <appliance-parent-directory>/build/openvino/consumer
-./run-docker.sh
-```
+> **NOTE:** Any platform where the video is to be visualized must have
+Docker installed and an OS with graphical support.

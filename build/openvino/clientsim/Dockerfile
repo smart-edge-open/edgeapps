@@ -26,5 +26,6 @@ RUN apt-get update && \
 WORKDIR /root
 RUN wget https://storage.googleapis.com/coverr-main/zip/Rainy_Street.zip
 RUN unzip Rainy_Street.zip
+ADD tx_video.sh .
 ADD start.sh .
 ENTRYPOINT ["./start.sh"]

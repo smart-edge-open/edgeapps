@@ -1,5 +1,6 @@
+#!/bin/bash
 #########################################################
-# Copyright 2019 Intel Corporation and Smart-Edge.com, Inc. All rights reserved.
+# Copyright 2019 Intel Corporation. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,25 +15,10 @@
 # limitations under the License.
 #########################################################
 
-apiVersion: v1
-kind: Pod
-metadata:
-  name: client-sim
-  namespace: default
-  labels:
-    app: client-sim
-spec:
-  containers:
-  - name: client-sim
-    image: library/client-sim:v1
-    imagePullPolicy: IfNotPresent
-    stdin: true
-    tty: true
-    securityContext:
-      privileged: true
-      runAsUser: 0
-    command:
-      - sleep
-      - infinity
-    ports:
-    - containerPort: 22
+trap "exit" SIGINT SIGTERM
+
+while :
+do
+  taskset -c 2 ffmpeg -i Rainy_Street.mp4 -pix_fmt yuvj420p -vcodec mjpeg \
+      -f mjpeg -b:v 50M udp://openvino.openness:10001?overrun_nonfatal=1 > /dev/null 2>&1 < /dev/null
+done

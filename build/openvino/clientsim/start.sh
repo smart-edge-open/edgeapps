@@ -15,7 +15,9 @@
 # limitations under the License.
 #########################################################
 
-while :
-do
-  ffmpeg -i Rainy_Street.mp4 -pix_fmt yuvj420p -vcodec mjpeg -f mjpeg -b:v 50M udp://openvino.openness:10001?overrun_nonfatal=1
-done
+trap "exit" SIGINT SIGTERM
+set -m
+./tx_video.sh &
+sleep 2
+taskset -c 1 ffplay -i rtp://@:9999
+fg
