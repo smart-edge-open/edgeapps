@@ -63,6 +63,9 @@ following:
     cd <appliance-ce-directory>/build/openvino/producer
     ./build-image.sh
     ```
+     save the docker image 
+    ```
+    docker save openvino-prod-app | gzip > openvino-prod-app.tar.gz   ``` 
 
 * Consumer application
 
@@ -70,6 +73,10 @@ following:
     cd <appliance-ce-directory>/build/openvino/consumer
     ./build-image.sh
     ```
+    save the docker image 
+    ```
+    docker save openvino-cons-app | gzip > openvino-cons-app.tar.gz
+    ``` 
 
 Now, the docker images should have been built successfully and ready to start.
 Images can be listed by executing this command:
