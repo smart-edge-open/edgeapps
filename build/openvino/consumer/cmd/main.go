@@ -267,7 +267,7 @@ func switchModel(payload []byte) {
 	log.Println("Rx notification -- model:", model.Name)
 
 	// Call OpenVINO C++ App with the model name
-	objectDetection(model.Name)
+	callOpenVINO(model.Name)
 }
 
 func notifListener(conn *websocket.Conn, client *http.Client) {

@@ -19,6 +19,7 @@ trap "exit" SIGINT SIGTERM
 
 while :
 do
-  taskset -c 2 ffmpeg -i Rainy_Street.mp4 -pix_fmt yuvj420p -vcodec mjpeg \
-      -f mjpeg -b:v 50M udp://openvino.openness:10001?overrun_nonfatal=1 > /dev/null 2>&1 < /dev/null
+  taskset -c 2 ffmpeg -re -i Rainy_Street.mp4 -pix_fmt yuvj420p \
+    -vcodec mjpeg -map 0:0 -f rtp rtp://openvino.openness:5000 > \
+    /dev/null 2>&1 < /dev/null
 done

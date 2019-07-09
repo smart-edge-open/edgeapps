@@ -19,5 +19,5 @@ trap "exit" SIGINT SIGTERM
 set -m
 ./tx_video.sh &
 sleep 2
-taskset -c 1 ffplay -i rtp://@:9999
+taskset -c 1 ffplay -reorder_queue_size 0 -i downstream.sdp 
 fg

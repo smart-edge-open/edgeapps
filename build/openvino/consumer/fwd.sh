@@ -15,7 +15,10 @@
 # limitations under the License.
 #########################################################
 
-sudo docker run --rm \
-    --add-host eaa.community.appliance.mec:192.168.122.3 \
-    --cpuset-cpus="5" \
-    -t openvino-prod-app:1.0
+while :
+do
+  taskset -c 1 ffmpeg -re -async 1 -vsync -1 -f mjpeg -r 30 -i vidfifo.mjpeg \
+    -vcodec mjpeg -b:v 50M -s 1280x720 -c:v copy \
+    -f rtp rtp://analytics.community.appliance.mec:5001 > \
+    /dev/null 2>&1 < /dev/null
+done

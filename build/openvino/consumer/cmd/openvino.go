@@ -21,43 +21,31 @@ import (
 	"os/exec"
 )
 
-var infCmd *exec.Cmd
-var fwCmd *exec.Cmd
+var cmd *exec.Cmd
 
-func objectDetection(modelName string) {
+func callOpenVINO(modelName string) {
 	var err error
 
 	// kill already running process if not the first time
-	if infCmd != nil {
-		err = infCmd.Process.Kill()
+	if cmd != nil {
+		err = cmd.Process.Kill()
 		if err != nil {
-			log.Fatal("Failed to kill process:", err)
+			log.Fatal("Failed to kill OpenVINO process:", err)
 		}
-
-		err = fwCmd.Process.Kill()
-		if err != nil {
-			log.Fatal("Failed to kill process:", err)
-		}
+		_ = cmd.Wait()
 	}
 
 	var openvinoPath = "/root/inference_engine_samples_build/intel64/Release/"
 	var openvinoCmd = "object_detection_demo_ssd_async"
 
 	// #nosec
-	infCmd = exec.Command("taskset", "-c", "1",
+	cmd = exec.Command("taskset", "-c", "2",
 		openvinoPath+openvinoCmd,
-		"-i", "udp://@:10001?overrun_nonfatal=1",
+		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
 		"-m", (modelName + "/FP32/" + modelName + ".xml"))
 
-	// #nosec
-	fwCmd = exec.Command("taskset", "-c", "0",
-		"ffmpeg", "-re", "-async", "1", "-vsync", "-1",
-		"-f", "mjpeg", "-r", "30", "-i", "vidfifo.mjpeg", "-vcodec",
-		"mjpeg", "-b:v", "50M", "-s", "1280x720", "-c:v", "copy",
-		"-f", "rtp", "rtp://analytics.community.appliance.mec:9999")
-
-	stdout, _ := infCmd.StdoutPipe()
-	stderr, _ := infCmd.StderrPipe()
+	stdout, _ := cmd.StdoutPipe()
+	stderr, _ := cmd.StderrPipe()
 	go func() {
 		if _, err = io.Copy(os.Stdout, stdout); err != nil {
 			log.Println(err)
@@ -69,26 +57,8 @@ func objectDetection(modelName string) {
 		}
 	}()
 
-	stdout1, _ := fwCmd.StdoutPipe()
-	stderr1, _ := fwCmd.StderrPipe()
-	go func() {
-		if _, err = io.Copy(os.Stdout, stdout1); err != nil {
-			log.Println(err)
-		}
-	}()
-	go func() {
-		if _, err = io.Copy(os.Stderr, stderr1); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	err = infCmd.Start()
+	err = cmd.Start()
 	if err != nil {
-		log.Fatal("Failed to run OpenVINO app:", err)
-	}
-
-	err = fwCmd.Start()
-	if err != nil {
-		log.Fatal("Failed to run Forwarder app:", err)
+		log.Fatal("Failed to run OpenVINO process:", err)
 	}
 }
