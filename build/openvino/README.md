@@ -65,7 +65,7 @@ following:
     ```
      save the docker image 
     ```
-    docker save openvino-prod-app | gzip > openvino-prod-app.tar.gz   ``` 
+    docker save openvino-prod-app | gzip > openvino-prod-app.tar.gz  
 
 * Consumer application
 
