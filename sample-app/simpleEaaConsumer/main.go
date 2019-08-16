@@ -17,7 +17,7 @@ package main
 import (
 	"log"
 
-	"github.com/otcshare/edgeapps/sample-app/common"
+	"github.com/open-ness/edgeapps/sample-app/common"
 )
 
 // A consumer shout create a secure connection the Edge Node. This can be
