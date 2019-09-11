@@ -27,6 +27,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -38,9 +39,11 @@ const (
 	EAACommonName = "eaa.community.appliance.mec"
 )
 
-// Model is the notification structure of OpenVINO inference model
+// Model is the notification structure of OpenVINO inference model name &
+// acceleration type
 type Model struct {
 	Name string `json:"model"`
+	Accelerator string `json:"accelerator"`
 }
 
 func getCredentials(prvKey *ecdsa.PrivateKey) AuthCredentials {
@@ -226,9 +229,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// get acceleration type from env variables
+	openvino_accl := os.Getenv("OPENVINO_ACCL")
+
 	var models [2]Model
-	models[0] = Model{"pedestrian-detection-adas-0002"}
-	models[1] = Model{"vehicle-detection-adas-0002"}
+	models[0] = Model{"pedestrian-detection-adas-0002", openvino_accl}
+	models[1] = Model{"vehicle-detection-adas-0002", openvino_accl}
 
 	serv.Notifications = make([]NotificationDescriptor, 1)
 	serv.Notifications = make([]NotificationDescriptor, 2)

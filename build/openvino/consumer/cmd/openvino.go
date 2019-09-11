@@ -23,7 +23,7 @@ import (
 
 var cmd *exec.Cmd
 
-func callOpenVINO(modelName string) {
+func callOpenVINO(modelName string, modelAccl string) {
 	var err error
 
 	// kill already running process if not the first time
@@ -40,7 +40,7 @@ func callOpenVINO(modelName string) {
 
 	// #nosec
 	cmd = exec.Command("taskset", "-c", "2",
-		openvinoPath+openvinoCmd,
+		openvinoPath+openvinoCmd, "-d", modelAccl,
 		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
 		"-m", (modelName + "/FP32/" + modelName + ".xml"))
 

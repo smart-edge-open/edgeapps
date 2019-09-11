@@ -24,6 +24,10 @@ ENV GOPATH=/root/go
 ENV GOROOT=/usr/local/go
 ENV PATH=$PATH:$GOPATH/bin:$GOROOT/bin
 
+# Type of acceleration to be used in OpenVINO inference:
+# CPU | VPU | HDDL
+ENV OPENVINO_ACCL=CPU
+
 RUN mkdir $GOPATH
 RUN apt-get update && \
     apt-get -y install wget git

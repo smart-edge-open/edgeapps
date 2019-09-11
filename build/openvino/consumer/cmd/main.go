@@ -40,9 +40,11 @@ const (
 
 var myURN URN
 
-// Model is the notification structure of OpenVINO inference model
+// Model is the notification structure of OpenVINO inference model name &
+// acceleration type
 type Model struct {
 	Name string `json:"model"`
+	Accelerator string `json:"accelerator"`
 }
 
 func authenticate(prvKey *ecdsa.PrivateKey) (*x509.CertPool, tls.Certificate) {
@@ -264,10 +266,11 @@ func switchModel(payload []byte) {
 		return
 	}
 
-	log.Println("Rx notification -- model:", model.Name)
+	log.Println("Rx notification -- " + model.Name + " | " +
+		model.Accelerator)
 
-	// Call OpenVINO C++ App with the model name
-	callOpenVINO(model.Name)
+	// Call OpenVINO C++ App with the model name & acceleration type
+	callOpenVINO(model.Name, model.Accelerator)
 }
 
 func notifListener(conn *websocket.Conn, client *http.Client) {
