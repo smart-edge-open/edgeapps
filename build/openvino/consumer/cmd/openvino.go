@@ -36,7 +36,7 @@ func callOpenVINO(modelName string) {
 	}
 
 	var openvinoPath = "/root/inference_engine_samples_build/intel64/Release/"
-	var openvinoCmd = "object_detection_demo_ssd_async"
+	var openvinoCmd = "object_detection_sample_ssd"
 
 	// #nosec
 	cmd = exec.Command("taskset", "-c", "2",
