@@ -7,4 +7,4 @@ Copyright © 2019 Intel Corporation and Smart-Edge.com, Inc.
 This directory contains simple lightweight EAA test app to demonstrate usage
 if EAA.
 
-Reference: https://github.com/smartedgemec/doc/tree/master/schema/eaa/README.md
+Reference: https://github.com/otcshare/specs/blob/master/schema/eaa/README.md
