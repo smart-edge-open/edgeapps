@@ -39,10 +39,10 @@ const (
 	EAACommonName = "eaa.community.appliance.mec"
 )
 
-// Model is the notification structure of OpenVINO inference model name &
-// acceleration type
-type Model struct {
-	Name string `json:"model"`
+// InferenceSettings is the notification structure of OpenVINO inference
+// settings: model name & acceleration type
+type InferenceSettings struct {
+	Model string `json:"model"`
 	Accelerator string `json:"accelerator"`
 }
 
@@ -200,10 +200,10 @@ func main() {
 		Namespace: "openvino",
 	}
 
-	notifModel := NotificationDescriptor{
-		Name:        "openvino-model",
+	notifOpenVINO := NotificationDescriptor{
+		Name:        "openvino-inference",
 		Version:     "1.0.0",
-		Description: "Model name to use for OpenVINO inference",
+		Description: "Settings to use for OpenVINO inference",
 	}
 
 	notifTerm := NotificationDescriptor{
@@ -214,7 +214,7 @@ func main() {
 
 	serv := Service{
 		URN:         &URN,
-		Description: "Notification for changing OpenVINO inference model",
+		Description: "Notification for OpenVINO inference settings",
 		EndpointURI: "openvino/producer",
 	}
 
@@ -230,15 +230,40 @@ func main() {
 	}
 
 	// get acceleration type from env variables
-	openvino_accl := os.Getenv("OPENVINO_ACCL")
+	openvinoAccl := os.Getenv("OPENVINO_ACCL")
 
-	var models [2]Model
-	models[0] = Model{"pedestrian-detection-adas-0002", openvino_accl}
-	models[1] = Model{"vehicle-detection-adas-0002", openvino_accl}
+	var accl [2]string
+	switch openvinoAccl {
+	case "CPU":
+		accl[0] = "CPU"
+		accl[1] = "CPU"
+	case "MYRIAD":
+		accl[0] = "MYRIAD"
+		accl[1] = "MYRIAD"
+	case "HDDL":
+		accl[0] = "HDDL"
+		accl[1] = "HDDL"
+	case "CPU_HDDL":
+		accl[0] = "CPU"
+		accl[1] = "HDDL"
+	case "CPU_MYRIAD":
+		accl[0] = "CPU"
+		accl[1] = "MYRIAD"
+	}
+
+	var infSettings [4]InferenceSettings
+	infSettings[0] = InferenceSettings{
+			"pedestrian-detection-adas-0002", accl[0]}
+	infSettings[1] = InferenceSettings{
+			"vehicle-detection-adas-0002", accl[0]}
+	infSettings[2] = InferenceSettings{
+			"pedestrian-detection-adas-0002", accl[1]}
+	infSettings[3] = InferenceSettings{
+			"vehicle-detection-adas-0002", accl[1]}
 
 	serv.Notifications = make([]NotificationDescriptor, 1)
 	serv.Notifications = make([]NotificationDescriptor, 2)
-	serv.Notifications[0] = notifModel
+	serv.Notifications[0] = notifOpenVINO
 	serv.Notifications[1] = notifTerm
 
 	requestByte, _ := json.Marshal(serv)
@@ -248,18 +273,18 @@ func main() {
 
 	// instantiate a notification instance
 	notif := NotificationFromProducer{}
-	notif.Name = notifModel.Name
-	notif.Version = notifModel.Version
+	notif.Name = notifOpenVINO.Name
+	notif.Version = notifOpenVINO.Version
 
 	// TODO: introduce a better mechanism for alternating models
 	// other than a limited for-loop
 	for i := 0; i < 1000; i++ {
-		jModel, _ := json.Marshal(models[i%2])
-		notif.Payload = jModel
+		jIS, _ := json.Marshal(infSettings[i%4])
+		notif.Payload = jIS
 		requestByte, _ = json.Marshal(notif)
 		// Producer posts notification
 		postNotif(client, requestByte)
-		log.Println("Model:", models[i%2])
+		log.Println("Inference settings:", infSettings[i%4])
 		// wait
 		time.Sleep(60 * time.Second)
 	}

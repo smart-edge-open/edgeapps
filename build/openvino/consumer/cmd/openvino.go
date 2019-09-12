@@ -23,7 +23,7 @@ import (
 
 var cmd *exec.Cmd
 
-func callOpenVINO(modelName string, modelAccl string) {
+func callOpenVINO(model string, accl string) {
 	var err error
 
 	// kill already running process if not the first time
@@ -35,14 +35,14 @@ func callOpenVINO(modelName string, modelAccl string) {
 		_ = cmd.Wait()
 	}
 
-	var openvinoPath = "/root/inference_engine_samples_build/intel64/Release/"
-	var openvinoCmd = "object_detection_sample_ssd"
+	var openvinoPath = "/root/omz_demos_build/intel64/Release/"
+	var openvinoCmd = "object_detection_demo_ssd_async"
 
 	// #nosec
 	cmd = exec.Command("taskset", "-c", "2",
-		openvinoPath+openvinoCmd, "-d", modelAccl,
+		openvinoPath+openvinoCmd, "-d", accl,
 		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
-		"-m", (modelName + "/FP32/" + modelName + ".xml"))
+		"-m", (model + "/FP16/" + model + ".xml"))
 
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()

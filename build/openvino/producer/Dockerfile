@@ -25,7 +25,7 @@ ENV GOROOT=/usr/local/go
 ENV PATH=$PATH:$GOPATH/bin:$GOROOT/bin
 
 # Type of acceleration to be used in OpenVINO inference:
-# CPU | VPU | HDDL
+# CPU | MYRIAD | HDDL | CPU_HDDL | CPU_MYRIAD
 ENV OPENVINO_ACCL=CPU
 
 RUN mkdir $GOPATH
