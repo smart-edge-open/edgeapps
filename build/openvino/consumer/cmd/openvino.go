@@ -38,11 +38,18 @@ func callOpenVINO(model string, accl string) {
 	var openvinoPath = "/root/omz_demos_build/intel64/Release/"
 	var openvinoCmd = "object_detection_demo_ssd_async"
 
+	var modelXML string
+	if accl == "CPU" {
+		modelXML = model + "/FP32/" + model + ".xml"
+	} else {
+		modelXML = model + "/FP16/" + model + ".xml"
+	}
+
 	// #nosec
 	cmd = exec.Command("taskset", "-c", "2",
 		openvinoPath+openvinoCmd, "-d", accl,
 		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
-		"-m", (model + "/FP16/" + model + ".xml"))
+		"-m", modelXML)
 
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
