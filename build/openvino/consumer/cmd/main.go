@@ -40,9 +40,11 @@ const (
 
 var myURN URN
 
-// Model is the notification structure of OpenVINO inference model
-type Model struct {
-	Name string `json:"model"`
+// InferenceSettings is the notification structure of OpenVINO inference
+// settings: model name & acceleration type
+type InferenceSettings struct {
+	Model string `json:"model"`
+	Accelerator string `json:"accelerator"`
 }
 
 func authenticate(prvKey *ecdsa.PrivateKey) (*x509.CertPool, tls.Certificate) {
@@ -257,17 +259,18 @@ func unsubscribeAll(client *http.Client) error {
 
 func switchModel(payload []byte) {
 
-	var model = Model{}
-	err := json.Unmarshal(payload, &model)
+	var infSettings = InferenceSettings{}
+	err := json.Unmarshal(payload, &infSettings)
 	if err != nil {
 		log.Println("Failed to unmarshal notification payload:", err)
 		return
 	}
 
-	log.Println("Rx notification -- model:", model.Name)
+	log.Println("Rx notification -- " + infSettings.Model + " | " +
+		infSettings.Accelerator)
 
-	// Call OpenVINO C++ App with the model name
-	callOpenVINO(model.Name)
+	// Call OpenVINO C++ App with the model name & acceleration type
+	callOpenVINO(infSettings.Model, infSettings.Accelerator)
 }
 
 func notifListener(conn *websocket.Conn, client *http.Client) {
