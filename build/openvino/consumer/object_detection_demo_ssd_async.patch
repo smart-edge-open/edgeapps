@@ -1,6 +1,6 @@
---- main.cpp	2019-05-27 23:39:30.488261000 +0100
-+++ main1.cpp	2019-05-28 00:19:19.014773772 +0100
-@@ -80,6 +80,10 @@
+--- main.cpp	2019-09-19 18:11:55.607355860 +0100
++++ main.cpp_changed	2019-09-19 18:11:46.981355924 +0100
+@@ -79,6 +79,10 @@
          const size_t width  = (size_t) cap.get(cv::CAP_PROP_FRAME_WIDTH);
          const size_t height = (size_t) cap.get(cv::CAP_PROP_FRAME_HEIGHT);
  
@@ -11,7 +11,16 @@
          // read input (video) frame
          cv::Mat curr_frame;  cap >> curr_frame;
          cv::Mat next_frame;
-@@ -314,7 +318,7 @@
+@@ -232,7 +236,7 @@
+         slog::info << "Start inference " << slog::endl;
+ 
+         bool isLastFrame = false;
+-        bool isAsyncMode = false;  // execution is always started using SYNC mode
++        bool isAsyncMode = true;  // execution is always started using SYNC mode
+         bool isModeChanged = false;  // set to TRUE when execution mode is changed (SYNC<->ASYNC)
+ 
+         typedef std::chrono::duration<double, std::ratio<1, 1000>> ms;
+@@ -345,7 +349,7 @@
                      }
                  }
              }
@@ -20,3 +29,10 @@
  
              t1 = std::chrono::high_resolution_clock::now();
              ocv_render_time = std::chrono::duration_cast<ms>(t1 - t0).count();
+@@ -395,4 +399,4 @@
+ 
+     slog::info << "Execution successful" << slog::endl;
+     return 0;
+-}
+\ No newline at end of file
++}

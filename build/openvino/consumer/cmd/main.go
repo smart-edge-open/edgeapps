@@ -294,7 +294,7 @@ func notifListener(conn *websocket.Conn, client *http.Client) {
 		}
 
 		switch notif.Name {
-		case "openvino-model":
+		case "openvino-inference":
 			switchModel(notif.Payload)
 
 		// Unsubscribe from services, remove WebSocket
