@@ -33,7 +33,7 @@ Client simulator is responsible for contiuosly tranmistting a video stream up to
 
 ### OpenVINO Producer Application
 
-OpenVINO producer application is responsible for activating a service in OpenNESS Edge Node. This service is simply a publication of the inference model name which can be used by the OpenVINO consumer application(s). This service involves sending periodic `openvino-inference` notification (its interval is defined by `NotificationInterval`), which in turn is absorbed by the consumer application(s).
+OpenVINO producer application is responsible for activating a service in OpenNESS Edge Node. This service is simply a publication of the inference model name which can be used by the OpenVINO consumer application(s). This service involves sending periodic `openvino-inference` notification, which in turn is absorbed by the consumer application(s).
 
 The producer application commences publishing notifications after it handshakes with the Edge Application Agent (EAA) over HTTPS REST API. This handshaking involves authentication and service activation.
 
@@ -59,7 +59,7 @@ But the producer app can dynamically alternate the acceleration types as defined
 4. `CPU_HDDL` - alternate inferencing across CPU and HDDL for all models
 5. `CPU_MYRIAD` - alternate inferencing across CPU and NCS2 for all models
 
-By default, the producer docker builds with `CPU` only inferencing:
+By default, the producer docker builds with `CPU` only inferencing.
 
 ### OpenVINO Consumer Application
 
