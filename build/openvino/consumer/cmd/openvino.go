@@ -21,10 +21,27 @@ import (
 	"os/exec"
 )
 
+// OpenVINO acceleration types
+const (
+	CPU    = "CPU"
+	MYRIAD = "MYRIAD"
+	HDDL   = "HDDL"
+)
+
 var cmd *exec.Cmd
 
 func callOpenVINO(model string, accl string) {
 	var err error
+
+	// validate accelerator type
+	switch accl {
+	case CPU:
+	case MYRIAD:
+	case HDDL:
+	default:
+		log.Println("ERROR: uknown acceleration type (" + accl + ")")
+		return
+	}
 
 	// kill already running process if not the first time
 	if cmd != nil {
@@ -39,7 +56,7 @@ func callOpenVINO(model string, accl string) {
 	var openvinoCmd = "object_detection_demo_ssd_async"
 
 	var modelXML string
-	if accl == "CPU" {
+	if accl == CPU {
 		modelXML = model + "/FP32/" + model + ".xml"
 	} else {
 		modelXML = model + "/FP16/" + model + ".xml"
