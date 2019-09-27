@@ -3,7 +3,7 @@ Copyright (c) 2019 Intel Corporation
 
 # Smart City Sample Application in OpenNESS
 
-Smart City sample application is one of the sample applications that are built on top of the OpenVINO & Open Visual Cloud software stacks for media processing and analytics. The application is deplyed across three regional offices (OpenNESS edge nodes). Each office is an aggregation point that runs multiple IP cameras (simulated) and their related analytic processing tasks. The tasks are running on the OpenNESS edge nodes for latency considerations.
+Smart City sample application is one of the sample applications that are built on top of the OpenVINO & Open Visual Cloud software stacks for media processing and analytics. The application is deployed across three regional offices (OpenNESS edge nodes). Each office is an aggregation point that runs multiple IP cameras (simulated) and their related analytic processing tasks. The tasks are running on the OpenNESS edge nodes for latency considerations.
 
 The full pipeline of the Smart City sample application on OpenNESS is composed of three main ingredients:
 
@@ -93,11 +93,7 @@ The script `backup-image.sh` saves docker image tar files to `smtc@devel-machine
 
 1. With virt-manager, start and login to the virtual machine.
 2. Follow instructions on https://github.com/OpenVisualCloud/Smart-City-Sample to setup docker and docker swarm.
-3. Clone repo of Smart City for OpenNESS [**coming...**] to virtual machine at location
-
-```shell
-vcse@smtc-office1:~/Smart-City-Sample
-```
+3. Clone repo of (Smart City for OpenNESS)[https://github.com/OpenVisualCloud/Smart-City-Sample/tree/openness] to virtual machine at location `vcse@smtc-office1:~/Smart-City-Sample`
 
 4. Copy the docker image tar files created in the previous step to virtual machine. This can be done through different ways such as ssh, NFS, etc. Assuming that the docker image files are shared at `vcse@smtc-office1:~/Smart-City-Sample/archive`.
 
