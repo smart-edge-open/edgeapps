@@ -39,10 +39,17 @@ const (
 	EAACommonName = "eaa.community.appliance.mec"
 )
 
+// OpenVINO acceleration types
+const (
+	CPU    = "CPU"
+	MYRIAD = "MYRIAD"
+	HDDL   = "HDDL"
+)
+
 // InferenceSettings is the notification structure of OpenVINO inference
 // settings: model name & acceleration type
 type InferenceSettings struct {
-	Model string `json:"model"`
+	Model       string `json:"model"`
 	Accelerator string `json:"accelerator"`
 }
 
@@ -195,7 +202,7 @@ func deactivateService(client *http.Client) {
 func main() {
 	log.Println("OpenVINO Producer Application Started")
 
-	URN := URN{
+	prodURN := URN{
 		ID:        "producer",
 		Namespace: "openvino",
 	}
@@ -213,7 +220,7 @@ func main() {
 	}
 
 	serv := Service{
-		URN:         &URN,
+		URN:         &prodURN,
 		Description: "Notification for OpenVINO inference settings",
 		EndpointURI: "openvino/producer",
 	}
@@ -235,31 +242,31 @@ func main() {
 	var accl [2]string
 	switch openvinoAccl {
 	case "CPU":
-		accl[0] = "CPU"
-		accl[1] = "CPU"
+		accl[0] = CPU
+		accl[1] = CPU
 	case "MYRIAD":
-		accl[0] = "MYRIAD"
-		accl[1] = "MYRIAD"
+		accl[0] = MYRIAD
+		accl[1] = MYRIAD
 	case "HDDL":
-		accl[0] = "HDDL"
-		accl[1] = "HDDL"
+		accl[0] = HDDL
+		accl[1] = HDDL
 	case "CPU_HDDL":
-		accl[0] = "CPU"
-		accl[1] = "HDDL"
+		accl[0] = CPU
+		accl[1] = HDDL
 	case "CPU_MYRIAD":
-		accl[0] = "CPU"
-		accl[1] = "MYRIAD"
+		accl[0] = CPU
+		accl[1] = MYRIAD
 	}
 
 	var infSettings [4]InferenceSettings
 	infSettings[0] = InferenceSettings{
-			"pedestrian-detection-adas-0002", accl[0]}
+		"pedestrian-detection-adas-0002", accl[0]}
 	infSettings[1] = InferenceSettings{
-			"vehicle-detection-adas-0002", accl[0]}
+		"vehicle-detection-adas-0002", accl[0]}
 	infSettings[2] = InferenceSettings{
-			"pedestrian-detection-adas-0002", accl[1]}
+		"pedestrian-detection-adas-0002", accl[1]}
 	infSettings[3] = InferenceSettings{
-			"vehicle-detection-adas-0002", accl[1]}
+		"vehicle-detection-adas-0002", accl[1]}
 
 	serv.Notifications = make([]NotificationDescriptor, 1)
 	serv.Notifications = make([]NotificationDescriptor, 2)

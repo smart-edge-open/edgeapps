@@ -43,7 +43,7 @@ var myURN URN
 // InferenceSettings is the notification structure of OpenVINO inference
 // settings: model name & acceleration type
 type InferenceSettings struct {
-	Model string `json:"model"`
+	Model       string `json:"model"`
 	Accelerator string `json:"accelerator"`
 }
 
