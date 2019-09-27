@@ -79,7 +79,7 @@ By clicking 'Finish' button, virt-manager pops up the virtual machine window to 
 
 ##### 1. Create Smart City docker images.
 
-On a development machine, follow instructions on https://github.com/OpenVisualCloud/Smart-City-Sample to build Smart City docker images.
+On a development machine, follow instructions on [Smart City GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample) to build Smart City docker images.
 After the images are successfully built, backup the images to tar files.
 
 ```shell
@@ -92,8 +92,8 @@ The script `backup-image.sh` saves docker image tar files to `smtc@devel-machine
 ##### 2. Setup Environment for Running Smart City on VMs.
 
 1. With virt-manager, start and login to the virtual machine.
-2. Follow instructions on https://github.com/OpenVisualCloud/Smart-City-Sample to setup docker and docker swarm.
-3. Clone repo of (Smart City for OpenNESS)[https://github.com/OpenVisualCloud/Smart-City-Sample/tree/openness] to virtual machine at location `vcse@smtc-office1:~/Smart-City-Sample`
+2. Follow instructions on [Smart City Sample](https://github.com/OpenVisualCloud/Smart-City-Sample) to setup docker and docker swarm.
+3. Clone repo of [Smart City for OpenNESS](https://github.com/OpenVisualCloud/Smart-City-Sample/tree/openness) to virtual machine at location `vcse@smtc-office1:~/Smart-City-Sample`
 
 4. Copy the docker image tar files created in the previous step to virtual machine. This can be done through different ways such as ssh, NFS, etc. Assuming that the docker image files are shared at `vcse@smtc-office1:~/Smart-City-Sample/archive`.
 
@@ -121,14 +121,11 @@ In this diagram, there are 3 sperate telco dataplane subnets:
 2. Smart city regional office-2 subnet is `192.168.20.0/24`
 3. Smart city regional office-3 subnet is `192.168.30.0/24`
 
-The orange/red network represents the cloud network (Internet). The OpenNESS
-controller manages OpenNESS edge nodes through this network. The Smart City
-cloud application also connects to Smart City edge applications through this
-network.
+The orange/red network represents the cloud network (Internet). The OpenNESS controller manages OpenNESS edge nodes through this network. The Smart City cloud application also connects to Smart City edge applications through this network.
 
 ### Setting-up Smart City Applications Interfaces
 
-Once the edge applications have been deployed, follow the below steps to set up the traffic. Similar to [OpenVINO Manual Configuration steps](https://github.com/open-ness/specs/blob/master/doc/openness_howto.md#7-openvino-manual-configuration-steps) in "OpenNESS How-To Guide".
+Once the edge applications have been deployed, follow the below steps to set up the traffic. Similar to [OpenVINO Manual Configuration](https://github.com/open-ness/specs/blob/master/doc/openness_howto.md#7-openvino-manual-configuration-steps) steps in "OpenNESS How-To Guide".
 
 From OpenNESS edge node 1, log in to the `smtc-office1` VM. The VM IP can be obtained by running this command `$ virsh net-dhcp-leases default`:
 
@@ -156,7 +153,7 @@ Repeat the above for OpenNESS edge nodes 2 & 3, by logging in to `smtc-office2` 
 Now, the 3 OpenNESS edge nodes are configured and ready to receive traffic from the client-side camera simulators.
 
 ### EPC Simulator Setup
-EPC simulator existance is assumed by NTS. EPC must be configured with an IP that belongs to the telco dataplane network. In this deployment it will be assigned IP: `192.168.x.50`.
+EPC simulator existence is assumed by NTS. EPC must be configured with an IP that belongs to the telco dataplane network. In this deployment it will be assigned IP: `192.168.x.50`.
 
 The three interfaces connected to the 3 subnets must be configured as below:
 
@@ -168,7 +165,7 @@ ifconfig enp94s0f2 up 192.168.30.50
 
 ### Client-side Camera Simulators Setup & Deployment
 
-The three interfaces connected to the 3 subnets must be configured as below. Similar to [OpenVINO Client Simulator Setup](https://github.com/open-ness/specs/blob/master/doc/openness_howto.md#9-openvino-client-simulator-setup) section in "OpenNESS How-To Guide".
+The three interfaces connected to the 3 subnets must be configured as below. Similar to [OpenVINO Client Simulator Setup](https://github.com/open-ness/specs/blob/master/doc/openness_howto.md#9-openvino-client-simulator-setup) steps in "OpenNESS How-To Guide".
 
 ```shell
 ifconfig enp94s0f0 up 192.168.10.10
@@ -213,7 +210,7 @@ Log in to the cloud machine and follow the link below to increase limit of nmap 
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
 
-Edit GatewaysPorts yes in `/etc/ssh/sshd_config` then:
+Set `GatewayPorts yes` in `/etc/ssh/sshd_config` then:
 
 ```shell
 systemctl restart sshd.
