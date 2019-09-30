@@ -96,7 +96,7 @@ following:
     ```
      save the docker image 
     ```
-    docker save openvino-prod-app�| gzip > openvino-prod-app.tar.gz  
+    docker save openvino-prod-app | gzip > openvino-prod-app.tar.gz  
 
 * Consumer application
 
@@ -106,7 +106,7 @@ following:
     ```
     save the docker image 
     ```
-    docker save openvino-cons-app�| gzip > openvino-cons-app.tar.gz
+    docker save openvino-cons-app | gzip > openvino-cons-app.tar.gz
     ``` 
 
 Now, the docker images should have been built successfully and ready to start.
