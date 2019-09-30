@@ -4,7 +4,7 @@ Copyright (c) 2019 Intel Corporation and Smart-Edge.com, Inc.
 # OpenVINO Sample Application in OpenNESS
 OpenVINO toolkit, short for Open Visual Inference and Neural network Optimization toolkit, provides improved neural network performance on Intel processors and enables development of cost-effective and real-time vision applications. The toolkit enables deep learning inference and easy heterogeneous execution across multiple Intel platforms (Intel CPUs, Intel Integrated Graphics, Intel FPGA, Intel Movidius Neural Compute Stick, Intel Neural Compute Stick 2 and Intel Vision Accelerator Design with Intel Movidius VPUs) - providing implementations across cloud architectures to edge devices.
 
-Intel Open Network Edge Services Software (OpenNESS) toolkit enables developers and businesses to easily land deep learning solutions that were optimized using OpenVINO toolkit on premises and on the network edge. Visual inference applications using OpenVINO are onboarded by OpenNESS for accelerated and low-latency execution on the edge.
+Open Network Edge Services Software (OpenNESS) toolkit enables developers and businesses to easily land deep learning solutions that were optimized using OpenVINO toolkit on premises and on the network edge. Visual inference applications using OpenVINO are onboarded by OpenNESS for accelerated and low-latency execution on the edge.
 
 This sample application demonstrates OpenVINO object detection (pedestrian and vehicle detection) deployment and execution on the OpenNESS edge platform. A live feed being received from a client device is inferred using OpenVINO pre-trained models, `pedestrian-detection-adas-0002` and `vehicle-detection-adas-0002`.
 
@@ -96,7 +96,7 @@ following:
     ```
      save the docker image 
     ```
-    docker save openvino-prod-app | gzip > openvino-prod-app.tar.gz  
+    docker save openvino-prod-appï¿½| gzip > openvino-prod-app.tar.gz  
 
 * Consumer application
 
@@ -106,7 +106,7 @@ following:
     ```
     save the docker image 
     ```
-    docker save openvino-cons-app | gzip > openvino-cons-app.tar.gz
+    docker save openvino-cons-appï¿½| gzip > openvino-cons-app.tar.gz
     ``` 
 
 Now, the docker images should have been built successfully and ready to start.
