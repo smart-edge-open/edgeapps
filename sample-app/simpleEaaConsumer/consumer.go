@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/otcshare/edgeapps/sample-app/common"
+	"github.com/open-ness/edgeapps/sample-app/common"
 	"github.com/pkg/errors"
 )
 
