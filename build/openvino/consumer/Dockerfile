@@ -24,11 +24,11 @@ ENV GOPATH=/root/go
 ENV GOROOT=/usr/local/go
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-ARG OPENVINO_LINK=http://registrationcenter-download.intel.com/akdlm/irc_nas/15512/l_openvino_toolkit_p_2019.1.144.tgz
+ARG OPENVINO_LINK=http://registrationcenter-download.intel.com/akdlm/irc_nas/15791/l_openvino_toolkit_fpga_p_2019.2.275.tgz
 ARG MODEL1_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin_20190329_105530/pedestrian-detection-adas-0002/
 ARG MODEL2_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin_20190329_105530/vehicle-detection-adas-0002/
 ARG INSTALL_DIR=/tmp/openvino_installer
-ARG OPENVINO_SAMPLES_DIR=/opt/intel/openvino/deployment_tools/inference_engine/samples/
+ARG OPENVINO_DEMOS_DIR=/opt/intel/openvino/deployment_tools/open_model_zoo/demos
 
 RUN mkdir $GOPATH
 RUN apt-get update && \
@@ -41,7 +41,8 @@ RUN apt-get update && \
     apt-get -y install autoconf libtool && \
     apt-get -y install ffmpeg libav-tools x264 && \
     apt-get -y install git && \
-    apt-get -y install util-linux
+    apt-get -y install util-linux && \
+    apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.58-dev libboost-thread1.58 libboost-filesystem1.58 
 
 # OpenVino installation
 RUN cd /tmp && \
@@ -58,13 +59,13 @@ WORKDIR /root
 RUN echo "source /opt/intel/openvino/bin/setupvars.sh" >> ~/.bashrc
 
 # Patch OpenVINO sample app
-COPY object_detection_demo_ssd_async.patch $OPENVINO_SAMPLES_DIR/object_detection_demo_ssd_async/
-RUN patch $OPENVINO_SAMPLES_DIR/object_detection_demo_ssd_async/main.cpp \
-		$OPENVINO_SAMPLES_DIR/object_detection_demo_ssd_async/object_detection_demo_ssd_async.patch
+COPY object_detection_demo_ssd_async.patch $OPENVINO_DEMOS_DIR/object_detection_demo_ssd_async/
+RUN patch $OPENVINO_DEMOS_DIR/object_detection_demo_ssd_async/main.cpp \
+		$OPENVINO_DEMOS_DIR/object_detection_demo_ssd_async/object_detection_demo_ssd_async.patch
 
 # Build OpenVINO samples
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh \
-    && $OPENVINO_SAMPLES_DIR/build_samples.sh"
+    && $OPENVINO_DEMOS_DIR/build_demos.sh"
 
 # Download OpenVINO pre-trained models
 RUN wget -r -np -nH --cut-dirs=5 -R index.html* $MODEL1_LINK
