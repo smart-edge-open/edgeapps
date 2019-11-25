@@ -33,10 +33,10 @@ import (
 
 // Connectivity constants
 const (
-	EAAServerName = "eaa.community.appliance.mec"
+	EAAServerName = "eaa.openness"
 	EAAServerPort = "443"
 	EAAServPort   = "80"
-	EAACommonName = "eaa.community.appliance.mec"
+	EAACommonName = "eaa.openness"
 )
 
 // OpenVINO acceleration types
