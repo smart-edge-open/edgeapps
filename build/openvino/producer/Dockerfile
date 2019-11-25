@@ -18,7 +18,7 @@ FROM ubuntu:16.04
 
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
-ENV no_proxy=$no_proxy,eaa.community.appliance.mec
+ENV no_proxy=$no_proxy,eaa.openness
 
 ENV GOPATH=/root/go
 ENV GOROOT=/usr/local/go

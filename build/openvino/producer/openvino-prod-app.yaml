@@ -13,26 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #########################################################
-
+---
 apiVersion: v1
 kind: Pod
 metadata:
   name: openvino-prod-app
   namespace: default
-  labels:
-    app: openvino-prod-app
 spec:
   containers:
   - name: openvino-prod-app
-    image: library/openvino-prod-app:v1
-    imagePullPolicy: IfNotPresent
-    stdin: true
-    tty: true
-    securityContext:
-      privileged: true
-      runAsUser: 0
-    command:
-      - sleep
-      - infinity
-    ports:
-    - containerPort: 22
+    image: openvino-prod-app:1.0
+    imagePullPolicy: Never
+
