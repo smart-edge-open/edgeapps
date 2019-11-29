@@ -31,9 +31,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// EaaCommonName Common Name that EAA uses for TLS connection
-const EaaCommonName string = "eaa.community.appliance.mec"
-
 // generatePrivateKey generates a private key. The ECDSAWithSHA256 private KEY
 // is need to create Certificate Request. The key uses P256 eliptic curve.
 func generatePrivateKey() (*ecdsa.PrivateKey, error) {
@@ -158,7 +155,7 @@ func createEncryptedClient(credentialsResponse AuthCredentials,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{RootCAs: certPool,
 				Certificates: []tls.Certificate{cert},
-				ServerName:   EaaCommonName,
+				ServerName:   Cfg.EaaCommonName,
 			},
 		}}
 

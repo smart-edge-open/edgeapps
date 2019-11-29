@@ -108,7 +108,7 @@ func connectConsumer(client *http.Client) (*websocket.Conn, error) {
 			RootCAs: transport.TLSClientConfig.RootCAs,
 			Certificates: []tls.Certificate{
 				transport.TLSClientConfig.Certificates[0]},
-			ServerName: common.EaaCommonName,
+			ServerName: common.Cfg.EaaCommonName,
 		},
 	}
 
