@@ -10,4 +10,4 @@ if EAA.
 Reference: https://github.com/otcshare/specs/blob/master/schema/eaa/README.md
 
 # Docker build
-For docker build to work please change `EdgeNodeEndpoint` and `ProducerEndpoint` from `localhost` to `eaa.community.appliance.mec` or other value that suits your setup best.
+For docker build to work please change `EdgeNodeEndpoint` and `ProducerEndpoint` from `localhost` to `eaa.openness` or other value that suits your setup best.

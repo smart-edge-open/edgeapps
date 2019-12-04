@@ -37,6 +37,6 @@ var Cfg = appConfig{
 	VerNotif:         "1.0.0",
 	EdgeNodeEndpoint: "localhost",
 	ProducerEndpoint: "localhost",
-	EaaCommonName:    "eaa.community.appliance.mec",
+	EaaCommonName:    "eaa.openness",
 	ProducerTimeout:  180, // in seconds
 	ConsumerTimeout:  120} // in seconds
