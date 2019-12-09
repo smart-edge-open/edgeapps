@@ -38,7 +38,7 @@ OpenVINO producer application is responsible for activating a service in OpenNES
 The producer application commences publishing notifications after it handshakes with the Edge Application Agent (EAA) over HTTPS REST API. This handshaking involves authentication and service activation.
 
 The `openvino-inference` provides information about the model name used in video inferencing and the acceleration type. Contents of the notification is defined by the below struct:
- 
+
 ```golang
 type InferenceSettings struct {
 	Model       string `json:"model"`
@@ -84,30 +84,30 @@ following:
 * Client Simulator
 
     ```shell
-    cd <appliance-ce-directory>/build/openvino/clientsim
+    cd <appliance-ce-directory>/openvino/clientsim
     ./build-image.sh
     ```
 
 * Producer application
 
     ```shell
-    cd <appliance-ce-directory>/build/openvino/producer
+    cd <appliance-ce-directory>/openvino/producer
     ./build-image.sh
     ```
-     save the docker image 
+     save the docker image
     ```
-    docker save openvino-prod-app | gzip > openvino-prod-app.tar.gz  
+    docker save openvino-prod-app | gzip > openvino-prod-app.tar.gz
 
 * Consumer application
 
     ```shell
-    cd <appliance-ce-directory>/build/openvino/consumer
+    cd <appliance-ce-directory>/openvino/consumer
     ./build-image.sh
     ```
-    save the docker image 
+    save the docker image
     ```
     docker save openvino-cons-app | gzip > openvino-cons-app.tar.gz
-    ``` 
+    ```
 
 Now, the docker images should have been built successfully and ready to start.
 Images can be listed by executing this command:
