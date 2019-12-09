@@ -19,6 +19,8 @@ kind: Pod
 metadata:
   name: openvino-cons-app
   namespace: default
+  labels:
+    name: openvino-cons-app
 spec:
   containers:
   - name: openvino-cons-app
