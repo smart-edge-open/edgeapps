@@ -35,8 +35,8 @@ var Cfg = appConfig{
 	ProducerAppID:    "ExampleProducerAppID",
 	Notification:     "ExampleNotification",
 	VerNotif:         "1.0.0",
-	EdgeNodeEndpoint: "localhost",
-	ProducerEndpoint: "localhost",
+	EdgeNodeEndpoint: "eaa.openness",
+	ProducerEndpoint: "eaa.openness",
 	EaaCommonName:    "eaa.openness",
 	ProducerTimeout:  180, // in seconds
 	ConsumerTimeout:  120} // in seconds
