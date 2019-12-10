@@ -1,5 +1,5 @@
 SPDX-License-Identifier: Apache-2.0
-Copyright (c) 2019 Intel Corporation and Smart-Edge.com, Inc.
+Copyright (c) 2019 Intel Corporation
 
 # OpenVINO Sample Application in OpenNESS
 OpenVINO toolkit, short for Open Visual Inference and Neural network Optimization toolkit, provides improved neural network performance on Intel processors and enables development of cost-effective and real-time vision applications. The toolkit enables deep learning inference and easy heterogeneous execution across multiple Intel platforms (Intel CPUs, Intel Integrated Graphics, Intel FPGA, Intel Movidius Neural Compute Stick, Intel Neural Compute Stick 2 and Intel Vision Accelerator Design with Intel Movidius VPUs) - providing implementations across cloud architectures to edge devices.

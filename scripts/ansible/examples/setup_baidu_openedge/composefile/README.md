@@ -1,6 +1,6 @@
 ```text
 SPDX-License-Identifier: Apache-2.0
-Copyright © 2019 Intel Corporation and Smart-Edge.com, Inc.
+Copyright (c) 2019 Intel Corporation
 ```
 
 # This directory contains scripts for docker-composer file and related Dockerfile to build baiduEdge container.
