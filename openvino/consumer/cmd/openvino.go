@@ -57,15 +57,15 @@ func callOpenVINO(model string, accl string) {
 		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
 		"-m", modelXML)
 
-	stdout, _ := cmd.StdoutPipe()
-	stderr, _ := cmd.StderrPipe()
 	go func() {
-		if _, err = io.Copy(os.Stdout, stdout); err != nil {
+		stdout, _ := cmd.StdoutPipe()
+		if _, err := io.Copy(os.Stdout, stdout); err != nil {
 			log.Println(err)
 		}
 	}()
 	go func() {
-		if _, err = io.Copy(os.Stderr, stderr); err != nil {
+		stderr, _ := cmd.StderrPipe()
+		if _, err := io.Copy(os.Stderr, stderr); err != nil {
 			log.Println(err)
 		}
 	}()
