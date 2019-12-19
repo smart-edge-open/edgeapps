@@ -20,12 +20,8 @@ RUN wget $DPDK_LINK
 RUN tar -xf $DPDK_FILENAME 
 RUN cd $RTE_SDK && cp ../$BBDEV_PATCH . &&  git apply $BBDEV_PATCH
 
-# RT repo
-RUN wget http://linuxsoft.cern.ch/cern/centos/7/rt/CentOS-RT.repo -O /etc/yum.repos.d/CentOS-RT.repo
-RUN wget http://linuxsoft.cern.ch/cern/centos/7/os/x86_64/RPM-GPG-KEY-cern -O /etc/pki/rpm-gpg/RPM-GPG-KEY-cern
-
 # install kernel sources to compile DPDK
-RUN yum install -y "kernel-rt-devel-uname-r == $(uname -r)"
+RUN yum install -y "kernel-devel-uname-r == $(uname -r)"
 RUN mkdir -p /lib/modules/$(uname -r)
 RUN ln -s /usr/src/kernels/$(uname -r) /lib/modules/$(uname -r)/build
 
