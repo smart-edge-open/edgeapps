@@ -21,7 +21,7 @@ RUN tar -xf $DPDK_FILENAME
 RUN cd $RTE_SDK && cp ../$BBDEV_PATCH . &&  git apply $BBDEV_PATCH
 
 # install kernel sources to compile DPDK
-RUN yum install -y "kernel-devel-uname-r == $(uname -r)"
+RUN yum install -y http://linuxsoft.cern.ch/centos-vault/7.6.1810/os/x86_64/Packages/kernel-devel-3.10.0-957.el7.x86_64.rpm
 RUN mkdir -p /lib/modules/$(uname -r)
 RUN ln -s /usr/src/kernels/$(uname -r) /lib/modules/$(uname -r)/build
 
