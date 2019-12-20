@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2019 Intel Corporation
+
+version: '3'
+services:
+  producer:
+    build:
+      context: .
+      dockerfile: "Dockerfile_producer"
+    image: "producer:${VER}"
+    privileged: true
+    ports:
+     - "80:80"
+     - "443:443"
+    network_mode: bridge
+  consumer:
+    build:
+      context: .
+      dockerfile: "Dockerfile_consumer"
+    image: "consumer:${VER}"
+    privileged: true
+    ports:
+     - "80:80"
+     - "443:443"
+    network_mode: bridge
