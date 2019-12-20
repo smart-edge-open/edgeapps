@@ -7,5 +7,5 @@ Copyright (c) 2019 Intel Corporation
 This directory contains simple lightweight EAA test app to demonstrate usage
 if EAA.
 
-Reference: https://github.com/otcshare/specs/blob/master/schema/eaa/README.md
+Reference: https://github.com/open-ness/specs/blob/master/schema/eaa/README.md
 
