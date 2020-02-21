@@ -6,6 +6,7 @@ export GO111MODULE = on
 .PHONY: build build-docker consumer consumer-docker producer producer-docker clean lint help
 TMP_DIR:=$(shell mktemp -d)
 BUILD_DIR ?=build
+CURRENT_DIR:=$(shell pwd)
 
 VER:=1.0
 
@@ -14,8 +15,11 @@ build: consumer producer
 build-docker: consumer-docker producer-docker
 
 consumer:
+	export GOSUMDB=off
+	cd ${CURRENT_DIR}/.. && go mod init sample-app || cd ${CURRENT_DIR}
 	mkdir -p "${BUILD_DIR}"
 	GOOS=linux go build -o "${BUILD_DIR}/consumer" ./simpleEaaConsumer
+	unset GOSUMDB
 
 consumer-docker: consumer
 	cp simpleEaaConsumer/Dockerfile "${TMP_DIR}/Dockerfile_consumer"
@@ -24,8 +28,11 @@ consumer-docker: consumer
 	cd "${TMP_DIR}" && VER=${VER} docker-compose -f docker-compose.yml build consumer
 
 producer:
+	export GOSUMDB=off
+	cd ${CURRENT_DIR}/.. && go mod init sample-app || cd ${CURRENT_DIR}
 	mkdir -p "${BUILD_DIR}"
 	GOOS=linux go build -o "${BUILD_DIR}/producer" ./simpleEaaProducer
+	unset GOSUMDB
 
 producer-docker: producer
 	cp simpleEaaProducer/Dockerfile "${TMP_DIR}/Dockerfile_producer"
