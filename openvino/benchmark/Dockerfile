@@ -36,6 +36,10 @@ RUN mkdir $INSTALL_DIR/deployment_tools/inference_engine/samples/build && cd $IN
     /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && cmake .. && make -j1"
 RUN pip3 install networkx==2.3
 
+RUN cd /opt/intel/openvino/deployment_tools/demo && \
+    /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./demo_squeezenet_download_convert_run.sh"
+
+
 RUN cd /root/inference_engine_samples_build && \
     /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && make"
 
