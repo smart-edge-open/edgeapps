@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2019 Intel Corporation
+
+# EditorConfig - http://editorconfig.org/
+# Install the EditorConfig plugin for your favorite editor to benefit from this.
+
+root = true
+
+[*]
+charset = utf-8
+indent_size = 4
+indent_style = tab
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{yaml,yml}]
+indent_size = 2
+indent_style = space
+
+[*.md]
+indent_style = space
+
+[*.json]
+indent_style = space
