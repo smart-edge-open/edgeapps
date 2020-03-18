@@ -9,7 +9,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/otcshare/edgeapps/sample-app/common"
+	"github.com/otcshare/edgeapps/applications/sample-app/common"
 	"github.com/pkg/errors"
 )
 
