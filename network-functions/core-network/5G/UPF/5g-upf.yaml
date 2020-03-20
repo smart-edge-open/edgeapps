@@ -1,0 +1,65 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 5g-upf-vpp
+  namespace: default
+  annotations:
+      k8s.v1.cni.cncf.io/networks: sriov-openness
+spec:
+  nodeName: ne-node02
+  containers:
+  - securityContext:
+      privileged: false 
+      capabilities:
+        add:
+          - IPC_LOCK
+          - SYS_NICE
+    name: upf
+    image: 5g-upf:1.0
+    imagePullPolicy: Never
+    command: [ "/bin/bash", "-c", "--" ]
+    args:  [ while true ; do sleep 900000; done; ]
+    volumeMounts:
+    - name: hugepages
+      mountPath: /hugepages
+    - name: class
+      mountPath: /sys/devices
+      readOnly: false
+    - name: sysfs
+      mountPath: /sys
+      readOnly: false
+    - name: host-proc
+      mountPath: /host/proc
+    - name: varvol
+      mountPath: /var/run
+      readOnly: false
+    resources:
+      requests:
+        hugepages-2Mi: 6Gi
+        memory: 6Gi
+        intel.com/intel_sriov_dpdk: "1"
+      limits:
+        hugepages-2Mi: 6Gi
+        memory: 6Gi
+        intel.com/intel_sriov_dpdk: "1"
+  volumes:
+  - name: hugepages
+    emptyDir:
+      medium: HugePages
+  - name: class
+    hostPath:
+      path: /sys/devices
+  - name: sysfs
+    hostPath:
+        path: /sys
+  - name: host-proc
+    hostPath:
+        path: /proc
+  - name: varvol
+    hostPath:
+        path: /var/run
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
