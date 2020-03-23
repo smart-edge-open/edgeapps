@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flexran
+spec:
+  containers:
+  - securityContext:
+      privileged: false
+      capabilities:
+        add:
+          - IPC_LOCK
+          - SYS_NICE
+    name: flexran 
+    image: flexran-va:1.0
+    imagePullPolicy: Never
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "while true; do sleep 300000; done;" ]
+    volumeMounts:
+    - mountPath: /hugepages
+      name: hugepage
+    - name: varrun
+      mountPath: /var/run/dpdk
+      readOnly: false
+    - name: time
+      mountPath: /etc/localtime
+      readOnly: false
+    resources:
+      requests:
+        intel.com/intel_fec_5g: '1'
+        hugepages-1Gi: 20Gi
+        memory: 20Gi
+      limits:
+        intel.com/intel_fec_5g: '1'
+        hugepages-1Gi: 20Gi
+        memory: 20Gi
+  volumes:
+  - name: hugepage
+    emptyDir:
+      medium: HugePages
+  - hostPath:
+      path: "/etc/localtime"
+    name: time
+  - name: varrun
+    emptyDir: {}
+  nodeSelector:
+    feature.node.kubernetes.io/pci-1200_8086.present: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX2: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512BW: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512CD: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512DQ: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512F: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512VL: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTL3CA: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTMBA: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ_FULL: 'true'
+    feature.node.kubernetes.io/kernel-config.PREEMPT: 'true'
+    feature.node.kubernetes.io/kernel-version.full: '3.10.0-1062.12.1.rt56.1042.el7.x86_64'
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+    feature.node.kubernetes.io/system-os_release.ID: 'centos'
