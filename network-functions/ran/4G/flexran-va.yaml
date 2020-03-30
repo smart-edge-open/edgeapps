@@ -29,11 +29,11 @@ spec:
       readOnly: false
     resources:
       requests:
-        intel.com/intel_fec_5g: '1'
+        intel.com/intel_fec_lte: '1'
         hugepages-1Gi: 20Gi
         memory: 20Gi
       limits:
-        intel.com/intel_fec_5g: '1'
+        intel.com/intel_fec_lte: '1'
         hugepages-1Gi: 20Gi
         memory: 20Gi
   volumes:
