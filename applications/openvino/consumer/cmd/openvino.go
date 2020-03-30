@@ -51,8 +51,11 @@ func callOpenVINO(model string, accl string) {
 		modelXML = model + "/FP16/" + model + ".xml"
 	}
 
+        // get taskset cpu from env
+        openvinoTasksetCpu := os.Getenv("OPENVINO_TASKSET_CPU")        
+        
 	// #nosec
-	cmd = exec.Command("taskset", "-c", "2",
+	cmd = exec.Command("taskset", "-c", openvinoTasksetCpu,
 		openvinoPath+openvinoCmd, "-d", accl,
 		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
 		"-m", modelXML)
