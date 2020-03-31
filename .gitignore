@@ -18,4 +18,3 @@ go.sum
 # Distributables folder
 dist/
 sample-app/build
-
