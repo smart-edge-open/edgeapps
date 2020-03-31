@@ -6,4 +6,4 @@ Copyright (c) 2020 Intel Corporation
 # 5g - UPF
 
 
-OpenNESS supports deployment of 5G User Plane Functions in Cloudnative environment. For more details please refer to [openness_upf.md](https://github.com/otcshare/specs/blob/upf-doc/doc/core-network/openness_upf.md)
+OpenNESS supports deployment of 5G User Plane Functions in Cloudnative environment. For more details please refer to [openness_upf.md](https://github.com/open-ness/specs/blob/upf-doc/doc/core-network/openness_upf.md)
