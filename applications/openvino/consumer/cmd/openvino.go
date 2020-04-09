@@ -51,24 +51,24 @@ func callOpenVINO(model string, accl string) {
 		modelXML = model + "/FP16/" + model + ".xml"
 	}
 
-        // get taskset cpu from env
-        openvinoTasksetCpu := os.Getenv("OPENVINO_TASKSET_CPU")        
-        
+	// get taskset cpu from env
+	openvinoTasksetCPU := os.Getenv("OPENVINO_TASKSET_CPU")
+
 	// #nosec
-	cmd = exec.Command("taskset", "-c", openvinoTasksetCpu,
+	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
 		openvinoPath+openvinoCmd, "-d", accl,
 		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
 		"-m", modelXML)
 
 	go func() {
 		stdout, _ := cmd.StdoutPipe()
-		if _, err := io.Copy(os.Stdout, stdout); err != nil {
+		if _, err = io.Copy(os.Stdout, stdout); err != nil {
 			log.Println(err)
 		}
 	}()
 	go func() {
 		stderr, _ := cmd.StderrPipe()
-		if _, err := io.Copy(os.Stderr, stderr); err != nil {
+		if _, err = io.Copy(os.Stderr, stderr); err != nil {
 			log.Println(err)
 		}
 	}()
