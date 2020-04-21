@@ -73,14 +73,6 @@ Big contributions, ideas or controversial features should be discussed with the 
 ## How to report an issue/bug/enhancement
 It is encouraged to use the [GitHub Issues](https://github.com/open-ness/edgeapps/issues) tool to report any bug, issue, enhancement or to seek help.
 
-## OpenNESS Release Schedule
-
-OpenNESS is released on a quarterly cadence to maintain a rapid pace of evolution. Each release is named after the year and month that it was tagged in, e.g: 20.03 for the OpenNESS release generated in March 2020. 
-
-Each release cycle involves 2 key dates (a) Code-freeze date, and (b) Release date. Code-freeze date is the last date for accepting code contributions. Contributions past the code-freeze date are not guaranteed inclusion into the release. RFCs should be submitted at an early stage before starting the new release cycle in order to give sufficient time for reviews and discussions.
-
-TSC agrees and finalizes the roadmap well enough before the new release cycle starts (i.e: before the release date of the preceding release). The roadmap identifies the set of features that has been committed for the upcoming release.
-
 ## Resources
 Below are some useful resources for getting started with OpenNESS:
 * [OpenNESS release notes](https://github.com/open-ness/specs/blob/master/openness_releasenotes.md)
