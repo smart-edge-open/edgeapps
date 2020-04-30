@@ -18,7 +18,7 @@ Thank you for considering joining our community! Let's get started from [here](C
 All code contributions should follow the [development guide](DEVELOPING.md).
 
 ## Code of Conduct
-The OpenNESS community abides by the [Contributor Covenant](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [OpenNESS maintainers](@open-ness/openness-maintainers).
+The OpenNESS community abides by the [Contributor Covenant](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [Intel Open Source Technology Center (OTC)](mailto:otc.community.care@intel.com).
 
 ## License
 The OpenNESS project is open-source and released under [Apache License, Version 2.0](LICENSE).
