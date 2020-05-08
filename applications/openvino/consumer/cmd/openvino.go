@@ -20,7 +20,6 @@ const (
 var cmd *exec.Cmd
 
 func callOpenVINO(model string, accl string) {
-	var err error
 
 	// validate accelerator type
 	switch accl {
@@ -34,7 +33,7 @@ func callOpenVINO(model string, accl string) {
 
 	// kill already running process if not the first time
 	if cmd != nil {
-		err = cmd.Process.Kill()
+		err := cmd.Process.Kill()
 		if err != nil {
 			log.Fatal("Failed to kill OpenVINO process:", err)
 		}
@@ -51,11 +50,11 @@ func callOpenVINO(model string, accl string) {
 		modelXML = model + "/FP16/" + model + ".xml"
 	}
 
-        // get taskset cpu from env
-        openvinoTasksetCpu := os.Getenv("OPENVINO_TASKSET_CPU")        
-        
+	// get taskset cpu from env
+	openvinoTasksetCPU := os.Getenv("OPENVINO_TASKSET_CPU")
+
 	// #nosec
-	cmd = exec.Command("taskset", "-c", openvinoTasksetCpu,
+	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
 		openvinoPath+openvinoCmd, "-d", accl,
 		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
 		"-m", modelXML)
@@ -73,7 +72,7 @@ func callOpenVINO(model string, accl string) {
 		}
 	}()
 
-	err = cmd.Start()
+	err := cmd.Start()
 	if err != nil {
 		log.Fatal("Failed to run OpenVINO process:", err)
 	}
