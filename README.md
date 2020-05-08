@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.com/open-ness/edgeapps.svg?branch=master)](https://travis-ci.com/open-ness/edgeapps)
+[![Go Report Card](https://goreportcard.com/badge/github.com/open-ness/edgeapps)](https://goreportcard.com/report/github.com/open-ness/edgeapps)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
 # OpenNESS Edge Applications
 This repository presents reference designs of network & enterprise edge applications that have been deployed with the Open Network Edge Services Software (OpenNESS) platform.
 
