@@ -1,3 +1,4 @@
+{{- if not .Values.deployment.sriov }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -13,7 +14,11 @@ spec:
   ingress:
   - from:
     - ipBlock:
+{{- if .Values.networkPolicy }}
+        cidr: {{ if .Values.networkPolicy.cidr }} {{- .Values.networkPolicy.cidr }} {{ else }} 192.168.1.0/24 {{ end }}
+{{- else }}
         cidr: 192.168.1.0/24
+{{- end }}
     ports:
     {{- if kindIs "map" .Values.nginx.http.server }}
     - protocol: TCP
@@ -26,3 +31,4 @@ spec:
     - protocol: TCP
       port: 443
     {{- end }}
+{{- end }}

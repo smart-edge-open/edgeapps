@@ -25,12 +25,10 @@ nginx:
     - hostPath: "/var/cache1"
       max_size: "100g"
     # more hostPath can be added for content caching.
+    # Uncomment and modify to configure the CDN server
     # server:
-      # port default 80
       # port: 80
-      # sslport default 443
       # sslport: 443
-      # serverName default cdn.openness
       # serverName: cdn.openness
 
 deployment:
@@ -46,3 +44,6 @@ deployment:
   # sriov: true or false
   sriov: true
 
+# Uncomment and modify to configure the networkPolicy 
+#networkPolicy:
+#  cidr: 192.168.1.0/24
