@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/amr-mokhtar/edgeapps.svg?branch=master)](https://travis-ci.com/amr-mokhtar/edgeapps)
-[![Go Report Card](https://goreportcard.com/badge/github.com/amr-mokhtar/edgeapps)](https://goreportcard.com/report/github.com/amr-mokhtar/edgeapps)
+[![Build Status](https://travis-ci.com/open-ness/edgeapps.svg?branch=master)](https://travis-ci.com/open-ness/edgeapps)
+[![Go Report Card](https://goreportcard.com/badge/github.com/open-ness/edgeapps)](https://goreportcard.com/report/github.com/open-ness/edgeapps)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 # OpenNESS Edge Applications
