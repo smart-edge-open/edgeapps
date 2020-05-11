@@ -1,7 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
 apiVersion: v2
 description: CDN nginx 
 keywords:
 - cdn
 - nginx
-name: cdn
+name: nginx-cdn
 version: 0.0.1

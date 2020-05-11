@@ -1,7 +1,0 @@
-{{ .Chart.Name }} Installed.
-Release name: {{ .Release.Name }}.
-
-To learn more about the release, try:
-
-  $ helm status {{ .Release.Name }}
-  $ helm get [command] {{ .Release.Name }}

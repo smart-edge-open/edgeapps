@@ -7,4 +7,3 @@ Copyright (c) 2020 Intel Corporation
 
 This sample application demonstrates CDN (Content Delivery Network) deployment and execution on the OpenNESS edge platform.
 
-The Helm chart for nginx based CDN application is added.
