@@ -45,6 +45,6 @@ deployment:
   # sriov: true or false
   # sriov: false
 
-# Uncomment and modify to configure the networkPolicy 
-networkPolicy:
-  cidr: 192.168.1.0/24
+# number of nodes in the cluster, used for creating network policy
+# while using kube-ovn
+numNodes: 1

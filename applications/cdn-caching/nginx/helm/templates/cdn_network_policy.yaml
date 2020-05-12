@@ -16,10 +16,13 @@ spec:
   - Ingress
   ingress:
   - from:
+{{- if .Values.numNodes }}
+{{- range $ipIdx := until ( int .Values.numNodes ) }}
     - ipBlock:
-{{- if .Values.networkPolicy }}
-        cidr: {{ if .Values.networkPolicy.cidr }} {{- .Values.networkPolicy.cidr }} {{ else }} 192.168.1.0/24 {{ end }}
+        cidr: 192.168.{{ add $ipIdx 1 }}.0/24
+{{- end }}
 {{- else }}
+    - ipBlock:
         cidr: 192.168.1.0/24
 {{- end }}
     ports:
