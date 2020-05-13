@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nginxcdn.fullname" . }}-deployment
+spec:
+  replicas: {{ if .Values.deployment.replicas }} {{- .Values.deployment.replicas -}} {{ else }} 1 {{ end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "nginxcdn.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ template "nginxcdn.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Values.deployment.sriov }}
+      annotations:
+        k8s.v1.cni.cncf.io/networks: sriov-openness
+{{- end }}
+    spec:
+      tolerations:
+      - key: node-role.kube-ovn/master  
+        effect: NoSchedule
+      initContainers:
+      - name: openssl
+        image: emberstack/openssl:latest
+        command: [ "openssl", "req", "-x509", "-nodes", "-days", "36500", "-newkey", "rsa:2048", "-keyout", "/root/cdnssl/nginx.key", "-out", "/root/cdnssl/nginx.crt", "-subj", "/CN=cdn.openness" ]
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 1Gi
+            cpu: 1
+        volumeMounts:
+        - name: cdn-ssl
+          mountPath: /root/cdnssl
+      containers:
+      - name: cdn-nginx
+        image: {{ if .Values.deployment.image }} {{- .Values.deployment.image -}} {{ else }} nginx:1.16.1 {{ end }}
+        imagePullPolicy: IfNotPresent
+        command: [ "nginx", "-g", "daemon off;"]
+        securityContext:
+          runAsUser: 0
+          privileged: true
+        resources:
+          limits:
+{{- if .Values.deployment.hugepages2M }}
+            hugepages-2Mi: {{ .Values.deployment.hugepages2M }}
+{{- end }}
+            memory: {{ if .Values.deployment.memory }} {{- .Values.deployment.memory -}} {{ else }} 10Gi {{ end }}
+            cpu: {{ if .Values.deployment.cpuLimit }} {{- .Values.deployment.cpuLimit -}} {{ else if .Values.nginx.worker_processes }} {{- (.Values.nginx.worker_processes | add1 | int) -}} {{ else }} 5  {{ end }}
+{{- if .Values.deployment.sriov }}
+            intel.com/intel_sriov_netdevice: "1"
+{{- end }}
+        volumeMounts:
+{{- range $index, $val := .Values.nginx.http.proxy_cache }}
+        - mountPath: /cdn/cache{{ $index }}
+          name: cdn-cache{{ $index }}
+{{- end }}
+        - mountPath: /etc/nginx/nginx.conf
+          name: cdn-conf
+          subPath: nginx.conf
+        - mountPath: /etc/nginx/ssl
+          name: cdn-ssl
+      volumes:
+{{- range $index, $val := .Values.nginx.http.proxy_cache }}
+      - name: cdn-cache{{ $index }}
+        hostPath:
+          path: {{ $val.hostPath }}
+          type: DirectoryOrCreate
+{{- end }}
+      - name: cdn-conf
+        configMap:
+          name: {{ template "nginxcdn.fullname" . }}-config
+          items:
+            - key: nginxconf
+              path: nginx.conf
+      - name: cdn-ssl
+        hostPath:
+          path: /etc/openness/cdn/ssl
+          type: DirectoryOrCreate
+      

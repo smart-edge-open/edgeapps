@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+nginx:
+  # user default "nginx"
+  user: "nginx"
+  # worker_processes default 4
+  worker_processes: 4
+  # worker_cpu_affinity default auto
+  worker_cpu_affinity: "auto"
+  #
+  events:
+    # worker_connections default 1000000
+    worker_connections 1000000
+  http:
+    # aio_write: "on"
+    # read_ahead: 0
+    # sendfile: "on"
+    # tcp_nopush: "on"
+    # tcp_nodelay: "on"
+    backend: 
+      # server required parameter (origin server)
+      server: localhost
+    # proxy_cache required parameter
+    proxy_cache:
+    - hostPath: "/var/cache0"
+      max_size: "5g"
+    # more hostPath can be added for content caching.
+    # Uncomment and modify to configure the CDN server
+    # server:
+      # port: 80
+      # sslport: 443
+      # serverName: cdn.openness
+
+deployment:
+  # replicas default 1
+  replicas: 1
+  # image default nginx:1.16.1
+  image: nginx:1.16.1
+  # cpuLimit default is 5 or nginx.worker_processes + 1
+  cpuLimit: 5
+  # memory default 10Gi
+  memory: 10Gi
+  # hugepages2M: 512Mi
+  # sriov: true or false
+  # sriov: false
+
+# number of nodes in the cluster, used for creating network policy
+# while using kube-ovn
+numNodes: 1
