@@ -45,6 +45,14 @@ deployment:
   # sriov: true or false
   # sriov: false
 
+cdnService:
+  # type of service ClusterIP, NodePort etc.,
+  type: "NodePort"
+  # httpNodePort port number when using NodePort service for http port (range : 30000-32767)
+  # httpNodePort: 30007
+  # httpsNodePort port number when using NodePort service for https port (range : 30000-32767)
+  # httpsNodePort: 30008
+
 # number of nodes in the cluster, used for creating network policy
 # while using kube-ovn
 numNodes: 1

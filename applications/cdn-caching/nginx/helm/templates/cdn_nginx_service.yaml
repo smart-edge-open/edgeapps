@@ -1,0 +1,40 @@
+{{- if .Values.cdnService }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "nginxcdn.fullname" . }}-service
+spec:
+{{- if .Values.cdnService.type }}
+  type: {{ .Values.cdnService.type }}
+{{- end }}
+  selector:
+    app.kubernetes.io/name: {{ template "nginxcdn.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: http 
+{{- if kindIs "map" .Values.nginx.http.server }}
+      port: {{ default "80" .Values.nginx.http.server.port }}
+{{- else }}
+      port: 80
+{{- end }}
+{{- if .Values.cdnService.type }}
+{{- if eq .Values.cdnService.type "NodePort" }}
+{{- if .Values.cdnService.httpNodePort }}
+      nodePort: {{ .Values.cdnService.httpNodePort }}
+{{- end }}
+{{- end }}
+{{- end }}
+    - name: https
+{{- if kindIs "map" .Values.nginx.http.server }}
+      port: {{ default "443" .Values.nginx.http.server.sslport }}
+{{- else }}
+      port: 443
+{{- end }}
+{{- if .Values.cdnService.type }}
+{{- if eq .Values.cdnService.type "NodePort" }}
+{{- if .Values.cdnService.httpsNodePort }}
+      nodePort: {{ .Values.cdnService.httpsNodePort }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
