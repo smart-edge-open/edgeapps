@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
+{{- $release_name := include "nginxcdn.fullname" . }}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -67,9 +69,14 @@ spec:
       volumes:
 {{- range $index, $val := .Values.nginx.http.proxy_cache }}
       - name: cdn-cache{{ $index }}
+{{- if $.Values.cdnNode }}
+        persistentVolumeClaim:
+          claimName: {{ $release_name }}-pvc{{ $index }}
+{{- else }}
         hostPath:
           path: {{ $val.hostPath }}
           type: DirectoryOrCreate
+{{- end }}
 {{- end }}
       - name: cdn-conf
         configMap:

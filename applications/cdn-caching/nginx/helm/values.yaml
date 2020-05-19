@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
+# cdnNode - the node to run the CDN application
+# adding this enables the Persistent volumes.
+# cdnNode: openness-node
+
 nginx:
   # user default "nginx"
   user: "nginx"
