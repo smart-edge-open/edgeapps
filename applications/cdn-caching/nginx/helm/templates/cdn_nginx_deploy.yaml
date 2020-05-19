@@ -81,4 +81,12 @@ spec:
         hostPath:
           path: /etc/openness/cdn/ssl
           type: DirectoryOrCreate
-      
+{{- if or .Values.deployment.sriov .Values.ssdDisks }}
+      nodeSelector:
+{{- if .Values.deployment.sriov }}
+        feature.node.kubernetes.io/network-sriov.capable: 'true'
+{{- end }}
+{{- if .Values.ssdDisks }}
+        feature.node.kubernetes.io/storage-nonrotationaldisk: 'true'
+{{- end }}
+{{- end }}

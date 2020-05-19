@@ -48,3 +48,6 @@ deployment:
 # number of nodes in the cluster, used for creating network policy
 # while using kube-ovn
 numNodes: 1
+# NFD: schedule on nodes with SSDs
+ssdDisks: true
+
