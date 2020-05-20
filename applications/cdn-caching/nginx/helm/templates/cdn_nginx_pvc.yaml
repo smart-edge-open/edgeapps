@@ -3,7 +3,7 @@
 
 {{- $release_name := include "nginxcdn.fullname" . }}
 
-{{- if .Values.cdnNode }}
+{{- if .Values.CDNNode }}
 {{- range $index, $val := .Values.nginx.http.proxy_cache }}
 apiVersion: v1
 kind: PersistentVolumeClaim

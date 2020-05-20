@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-{{- if .Values.cdnService }}
+{{- if .Values.CDNService }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ template "nginxcdn.fullname" . }}-service
 spec:
-{{- if .Values.cdnService.type }}
-  type: {{ .Values.cdnService.type }}
+{{- if .Values.CDNService.type }}
+  type: {{ .Values.CDNService.type }}
 {{- end }}
   selector:
     app.kubernetes.io/name: {{ template "nginxcdn.name" . }}
@@ -20,10 +20,10 @@ spec:
 {{- else }}
       port: 80
 {{- end }}
-{{- if .Values.cdnService.type }}
-{{- if eq .Values.cdnService.type "NodePort" }}
-{{- if .Values.cdnService.httpNodePort }}
-      nodePort: {{ .Values.cdnService.httpNodePort }}
+{{- if .Values.CDNService.type }}
+{{- if eq .Values.CDNService.type "NodePort" }}
+{{- if .Values.CDNService.httpNodePort }}
+      nodePort: {{ .Values.CDNService.httpNodePort }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -33,10 +33,10 @@ spec:
 {{- else }}
       port: 443
 {{- end }}
-{{- if .Values.cdnService.type }}
-{{- if eq .Values.cdnService.type "NodePort" }}
-{{- if .Values.cdnService.httpsNodePort }}
-      nodePort: {{ .Values.cdnService.httpsNodePort }}
+{{- if .Values.CDNService.type }}
+{{- if eq .Values.CDNService.type "NodePort" }}
+{{- if .Values.CDNService.httpsNodePort }}
+      nodePort: {{ .Values.CDNService.httpsNodePort }}
 {{- end }}
 {{- end }}
 {{- end }}

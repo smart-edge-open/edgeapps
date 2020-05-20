@@ -52,4 +52,4 @@ deployment:
 # while using kube-ovn
 #numNodes: 1
 # NFD: schedule on nodes with SSDs
-ssdDisks: true
+SSDDisks: true

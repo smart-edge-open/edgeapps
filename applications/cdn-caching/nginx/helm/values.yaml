@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-# cdnNode - the node to run the CDN application
+# CDNNode - the node to run the CDN application
 # adding this enables the Persistent volumes.
-# cdnNode: openness-node
+# CDNNode: openness-node
 
 nginx:
   # user default "nginx"
@@ -49,7 +49,7 @@ deployment:
   # sriov: true or false
   # sriov: false
 
-cdnService:
+CDNService:
   # type of service ClusterIP, NodePort etc.,
   type: "NodePort"
   # httpNodePort port number when using NodePort service for http port (range : 30000-32767)
@@ -61,5 +61,5 @@ cdnService:
 # while using kube-ovn
 numNodes: 1
 # NFD: schedule on nodes with SSDs
-ssdDisks: true
+SSDDisks: true
 

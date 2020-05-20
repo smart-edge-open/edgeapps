@@ -69,7 +69,7 @@ spec:
       volumes:
 {{- range $index, $val := .Values.nginx.http.proxy_cache }}
       - name: cdn-cache{{ $index }}
-{{- if $.Values.cdnNode }}
+{{- if $.Values.CDNNode }}
         persistentVolumeClaim:
           claimName: {{ $release_name }}-pvc{{ $index }}
 {{- else }}
@@ -88,12 +88,12 @@ spec:
         hostPath:
           path: /etc/openness/cdn/ssl
           type: DirectoryOrCreate
-{{- if or .Values.deployment.sriov .Values.ssdDisks }}
+{{- if or .Values.deployment.sriov .Values.SSDDisks }}
       nodeSelector:
 {{- if .Values.deployment.sriov }}
         feature.node.kubernetes.io/network-sriov.capable: 'true'
 {{- end }}
-{{- if .Values.ssdDisks }}
+{{- if .Values.SSDDisks }}
         feature.node.kubernetes.io/storage-nonrotationaldisk: 'true'
 {{- end }}
 {{- end }}
