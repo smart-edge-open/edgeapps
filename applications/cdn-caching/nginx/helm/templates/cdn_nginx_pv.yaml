@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+{{- $release_name := include "nginxcdn.fullname" . }}
+
+{{- if .Values.CDNNode }}
+{{- range $index, $val := .Values.nginx.http.proxy_cache }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $release_name }}-pv{{ $index }}
+  labels:
+        type: local
+spec:
+  capacity:
+        storage: {{ upper $val.max_size }}i
+  accessModes:
+        - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+        path: {{ $val.hostPath }}
+  nodeAffinity:
+        required:
+          nodeSelectorTerms:
+          - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                  - {{ $.Values.CDNNode }}
+---
+{{- end }}
+{{- end }}
