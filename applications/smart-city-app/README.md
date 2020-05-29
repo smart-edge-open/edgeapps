@@ -142,8 +142,8 @@ The full pipeline of the Smart City sample application on OpenNESS is distribute
 The Smart City setup with OpenNESS should typically deployed as shown in this Figure. The drawing depicts 2 offices for the purpose of this guide, but there is no limitation to the number of offices.
 
 ![Smart City Setup](setup.png)
-_Figure - Smart City Setup with OpenNESS_
 
+_Figure - Smart City Setup with OpenNESS_
 
 ### Configuring OpenNESS
 
@@ -170,7 +170,7 @@ kubectl interfaceservice get <officeX_host_name>
 
 ### Building Smart City ingredients
 
-1. Clone the Smart City Reference Pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git) to: (1) Camera simulator machines, (2) OpenNESS Controller machine, and (3) Smart City cloud master machine.
+1. Clone the Smart City Reference Pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git) to: (a) Camera simulator machines, (b) OpenNESS Controller machine, and (c) Smart City cloud master machine.
 
 2. Build the Smart City application on all of the machines as explained in [Smart City deployment on OpenNESS](https://github.com/OpenVisualCloud/Smart-City-Sample/tree/openness-k8s/deployment/openness). At least 2 offices (edge nodes) must be installed on OpenNESS.
 
@@ -216,8 +216,9 @@ kubectl interfaceservice get <officeX_host_name>
     > **NOTE**: Do not stop firewall on OpenNESS nodes.
 
 4. On the OpenNESS Controller machine, build & run the Smart City cloud containers
+
     ```shell
-    export CAMERA_HOSTS=192.168.1.10,192.168.2.10
+    export CAMERA_HOSTS=192.168.1.10,192.168.2.10
     export CLOUD_HOST=<cloud-master-node-ip>
 
     make
@@ -230,6 +231,7 @@ kubectl interfaceservice get <officeX_host_name>
 5. From the web browser, launch the Smart City web UI at URL `https://<cloud-master-node-ip>/`
 
 ## References
+
 - [OpenNESS Smart City application whitepaper](https://github.com/otcshare/specs/blob/master/doc/applications/openness_ovc.md)
 - [Intel Open Visual Cloud Smart City reference pipeline](https://github.com/OpenVisualCloud/Smart-City-Sample)
 - [Intel Open Visual Cloud VCAC-A card media analytics software](https://github.com/OpenVisualCloud/VCAC-SW-Analytics/)
