@@ -2,8 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-set -x
-
+echo "Pre-Installation setup for CDN Transcode Sample"
 DIR=$(dirname $(readlink -f "$0"))
 function create_secret {
     kubectl create secret generic self-signed-certificate "--from-file=${DIR}/certs/self.crt" "--from-file=${DIR}/certs/self.key"
@@ -17,4 +16,4 @@ for yaml in $(find "$DIR/CDN-Transcode-Sample/deployment/kubernetes/" -maxdepth 
     kubectl apply -f "$yaml"
 done
 
-./mkvolume.sh
+$DIR/CDN-Transcode-Sample/deployment/kubernetes/mkvolume.sh
