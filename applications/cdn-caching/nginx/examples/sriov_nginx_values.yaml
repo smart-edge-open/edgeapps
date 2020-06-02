@@ -13,6 +13,7 @@ nginx:
     # worker_connections default 1000000
     worker_connections 1000000
   http:
+    access_log: "off"
     aio_write: "on"
     read_ahead: 0
     sendfile: "on"
@@ -29,10 +30,14 @@ nginx:
       max_size: "100g"
     # more hostPath can be added for content caching.
     # Uncomment and modify to configure the CDN server
-    # server:
+    server:
       # port: 80
       # sslport: 443
       # serverName: cdn.openness
+      # ext_ssl_certificate if true, certificate files are passed in the command line, as below,
+      #  --set-file nginx.http.server.ssl_cert_file=<cert file> --set-file nginx.http.server.ssl_key_file=<key file>
+      ext_ssl_certificate: false
+      # proxy_cache_key "$host$request_uri$cookie_user"
 
 deployment:
   # replicas default 1

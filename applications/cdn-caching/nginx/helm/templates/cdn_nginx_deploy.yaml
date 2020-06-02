@@ -26,6 +26,7 @@ spec:
       tolerations:
       - key: node-role.kube-ovn/master  
         effect: NoSchedule
+{{- if not ( eq .Values.nginx.http.server.ext_ssl_certificate true ) }}
       initContainers:
       - name: openssl
         image: emberstack/openssl:latest
@@ -38,6 +39,7 @@ spec:
         volumeMounts:
         - name: cdn-ssl
           mountPath: /root/cdnssl
+{{- end }}
       containers:
       - name: cdn-nginx
         image: {{ if .Values.deployment.image }} {{- .Values.deployment.image -}} {{ else }} nginx:1.16.1 {{ end }}
@@ -84,10 +86,16 @@ spec:
           items:
             - key: nginxconf
               path: nginx.conf
+{{- if eq .Values.nginx.http.server.ext_ssl_certificate true }}
+      - name: cdn-ssl
+        secret:
+          secretName: {{ template "nginxcdn.fullname" . }}-secret
+{{- else }}
       - name: cdn-ssl
         hostPath:
           path: /etc/openness/cdn/ssl
           type: DirectoryOrCreate
+{{- end }}
 {{- if or .Values.deployment.sriov .Values.SSDDisks }}
       nodeSelector:
 {{- if .Values.deployment.sriov }}
