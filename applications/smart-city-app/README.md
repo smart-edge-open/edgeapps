@@ -44,21 +44,21 @@ This mode provide an easy and quick start with executing the application in the 
     make
     ```
 
-    > **NOTE:** OpenNESS Docker registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in the place of `<controller-node-ip>`.
+    > **NOTE:** OpenNESS Docker registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
 
-1. Execute the `pre-install.sh` script to generate, self-sign and create certificates secret
+3. Execute the `pre-install.sh` script to generate, self-sign and create certificates secret
 
     ```shell
     ./pre-install.sh
     ```
 
-2. Install the application using the Helm chart
+4. Install the application using the Helm chart
 
     ```shell
     helm install smart-city-app Smart-City-Sample/deployment/kubernetes/helm/smtc
     ```
 
-3. From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
+5. From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
 
 
 ## Deploying the Smart City Application with VCAC-A
@@ -94,7 +94,7 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
     make
     ```
 
-    > **NOTE:** OpenNESS Docker registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in the place of `<controller-node-ip>`.
+    > **NOTE:** OpenNESS Docker registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
 
 6. Execute the `pre-install.sh` script to generate, self-sign and create certificates secret
 
