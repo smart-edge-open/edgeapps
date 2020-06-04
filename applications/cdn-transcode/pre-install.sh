@@ -16,4 +16,5 @@ for yaml in $(find "$DIR/CDN-Transcode-Sample/deployment/kubernetes/" -maxdepth 
     kubectl apply -f "$yaml"
 done
 
+# create volume
 $DIR/CDN-Transcode-Sample/deployment/kubernetes/mkvolume.sh
