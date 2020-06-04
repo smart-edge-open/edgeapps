@@ -8,7 +8,7 @@ kind: Deployment
 metadata:
   name: {{ include "nginxcdn.fullname" . }}-deployment
 spec:
-  replicas: {{ if .Values.deployment.replicas }} {{- .Values.deployment.replicas -}} {{ else }} 1 {{ end }}
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ template "nginxcdn.name" . }}

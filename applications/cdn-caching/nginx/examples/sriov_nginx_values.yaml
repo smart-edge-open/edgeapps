@@ -40,8 +40,6 @@ nginx:
       # proxy_cache_key "$host$request_uri$cookie_user"
 
 deployment:
-  # replicas default 1
-  replicas: 1
   # image default nginx:1.16.1
   image: nginx:1.16.1
   # cpuLimit default is 5 or nginx.worker_processes + 1
