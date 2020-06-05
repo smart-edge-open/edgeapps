@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name:  {{ .Release.Name }}-du
+  namespace: {{ .Values.namespace }}
+spec:
+  containers:
+  - securityContext:
+      privileged: {{ .Values.securityContext.privileged }}
+      capabilities:
+        add:
+          - IPC_LOCK
+          - SYS_NICE
+    name: {{ .Release.Name }}-du-app
+    image: "{{ .Values.image.registryIpAddress }}:{{ .Values.image.registryPort }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+    imagePullPolicy: {{ .Values.image.pullPolicy }}
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "./start_du.sh && while true; do sleep 300000; done;" ]
+    volumeMounts:
+    - name: hugepage
+      mountPath: /hugepages
+    - name: time
+      mountPath: /etc/localtime
+      readOnly: false
+    - name: testres
+      mountPath: /opt/flexran_xran/results
+      readOnly: false
+    resources:
+      requests:
+        intel.com/{{ .Values.duResources.requests.sriovResName }}: '{{ .Values.duResources.requests.sriovResAmount }}'
+        {{ .Values.duResources.requests.hugepageSize }}: {{ .Values.duResources.requests.hugepageAmount }}
+        memory: {{ .Values.duResources.requests.memorySize }}
+      limits:
+        intel.com/{{ .Values.duResources.limits.sriovResName }}: '{{ .Values.duResources.requests.sriovResAmount }}'
+        {{ .Values.duResources.limits.hugepageSize }}: {{ .Values.duResources.limits.hugepageAmount }}
+        memory: {{ .Values.duResources.limits.memorySize }}  
+    env:
+      - name: XRAN_DEF_APP_MODE
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defAppMode
+      - name: XRAN_DEF_TECH
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defTech
+      - name: XRAN_DEF_CAT
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defCat
+      - name: XRAN_DEF_MU
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defMu
+      - name: XRAN_DEF_BW
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defBw
+      - name: XRAN_DEF_TC
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defTc
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - ru
+        topologyKey: "kubernetes.io/hostname"
+  volumes:
+  - name: hugepage
+    emptyDir:
+      medium: HugePages
+  - name: time
+    hostPath:
+      path: "/etc/localtime"
+  - name: testres
+    hostPath:
+      path: "/opt/flexran_xran/results"    
+  nodeSelector:
+    feature.node.kubernetes.io/cpu-cpuid.AVX: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX2: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512BW: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512CD: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512DQ: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512F: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512VL: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTL3CA: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTMBA: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ_FULL: 'true'
+    feature.node.kubernetes.io/kernel-config.PREEMPT: 'true'
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+    feature.node.kubernetes.io/kernel-version.full: '{{ .Values.nodeSelector.kernelVersionFull }}'
+    feature.node.kubernetes.io/system-os_release.ID: '{{ .Values.nodeSelector.systemOS }}'

@@ -1,0 +1,105 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+# namespace specifies the k8s namespace where xRAN
+# applications will be deployed
+namespace: default
+
+# image provides description of the docker image used by both pods
+image:
+  # name is the name of the image to be downloaded from the docker registry
+  name: xran-sample-app
+  # registryIpAddress provides the ip address of the docker registry - PLEASE CHANGE IT !!!
+  registryIpAddress: <registry_ip_address>
+  # registryPort is the port used to access the image in the docker registry - PLEASE CHANGE IT !!!
+  registry_port: <registry_port>
+  # tag helps to identify the image in the registry
+  tag: 1.0
+  # pullPolicy is the pull policy used for the docker image 
+  pullPolicy: IfNotPresent
+
+# securityContext specifies the security context of the pods
+securityContext:
+  # privileged sets pods' priviledged level to true or false
+  privileged: true
+
+# ruResources provide RU pod's resource limits and requests
+ruResources:
+  #limits sets containers' resource limits
+  limits:
+    # sriovResName is the name of the sriov resource
+    sriovResName: intel_sriov_dpdk
+    # sriovResAmount is the limit for VFs number under sriovResName
+    sriovResAmount: 2
+    # hugepageSize sets the hugepage size limit to hugepages-2Mi or hugepages-1Gi
+    hugepageSize:  hugepages-1Gi
+    # hugepageAmount sets the the number of hugepages limit available to each pod
+    hugepageAmount: 20Gi
+    # memorySize is the memory size limit for each pod
+    memorySize: 20Gi
+  # requests specifies the requested containers' resource
+  requests:
+    # sriovResName is the name of the sriov resource
+    sriovResName: intel_sriov_dpdk
+    # sriovResAmount is the number of VFs requested
+    sriovResAmount: 2
+    # hugepageSize sets the requested hugepage size to hugepages-2Mi or hugepages-1Gi
+    hugepageSize:  hugepages-1Gi
+    # hugepageAmount sets the requested number of hugepages available to each pod
+    hugepageAmount: 20Gi
+    # memorySize is the size of memory requested for each pod
+    memorySize: 20Gi
+
+# duResources provide pod's resource limits and requests
+duResources:
+  #limits sets containers' resource limits
+  limits:
+    # sriovResName is the name of the sriov resource
+    sriovResName: intel_sriov_dpdk
+    # sriovResAmount is the limit for VFs number under sriovResName
+    sriovResAmount: 2
+    # hugepageSize sets the hugepage size limit to hugepages-2Mi or hugepages-1Gi
+    hugepageSize:  hugepages-1Gi
+    # hugepageAmount sets the the number of hugepages limit available to each pod
+    hugepageAmount: 20Gi
+    # memorySize is the memory size limit for each pod
+    memorySize: 20Gi
+  # requests specifies the requested containers' resource
+  requests:
+    # sriovResName is the name of the sriov resource
+    sriovResName: intel_sriov_dpdk
+    # sriovResAmount is the number of VFs requested
+    sriovResAmount: 2
+    # hugepageSize sets the requested hugepage size to hugepages-2Mi or hugepages-1Gi
+    hugepageSize:  hugepages-1Gi
+    # hugepageAmount sets the requested number of hugepages available to each pod
+    hugepageAmount: 20Gi
+    # memorySize is the size of memory requested for each pod
+    memorySize: 20Gi
+
+# nodeSelector sets the variables used by node selector
+nodeSelector:
+  # kernelVersion holds the kernel verion of the host
+  kernelVersionFull: '3.10.0-1062.12.1.rt56.1042.el7.x86_64'
+  # systemOS specifies OS on the host 
+  systemOS: 'centos'
+
+# configMapData keeps ConfigMap's data 
+configMapData:
+  # duApplicationMode is the aplication mode that runs xRAN sample app in DU mode
+  # allowed vaues are: du, ru-du  (to run RU and DU in one pod, none (to run nothing)
+  duApplicationMode: du
+  # duApplicationMode is the aplication mode that runs xRAN sample app in RU mode
+  # allowed vaues are: ru, ru-du  (to run both apps in one pod), none (to run neither)
+  ruApplicationMode: ru
+  # technology is the technology to be tested by the xRAN sample apps (0 for 5G 1 for LTE)
+  technology: 0
+  # category is the RU category (0 for cat A - 1 for cat B)
+  category: 1
+  # mu sets up multi-user MIMO
+  mu: 1
+  # bw is bandwith 
+  bw: 100
+  # tc is test case number to run
+  tc: 101
+
