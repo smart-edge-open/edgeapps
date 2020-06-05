@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-COMMIT=0e06f1004f7b7477d35882cf4dfce94ac86bf584
+TAG=v20.4
 
-echo "Cloning the CDN transcode sample commit: $COMMIT"
+echo "Cloning the CDN transcode sample tag: $TAG"
 git clone https://github.com/OpenVisualCloud/CDN-Transcode-Sample || { echo "git clone failed"; exit 2; }
 cd CDN-Transcode-Sample
-git reset --hard $COMMIT || { echo "Failed to reset to commit ID $COMMIT"; exit 3; }
+git checkout tags/v20.4 || { echo "Failed to checkput Tag $TAG"; exit 3; }
 mkdir -p build
 cd build
 

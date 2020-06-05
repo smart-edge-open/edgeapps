@@ -58,6 +58,7 @@ helm install cdn-transcode ./CDN-Transcode-Sample/deployment/kubernetes/helm/cdn
 
 The above steps will deploy the application on the OpenNESS node.
 > **NOTE** These steps are tested from the OpenNESS master with a single OpenNESS edge Node only.
+> **NOTE** Option 1 is preferred, as it provides the logs / output of the pre-installation step.
 
 Check the running pods as below,
 ```
@@ -77,7 +78,7 @@ zookeeper-service-68bc89fb9-7qb5x   1/1     Running   0          68m
 To remove the CDN Transcode Sample Application services follow the below steps,
 
 ```
-helm delete cdn-transcode
+helm uninstall cdn-transcode
 ./clean.sh
 ```
 
