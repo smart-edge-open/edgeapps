@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: xran-app-du-config
+  namespace: {{ .Values.namespace }}
+data:
+  defAppMode: '{{ .Values.configMapData.duApplicationMode }}'
+  defTech: '{{ .Values.configMapData.technology }}'
+  defCat: '{{ .Values.configMapData.category }}'
+  defMu: '{{ .Values.configMapData.mu }}'
+  defBw: '{{ .Values.configMapData.bw }}'
+  defTc: '{{ .Values.configMapData.tc }}'
+
