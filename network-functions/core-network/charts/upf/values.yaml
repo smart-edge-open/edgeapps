@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+image:
+  repository:
+    <ip_address>:<port>/intel/flexcore-upf # Change Me! - please provide IP address and port
+    # of Docker registry where FlexCore UPF docker image is uploaded
+  tag: 1.0 # The tag identifying the FlexCore docker image,
+  pullPolicy: IfNotPresent # Pull policy for docker image
+
+restartPolicy: Never # Restart policy for the pod
+allowPrivilegeEscalation: true # Allow privilege escalation level values: true false
+isPrivileged: true # Pod privilege level, possible values: true false
+
+#huge pages information
+hugePageSize: hugepages-1Gi # Possible values: hugepages-1Gi hugepages-2Mi
+hugePageAmount: 4Gi # Amount of hugepages to be reserved for the pod
+memory: 6Gi # Amount of memory to be reserved for the pod
+
+#node information
+node:
+  name: esi13 # Node on which the upf needs to be run
+  path: /root/astri/upf # Path on the node where the upf binary is stored
