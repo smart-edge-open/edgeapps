@@ -1,7 +1,7 @@
+#!/bin/bash
+
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
-
-#!/bin/bash -xe
 
 source /opt/intel/openvino/bin/setupvars.sh
 cd /opt/intel/openvino/deployment_tools/demo
