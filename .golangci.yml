@@ -38,7 +38,7 @@ linters-settings:
   misspell:
     locale: US
   lll:
-    line-length: 80
+    line-length: 120
     tab-width: 4
 
 issues:
