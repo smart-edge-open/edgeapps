@@ -3,7 +3,7 @@
 
 apiVersion: v2
 name: upf
-description: A Helm chart for UPF deployment (FlexCore UPF)
+description: A Helm chart for VPP based   UPF deployment
 
 type: application
 
