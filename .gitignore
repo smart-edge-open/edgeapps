@@ -11,10 +11,6 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# GO sepecific generated files
-go.mod
-go.sum
-
 # Distributables folder
 dist/
-sample-app/build
+applications/sample-app/build

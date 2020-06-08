@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    component: {{ .Values.component }}
+spec:
+  containers:
+  - command:
+      - "/otelcol"
+      - "--config=/conf/otel-agent-config.yaml"
+      # Memory Ballast size should be max 1/3 to 1/2 of memory.
+      - "--mem-ballast-size-mib=165"
+      - "--log-level=DEBUG"
+    image: {{ .Values.agent.image }}
+    imagePullPolicy: {{ .Values.pullPolicy }}
+    name: {{ .Values.agent.name }}
+    resources:
+      limits:
+        cpu: {{ .Values.agent.resources.limits.cpu }}
+        memory: {{ .Values.agent.resources.limits.memory }}
+      requests:
+        cpu: {{ .Values.agent.resources.requests.cpu }}
+        memory: {{ .Values.agent.resources.requests.memory }}
+    ports:
+    - containerPort: {{ .Values.agent.opencensusport }} #Opencensus receiver port.
+    volumeMounts:
+    - name: {{ .Values.agent.configmapName }}
+      mountPath: "/conf"
+    - name: certs
+      mountPath: "/root/CA"
+  - command:
+    env:
+    - name: GO111MODULE
+      value: "on"
+    - name: OTEL_AGENT_ENDPOINT
+      value: "{{ .Values.agent.receiver.opencensus.endpoint }}"
+    name: {{ .Values.app.name }}
+    image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+    imagePullPolicy: {{ .Values.pullPolicy }}
+    command: ["/bin/bash", "-c", "./main"]
+    resources:
+      limits:
+        cpu: {{ .Values.app.resources.limits.cpu }}
+        memory: {{ .Values.app.resources.limits.memory }}
+      requests:
+        cpu: {{ .Values.app.resources.requests.cpu }}
+  volumes:
+  - configMap:
+      name: {{ .Values.agent.configMap }}
+    name: {{ .Values.agent.configmapName }}
+  - name: certs
+    secret:
+      secretName: root-cert
