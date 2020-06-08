@@ -3,10 +3,12 @@
 
 ---
 image:
-  repository:
-    <ip_address>:<port>/intel/flexcore-upf # Change Me! - please provide IP address and port
+    # Change Me! - please provide IP address and port of docker registry in
+    # the format  <ip_address>:<port>/<image-name>
+    # <ip_address>:<port>/intel/flexcore-upf
     # of Docker registry where FlexCore UPF docker image is uploaded
-  tag: 1.0 # The tag identifying the FlexCore docker image,
+  repository: upf-app
+  tag: "1.0" # The tag identifying the FlexCore docker image,
   pullPolicy: IfNotPresent # Pull policy for docker image
 
 restartPolicy: Never # Restart policy for the pod
