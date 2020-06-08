@@ -42,11 +42,11 @@ spec:
           readOnly: false
       resources:
         requests:
-          hugepages-1Gi: {{ .Values.hugePageAmount }}
+          {{ .Values.hugePageSize }} : {{ .Values.hugePageAmount }}
           memory: {{ .Values.memory }}
           intel.com/intel_sriov_dpdk: "1"
         limits:
-          hugepages-1Gi: {{ .Values.hugePageAmount }}
+          {{ .Values.hugePageSize }} : {{ .Values.hugePageAmount }}
           memory: {{ .Values.memory }}
           intel.com/intel_sriov_dpdk: "1"
   volumes:
