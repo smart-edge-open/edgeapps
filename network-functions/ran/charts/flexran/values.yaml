@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+image:
+  repository: <ip_address>:<port>/intel/flexran5g         # Change Me! - please provide IP address and port 
+                                                          # of Docker registry where FlexRAN docker image is uploaded
+  tag: 3.10.0-1062.18.1                                   # The tag identifying the FlexRAN docker image,
+                                                          # the kernel version used to build FlexRAN can be used as tag
+pullPolicy: IfNotPresent                                  # Pull policy for docker image
+restartPolicy: Never                                      # Restart policy for the pod
+kernelVersion: 3.10.0-1062.12.1.rt56.1042.el7.x86_64      # Kernel version targeted
+os: centos                                                # Operating system of the host
+isPrivileged: false                                       # Pod privilege level, possible values: true false
+resourceName: intel_fec_5g                                # FEC resource name (as per SRIOV-DP config map) 
+                                                          # possible values: intel_fec_5g intel_fec_lte
+numberOfFECVf: 1                                          # Number of FEC VFs to be passed to the pod
+hugePageSize: hugepages-1Gi                               # Possible values: hugepages-1Gi hugepages-2Mi
+hugePageAmount: 20Gi                                      # Amount of hugepages to be reserved for the pod
+memory: 20Gi                                              # Amount of memory to be reserved for the pod
+
