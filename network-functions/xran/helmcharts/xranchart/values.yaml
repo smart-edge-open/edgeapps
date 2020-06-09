@@ -95,11 +95,11 @@ configMapData:
   # technology is the technology to be tested by the xRAN sample apps (0 for 5G 1 for LTE)
   technology: 0
   # category is the RU category (0 for cat A - 1 for cat B)
-  category: 1
+  category: 0
   # mu sets up multi-user MIMO
-  mu: 1
+  mu: 0
   # bw is bandwith 
-  bw: 100
+  bw: 20
   # tc is test case number to run
-  tc: 101
+  tc: 0
 
