@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: create directory for copying certificate
+  file:
+    path: /etc/docker/certs.d/{{ docker_registry_address }}
+    state: directory
+
+- name: generate client key and csr file
+  command: "{{ item }}"
+  with_items:
+    - openssl req -new -sha256 -nodes -out client.csr -newkey rsa:2048 -keyout client.key -subj "/CN={{ ansible_hostname }}"
+  args:
+    chdir: "/etc/docker/certs.d/{{ docker_registry_address }}"
+  changed_when: true
+
+- name: create a directory for copying client.csr file
+  file:
+    path: "{{ docker_registry_dir }}/{{ ansible_hostname }}/"
+    state: directory
+  delegate_to: "{{ docker_registry_ip }}"
+
+- name: copy client.csr certificate file on master node
+  copy:
+    src: "/etc/docker/certs.d/{{ docker_registry_address }}/client.csr"
+    dest: "{{ docker_registry_dir }}/{{ ansible_hostname }}/client.csr"
+  delegate_to: "{{ docker_registry_ip }}"
+
+- name: generate client.cert from client.csr , root CA and key file
+  command: "{{ item }}"
+  with_items:
+    - openssl x509 -req -in client.csr -CA ../ca.crt -CAkey ../ca.key -days 1000 -out client.cert -CAcreateserial
+  args:
+    chdir: "{{ docker_registry_dir }}/{{ ansible_hostname }}/"
+  delegate_to: "{{ docker_registry_ip }}"
+  changed_when: true
+
+- name: get public self signed certificate
+  fetch:
+    src: "{{ docker_registry_dir }}/ca.crt"
+    dest: "/etc/docker/certs.d/{{ docker_registry_address }}/ca.crt"
+    flat: yes
+  delegate_to: "{{ docker_registry_ip }}"
+
+- name: get client.cert certificate
+  fetch:
+    src: "{{ docker_registry_dir }}/{{ ansible_hostname }}/client.cert"
+    dest: "/etc/docker/certs.d/{{ docker_registry_address }}/client.cert"
+    flat: yes
+  delegate_to: "{{ docker_registry_ip }}"
+
+- name: copy docker registry curl commnd script file from master node
+  fetch:
+    src: "{{ ansible_env.HOME }}/registry_curl_cmd.sh"
+    dest:  "{{ ansible_env.HOME }}/registry_curl_cmd.sh"
+    flat: yes
+    mode: '0744'
+  delegate_to: "{{ docker_registry_ip }}"
+
+- name: remove client.csr from ansible host after certificate generation
+  file:
+    path: "/etc/docker/certs.d/{{ docker_registry_address }}/client.csr"
+    state: absent
+  ignore_errors: yes

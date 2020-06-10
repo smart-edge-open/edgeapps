@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: disable docker service
+  systemd:
+    name: docker
+    enabled: no
+    state: stopped
+  ignore_errors: yes
+
+- name: uninstall
+  yum:
+    name: "{{ docker_packages_to_remove }}"
+    state: absent
+
+- name: remove docker-compose
+  pip:
+    name: docker-compose
+    state: absent
+  ignore_errors: yes
+
+- name: remove dirs
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+  - /root/.docker
+  - /etc/systemd/system/docker.service.d
+  - /etc/docker
+
+- name: remove repository
+  yum_repository:
+    name: docker
+    state: absent
+
+- name: clear yum cache
+  command: yum clean all
+  args:
+    warn: false
+  changed_when: true

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Values.service.name }}"
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.cameraStreamPort }}

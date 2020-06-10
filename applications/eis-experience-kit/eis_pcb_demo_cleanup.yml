@@ -1,0 +1,80 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- hosts: localhost
+  tasks:
+  - name: Load VideoIngestion vars
+    include_vars: ./roles/video_ingestion/build/defaults/main.yml
+
+  - name: Cleanup VideoIngestion image
+    include_tasks: ./roles/video_ingestion/build/tasks/cleanup.yml
+
+  - name: Load VideoAnalytics vars
+    include_vars: ./roles/video_analytics/build/defaults/main.yml
+
+  - name: Cleanup VideoAnalytics image
+    include_tasks: ./roles/video_analytics/build/tasks/cleanup.yml
+
+  - name: Load Visualizer vars
+    include_vars: ./roles/visualizer/build/defaults/main.yml
+
+  - name: Cleanup Visualizer image
+    include_tasks: ./roles/visualizer/build/tasks/cleanup.yml
+
+  - name: Load CameraStream vars
+    include_vars: ./roles/camera_stream/build/defaults/main.yml
+
+  - name: Cleanup CameraStream image
+    include_tasks: ./roles/camera_stream/build/tasks/cleanup.yml
+
+  - name: Load ETCD vars
+    include_vars: ./roles/etcd/build/defaults/main.yml
+
+  - name: Cleanup ETCD docker image
+    include_tasks: ./roles/etcd/build/tasks/cleanup.yaml
+
+  - name: load docker variables
+    include_vars: ./roles/docker/defaults/main.yml
+
+  - name: prune docker
+    include_tasks: ./roles/docker/tasks/prune.yml
+
+  - name: uninstall docker
+    include_tasks: ./roles/docker/tasks/uninstall.yml
+
+  - name: remove docker registry client certificate
+    include_tasks: ./roles/docker_registry/localhost/tasks/cleanup.yml
+
+- hosts: controller_group
+  tasks:
+  - name: Load ETCD vars
+    include_vars: ./roles/etcd/deploy/defaults/main.yml
+
+  - name: Cleanup ETCD
+    include_tasks: ./roles/etcd/deploy/tasks/cleanup.yaml
+
+  - name: Load CameraStream vars
+    include_vars: ./roles/camera_stream/deploy/defaults/main.yml
+
+  - name: Cleanup CameraStream
+    include_tasks: ./roles/camera_stream/deploy/tasks/cleanup.yaml
+
+  - name: Load VideoAnalytics vars
+    include_vars: ./roles/video_analytics/deploy/defaults/main.yml
+
+  - name: Cleanup VideoAnalytics
+    include_tasks: ./roles/video_analytics/deploy/tasks/cleanup.yaml
+
+  - name: Load VideoIngestion vars
+    include_vars: ./roles/video_ingestion/deploy/defaults/main.yml
+
+  - name: Cleanup VideoIngestion
+    include_tasks: ./roles/video_ingestion/deploy/tasks/cleanup.yaml
+
+  - name: Load Visualizer vars
+    include_vars: ./roles/visualizer/deploy/defaults/main.yml
+
+  - name: Cleanup Visualizer
+    include_tasks: ./roles/visualizer/deploy/tasks/cleanup.yaml

@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Remove {{ app_name }} deployment
+  command: "helm -n {{ k8s_eis_namespace }} uninstall {{ helm_release_name }}"
+  ignore_errors: yes
+  changed_when: true
+
+- name: Remove {{ app_name }} Helm charts
+  file:
+    path: "{{ helm_chart_visualizer }}"
+    state: absent
+  ignore_errors: yes
+
+- name: Remove {{ app_name }} ETCD certificates
+  file:
+    path: "{{ etcd_certs_location }}/{{ app_name }}"
+    state: absent
+  ignore_errors: yes
+
+- name: Get node IP
+  shell: kubectl get nodes -o jsonpath="{.items[0].status.addresses[?(@.type==\"InternalIP\")].address}"
+  register: nodeip
+  changed_when: false
+
+- name: Wait for delete deployment
+  shell: ssh {{ nodeip.stdout  }} "docker ps | grep {{ docker_registry_address }}/{{ docker_name }}"
+  register: result
+  until: result.rc == 1
+  retries: 6
+  delay: 10
+  delegate_to: localhost
+  changed_when: false
+  ignore_errors: yes
+
+- name: Remove {{ app_name }} docker image from the node
+  shell: ssh {{ nodeip.stdout  }} 'docker rmi -f  $(docker images -q {{ docker_registry_address }}/{{ docker_name }}) && docker system prune --volumes -f'
+  delegate_to: localhost
+  changed_when: true
+  ignore_errors: yes

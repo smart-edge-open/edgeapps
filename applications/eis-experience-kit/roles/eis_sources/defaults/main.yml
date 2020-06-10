@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+eis_repo_url: "ssh://git@gitlab.devtools.intel.com:29418/Indu/IEdgeInsights/IEdgeInsights.git"
+eis_repo_branch: EIS_OpenNESS_Integration
+

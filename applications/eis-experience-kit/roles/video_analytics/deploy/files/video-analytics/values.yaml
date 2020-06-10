@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+service:
+  name: ia-video-analytics-service
+  type: ClusterIP
+
+secrets:
+  etcdCertsSecretName: videoanalytics
+  rootCaSecretName: rootca
+  etcdCertName: etcd_VideoAnalytics_cert
+  etcdKeyName: etcd_VideoAnalytics_key

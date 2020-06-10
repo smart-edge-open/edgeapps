@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Remove proxy from /etc/environment
+  lineinfile:
+    dest: /etc/environment
+    regexp: "^{{ item }}=.*"
+    state: absent
+  with_items:
+    - http_proxy
+    - https_proxy
+    - HTTPS_PROXY
+    - HTTP_PROXY
+    - FTP_PROXY
+    - ftp_proxy
+    - no_proxy
+    - NO_PROXY
+  when: proxy_os_remove_old

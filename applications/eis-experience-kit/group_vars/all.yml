@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+# Global variables for group [all]
+# Will override local variables from defaults
+
+---
+docker_registry_port: 5000
+docker_registry_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] }}"
+docker_registry_address: "{{ docker_registry_ip }}:{{ docker_registry_port }}"
+docker_registry_dir: "/opt/docker-registry/"
+
+eis_version: "{{ lookup('env', 'EIS_VERSION') }}"
+etcd_version: "{{ lookup('env', 'ETCD_VERSION') }}"
+dev_mode: "{{ lookup('env', 'DEV_MODE') }}"
+
+eis_sources_dir: "/opt/eis_repo"
