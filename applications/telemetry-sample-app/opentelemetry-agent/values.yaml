@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+#Common
+pullPolicy: IfNotPresent
+component: otel-agent
+namespace: default
+name: otel-agent-sidecar
+#Agent
+agent:
+  image: otel/opentelemetry-collector-dev:latest
+  configmapName: otel-agent-config-vol
+  configMap: otel-agent-conf
+  name: otel-agent
+  rootca:  /root/CA/cert.pem
+  servername: otel-collector.telemetry.svc
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  opencensusport: 55678  #OpenCensus receiver port
+  receivers: opencensus
+  receiver:
+    opencensus:
+      endpoint: "0.0.0.0:55678"
+
+  exporters: opencensus
+  exporter:
+    opencensus:
+      endpoint: "otel-collector.telemetry.svc:55668"
+
+#App
+app:
+  image:
+    repository: 10.0.0.1:5000/intel/metricapp #Change Me
+    tag: 0.1.0
+  name: metrics-app
+  resources:
+    requests:
+      cpu: "0.1"
+    limits:
+      cpu: "2"
+      memory: "256Mi"

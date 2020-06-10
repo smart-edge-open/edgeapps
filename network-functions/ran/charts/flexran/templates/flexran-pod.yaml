@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flexran
+spec:
+  containers:
+  - securityContext:
+      privileged: {{ .Values.isPrivileged }}
+      capabilities:
+        add:
+          - IPC_LOCK
+          - SYS_NICE
+    name: {{ .Release.Name }}
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+    imagePullPolicy: {{ .Values.pullPolicy }}
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "while true; do sleep 300000; done;" ]
+    volumeMounts:
+    - mountPath: /hugepages
+      name: hugepage
+    - name: varrun
+      mountPath: /var/run/dpdk
+      readOnly: false
+    - name: time
+      mountPath: /etc/localtime
+      readOnly: false
+    resources:
+      requests:
+        intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
+        {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}
+        memory: {{ .Values.memory }}
+      limits:
+        intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
+        {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}                
+        memory: {{ .Values.memory }}
+  volumes:
+  - name: hugepage
+    emptyDir:
+      medium: HugePages
+  - hostPath:
+      path: "/etc/localtime"
+    name: time
+  - name: varrun
+    emptyDir: {}
+  nodeSelector:
+    feature.node.kubernetes.io/pci-1200_8086.present: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX2: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512BW: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512CD: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512DQ: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512F: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512VL: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTL3CA: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTMBA: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ_FULL: 'true'
+    feature.node.kubernetes.io/kernel-config.PREEMPT: 'true'
+    feature.node.kubernetes.io/kernel-version.full: '{{ .Values.kernelVersion }}'
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+    feature.node.kubernetes.io/system-os_release.ID: '{{ .Values.os}}'
