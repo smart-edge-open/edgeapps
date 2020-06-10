@@ -15,4 +15,5 @@ RUN apt-get update && \
 WORKDIR /root
 
 COPY run_upf.sh ./run_upf.sh
-COPY 5g_upf_vpp ./5g_upf_vpp
+# update with the location of the upf source
+#COPY 5g_upf_vpp ./5g_upf_vpp
