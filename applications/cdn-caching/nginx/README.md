@@ -91,7 +91,7 @@ Extra setup is not required when using the control interface for data / content 
 Helm is used to deploy the CDN application. Please refer to [Helm website](https://helm.sh/) for further details.
 Clone the edgeapps repo and the nginx based CDN helm chart is available under "applications/cdn-caching/nginx/".
 
-> **Note:** The values.yaml file contain the key and default values used to customize the templates, during the helm deployment. Comments that explain the roles of the keys and their possible vaues are added in the values.yaml file. The example folder will contain further example values files. Users can pass custom values via the helm install command line, either as a file or as key-value pairs.
+> **Note:** The values.yaml file contain the key and default values used to customize the templates, during the helm deployment. Comments that explain the roles of the keys and their possible vaues are added in the values.yaml file. The example folder will contain further example values files. 
 
 > **Note:** Provide the proper values for the origin server and the disk storage locations, where the contents need to be cached.
 
@@ -100,11 +100,13 @@ Clone the edgeapps repo and the nginx based CDN helm chart is available under "a
 The ssl certificates for the nginx, can be passed in the command line as below, during application deployment.
 
 ```shell
-helm install -f <path-to-custom-file> --set-file nginx.http.server.ssl_cert_file=<path-to-certificate-file> --set-file nginx.http.server.ssl_key_file=<path-to-key-file> <release-name> <path-to-helm-chart>
+helm install -f <path-to-optional-user-values-file> --set-file nginx.http.server.ssl_cert_file=<path-to-certificate-file> --set-file nginx.http.server.ssl_key_file=<path-to-key-file> <release-name> <path-to-helm-chart>
+
+# example
+helm install -f ./examples/sriov_nginx_values.yaml  --set-file nginx.http.server.ssl_cert_file=$PWD/nginx.crt --set-file nginx.http.server.ssl_key_file=$PWD/nginx.key openness_cdn ./helm/
 ```
 ### Testing using wrk
 "wrk" tool can be used for generating multiple http requests. Hence it will be used to test the CDN.
-
 ```shell
 ./wrk -t56 -c100 -d60s http://10.16.0.12/bigfile
 ```
@@ -118,4 +120,14 @@ Running 1m test @ http://10.16.0.12/bigfile
   877266 requests in 1.00m, 65.55GB read
 Requests/sec:  14596.88
 Transfer/sec:      1.09GB
+```
+> **Note** The wrk tool can be installed in a CentOS traffic host machine using the following steps,
+```
+	yum groupinstall 'Development Tools'
+	yum install -y openssl-devel git 
+	git clone https://github.com/wg/wrk.git wrk
+	cd wrk
+	make
+	# move the executable to somewhere in your PATH
+	cp wrk /somewhere/in/your/PATH
 ```
