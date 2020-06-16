@@ -1,6 +1,0 @@
-github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
-github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
-github.com/otcshare/edgeapps v0.0.0-20200513043854-a3d6e4a2e67d h1:Uzx9ed8O51XOdsvaL1r6EvnRul4evUQAQj47GCnA5Xw=
-github.com/otcshare/edgeapps v0.0.0-20200513043854-a3d6e4a2e67d/go.mod h1:Jk67iWGIVe9yzeyzMWKBtEA6dB/rXtFZRAdD8gp0yTM=
-github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
-github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
