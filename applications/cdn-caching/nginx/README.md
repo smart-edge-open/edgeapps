@@ -36,6 +36,10 @@ The nginx based CDN application can use the following network interface types fo
 * direct Kubeovn interface - using interfaceservice option
 * direct sriov interface
 
+![Sample CDN Setup](cdn-nginx-network.jpg)
+
+_Figure - Sample CDN test Setup and possible n/w interfaces with OpenNESS_
+
 The required interface option can be selected by specifying the proper keys and values via the helm install command line.
 Extra setup is not required when using the control interface for data / content traffic, as the required (service) resources are created automatically by the helm during installation.
 
