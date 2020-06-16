@@ -36,7 +36,7 @@ The nginx based CDN application can use the following network interface types fo
 * direct Kubeovn interface - using interfaceservice option
 * direct sriov interface
 
-![Sample CDN Setup](cdn-nginx-network.jpg)
+![Sample CDN Setup](cdn-nginx-network.png)
 
 _Figure - Sample CDN test Setup and possible n/w interfaces with OpenNESS_
 
