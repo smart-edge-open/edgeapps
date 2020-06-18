@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "nginxcdn.fullname" . }}-config
+  labels:
+    helm.sh/chart: {{ template "nginxcdn.chart" . }}
+    app.kubernetes.io/name: {{ template "nginxcdn.name" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  nginxconf:
+    {{ tpl (.Files.Get "nginx.conf") . | quote }}
