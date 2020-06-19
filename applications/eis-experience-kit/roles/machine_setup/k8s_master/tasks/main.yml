@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- debug:
+    msg: "Setting up OS k8s_master"
+
+- name: Install base OS rpm packages
+  include_role:
+    name: machine_setup/localhost
+    tasks_from: install_base_os_packages.yml
+
+- name: install Eis requirements
+  pip:
+    name:
+      - pyzmq==18.0.2
+      - pyyaml==5.1.1
+    executable: /usr/bin/pip3
+    state: present

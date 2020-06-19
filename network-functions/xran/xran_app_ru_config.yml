@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: xran-app-ru-config
+  namespace: default
+data:
+  defAppMode: "ru"
+  defTech: "0"
+  defCat: "0" 
+  defMu: "0"
+  defBw: "20"
+  defTc: "0"
+

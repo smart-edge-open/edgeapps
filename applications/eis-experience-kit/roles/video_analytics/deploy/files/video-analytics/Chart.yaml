@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: v2
+name: ia-video-analytics
+description: A Helm chart for VideoAnalytics app
+type: application
+version: 2.2

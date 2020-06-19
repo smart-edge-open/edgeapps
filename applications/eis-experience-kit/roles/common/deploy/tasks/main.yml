@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Create EIS namespace if needed
+  block:
+  - name: Check if namespace '{{ k8s_eis_namespace }}' already exists
+    command: kubectl get ns {{ k8s_eis_namespace }}
+    ignore_errors: yes
+    register: get_ns_eis
+  - name: Create namespace {{ k8s_eis_namespace }}
+    command: kubectl create namespace {{ k8s_eis_namespace }}
+    when: get_ns_eis.rc == 1

@@ -1,0 +1,20 @@
+{
+    "/VideoAnalytics/config": {
+        "encoding": {
+            "type": "jpeg",
+            "level": 95
+        },
+        "queue_size": 10,
+        "max_jobs": 20,
+        "max_workers":4,
+        "udfs": [{
+            "name": "pcb.pcb_classifier",
+            "type": "python",
+            "ref_img": "common/udfs/python/pcb/ref/ref.png",
+            "ref_config_roi": "common/udfs/python/pcb/ref/roi_2.json",
+            "model_xml": "common/udfs/python/pcb/ref/model_2.xml",
+            "model_bin": "common/udfs/python/pcb/ref/model_2.bin",
+            "device": "CPU"
+        }]
+    }
+}

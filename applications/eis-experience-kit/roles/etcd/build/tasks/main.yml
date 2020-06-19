@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Build ETCD Docker Container
+  command: "docker-compose -f {{ docker_compose_file }} build {{ docker_image_name }}"
+  changed_when: true
+
+- name: Add tag to the ETCD image
+  command: "docker tag {{ docker_image_tag }} {{ docker_registry_address }}/{{ docker_image_tag }}"
+  changed_when: true
+
+- name: Push image to the docker registry
+  command: "docker push {{ docker_registry_address }}/{{ docker_image_tag }}"
+  changed_when: true

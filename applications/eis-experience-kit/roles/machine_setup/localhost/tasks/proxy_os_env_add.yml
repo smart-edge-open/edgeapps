@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Adding proxy to /etc/environment
+  block:
+    - name: http -> /etc/environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        line: "http_proxy={{ proxy_os_http }}"
+      when: proxy_os_enable|bool and proxy_os_http
+
+    - name: https -> /etc/environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        line: "https_proxy={{ proxy_os_https }}"
+      when: proxy_os_enable|bool and proxy_os_https
+
+    - name: HTTP -> /etc/environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        line: "HTTP_PROXY={{ proxy_os_http }}"
+      when: proxy_os_enable|bool and proxy_os_http
+
+    - name: HTTPS -> /etc/environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        line: "HTTPS_PROXY={{ proxy_os_https }}"
+      when: proxy_os_enable|bool and proxy_os_https
+
+    - name: ftp -> /etc/environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        line: "ftp_proxy={{ proxy_os_ftp }}"
+      when: proxy_os_enable|bool and proxy_os_ftp
+
+    - name: FTP -> /etc/environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        line: "FTP_PROXY={{ proxy_os_ftp }}"
+      when: proxy_os_enable|bool and proxy_os_ftp
+
+    - name: no proxy -> /etc/environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        line: "no_proxy={{ proxy_os_noproxy }}"
+      when: proxy_os_enable|bool and proxy_os_noproxy
+
+    - name: NO PROXY -> /etc/environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        line: "NO_PROXY={{ proxy_os_noproxy }}"
+      when: proxy_os_enable|bool and proxy_os_noproxy

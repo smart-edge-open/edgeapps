@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Add proxy to /etc/yum.conf
+  lineinfile:
+    path: /etc/yum.conf
+    line: proxy={{ proxy_yum_url }}
+  when: proxy_yum_url|length > 0

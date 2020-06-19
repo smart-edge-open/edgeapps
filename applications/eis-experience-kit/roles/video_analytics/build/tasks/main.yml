@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Build {{ docker_image_name }} docker image
+  shell: docker-compose build {{ docker_image_name }}
+  args:
+    chdir: "{{ eis_sources_dir }}/docker_setup"
+  changed_when: true
+
+- name: Add tag to the {{ docker_image_name }} image
+  command: "docker tag {{ docker_image_tag }} {{ docker_registry_address }}/{{ docker_image_tag }}"
+  changed_when: true
+
+- name: Push {{ docker_image_name }} image to Docker Registry
+  command: docker push {{ docker_registry_address }}/{{ docker_image_tag }}
+  changed_when: true

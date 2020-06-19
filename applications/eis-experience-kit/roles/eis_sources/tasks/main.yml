@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: create directory if not exist
+  file:
+    path: "{{ eis_sources_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: EIS code repository using git clone
+  git:
+    repo: '{{ eis_repo_url }}'
+    dest: '{{ eis_sources_dir }}'
+    version: "{{ eis_repo_branch }}"
+    force: yes
+  when: eis_source == "gitclone"
+
+- name: EIS code repository from baseline release
+  unarchive:
+    src: "{{ release_package_path }}"
+    dest: "{{ eis_sources_dir }}"
+    remote_src: no
+  when: eis_source == "release"

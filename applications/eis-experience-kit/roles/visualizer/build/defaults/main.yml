@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+docker_image_name: "ia_visualizer"
+docker_image_tag: "{{ docker_image_name }}:{{ eis_version }}"
