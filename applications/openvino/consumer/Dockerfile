@@ -38,12 +38,10 @@ RUN apt-get update && \
 
 # OpenVino installation
 WORKDIR /tmp
-# hadolint ignore=DL3003
-RUN wget $OPENVINO_LINK && \
-    tar xf l_openvino_toolkit*.tgz && \
-    pwd && ls && \
-    cd l_openvino_toolkit* && \
-    sed -i 's/decline/accept/g' silent.cfg && \
+RUN wget $OPENVINO_LINK && tar xf l_openvino_toolkit*.tgz
+
+WORKDIR /tmp/l_openvino_toolkit_p_2020.2.120
+RUN sed -i 's/decline/accept/g' silent.cfg && \
     ./install_openvino_dependencies.sh && \
     ./install.sh -s silent.cfg && \
     rm -rf /tmp/l_openvino_toolkit*

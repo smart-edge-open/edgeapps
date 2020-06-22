@@ -11,12 +11,12 @@ ENV no_proxy=$no_proxy
 ARG DOWNLOAD_LINK=http://registrationcenter-download.intel.com/akdlm/irc_nas/16612/l_openvino_toolkit_p_2020.2.120.tgz
 ARG INSTALL_DIR=/opt/intel/openvino
 ARG TEMP_DIR=/tmp/openvino_installer
+
 # hadolint ignore=DL3020
 ADD $DOWNLOAD_LINK $TEMP_DIR/openvino.tgz
-# hadolint ignore=DL3003,DL3009
-RUN apt-get update
-# hadolint ignore=DL3003,DL3008
-RUN apt-get install -y --no-install-recommends \
+
+# hadolint ignore=DL3003,DL3008,DL3009
+RUN apt-get update && apt-get install -y --no-install-recommends \
     cpio \
     sudo \
     python3-pip \
@@ -26,11 +26,11 @@ RUN apt-get install -y --no-install-recommends \
     libboost-program-options1.65 \
     lsb-release \
     libjson-c-dev
-# hadolint ignore=DL3003
-RUN cd $TEMP_DIR && \
-    tar xf openvino.tgz && \
-    cd l_openvino_toolkit* && \
-    sed -i 's/decline/accept/g' silent.cfg && \
+
+WORKDIR $TEMP_DIR 
+RUN tar xf openvino.tgz 
+WORKDIR $TEMP_DIR/l_openvino_toolkit_p_2020.2.120
+RUN sed -i 's/decline/accept/g' silent.cfg && \
     ./install.sh -s silent.cfg && \
     rm -rf $TEMP_DIR
 
