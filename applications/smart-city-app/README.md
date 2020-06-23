@@ -40,7 +40,7 @@ This mode provide an easy and quick start with executing the application in the 
     ```shell
     mkdir build
     cd build
-    cmake -DREGISTRY=<controller-node-ip>:5000 
+    cmake -DREGISTRY=<controller-node-ip>:5000 .. 
     make
     ```
 
