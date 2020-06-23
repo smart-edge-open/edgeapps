@@ -22,6 +22,7 @@ ARG INSTALL_DIR=/tmp/openvino_installer
 ARG OPENVINO_DEMOS_DIR=/opt/intel/openvino/deployment_tools/open_model_zoo/demos
 
 RUN mkdir $GOPATH
+# hadolint ignore=DL3008,DL3009,DL3015
 RUN apt-get update && \
 	apt-get -y install build-essential gcc g++ cmake && \
 	apt-get -y install cpio && \
@@ -36,15 +37,14 @@ RUN apt-get update && \
 	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.58-dev libboost-thread1.58 libboost-filesystem1.58
 
 # OpenVino installation
-RUN cd /tmp && \
-	wget $OPENVINO_LINK && \
-	tar xf l_openvino_toolkit*.tgz && \
-	pwd && ls && \
-	cd l_openvino_toolkit* && \
-	sed -i 's/decline/accept/g' silent.cfg && \
-	./install_openvino_dependencies.sh && \
-	./install.sh -s silent.cfg && \
-	rm -rf /tmp/l_openvino_toolkit*
+WORKDIR /tmp
+RUN wget $OPENVINO_LINK && tar xf l_openvino_toolkit*.tgz
+
+WORKDIR /tmp/l_openvino_toolkit_p_2020.2.120
+RUN sed -i 's/decline/accept/g' silent.cfg && \
+    ./install_openvino_dependencies.sh && \
+    ./install.sh -s silent.cfg && \
+    rm -rf /tmp/l_openvino_toolkit*
 
 WORKDIR /root
 RUN echo "source /opt/intel/openvino/bin/setupvars.sh" >> ~/.bashrc
@@ -63,24 +63,25 @@ RUN wget -r -np -nH --cut-dirs=5 -R index.html* $MODEL1_LINK
 RUN wget -r -np -nH --cut-dirs=5 -R index.html* $MODEL2_LINK
 
 # Rebuilding libusb without UDEV support -- required for Intel Movidius Stick
-RUN cd /tmp && \
-	wget https://github.com/libusb/libusb/archive/v1.0.22.zip && \
-	unzip v1.0.22.zip && cd libusb-1.0.22 && \
-	./bootstrap.sh && \
-	./configure --disable-udev --enable-shared && \
-	make -j4 && make install && \
-	rm -rf /tmp/*1.0.22*
+WORKDIR /tmp 
+RUN wget https://github.com/libusb/libusb/archive/v1.0.22.zip && unzip v1.0.22.zip 
+
+WORKDIR /tmp/libusb-1.0.22
+RUN ./bootstrap.sh && \
+    ./configure --disable-udev --enable-shared && \
+    make -j4 && make install && \
+    rm -rf /tmp/*1.0.22*
 
 # Install UDEV rules for Intel Movidius Stick
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh \
 	&& /opt/intel/openvino/install_dependencies/install_NCS_udev_rules.sh"
 
 # Install Go
-RUN cd /tmp && \
-	wget https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz && \
-	tar -xvf go1.12.4.linux-amd64.tar.gz && \
-	mv go /usr/local && \
-	rm -rf /tmp/go*
+WORKDIR /tmp 
+RUN wget https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz && \
+    tar -xvf go1.12.4.linux-amd64.tar.gz && \
+    mv go /usr/local && \
+    rm -rf /tmp/go*
 
 # Get go dependencies
 RUN go get github.com/gorilla/websocket
