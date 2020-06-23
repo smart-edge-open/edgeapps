@@ -9,4 +9,4 @@ RUN useradd -m vlcuser
 COPY streamstart.sh /tmp/
 RUN chmod +x /tmp/streamstart.sh
 COPY pcb_d2000.avi /tmp/
-CMD /tmp/streamstart.sh
+ENTRYPOINT ["/tmp/streamstart.sh"]
