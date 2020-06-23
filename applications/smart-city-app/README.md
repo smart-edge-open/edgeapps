@@ -28,11 +28,11 @@ Details on deploying the application is provided in the following sections.
 
 This mode provide an easy and quick start with executing the application in the OpenNESS environment.
 
-1. On the OpenNESS Controller node, clone the Smart City reference pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git)
+1. Initialize the git submodule that will clone the Smart City reference pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git)
 
     ```shell
-    git clone https://github.com/OpenVisualCloud/Smart-City-Sample.git
-    cd Smart-City-Sample
+    git submodule update --init
+    cd app
     ```
 
 2. Build the Smart City application
@@ -55,7 +55,7 @@ This mode provide an easy and quick start with executing the application in the 
 4. Install the application using the Helm chart
 
     ```shell
-    helm install smart-city-app Smart-City-Sample/deployment/kubernetes/helm/smtc
+    helm install smart-city-app app/deployment/kubernetes/helm/smtc
     ```
 
 5. From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
@@ -78,11 +78,11 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
 
 3. Set the line `k8s_device_plugins_enable: true` in `group_vars/all/10-default.yml`
 
-4. On the OpenNESS Controller node, clone the Smart City reference pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git)
+4. Initialize the git submodule that will clone the Smart City reference pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git)
 
     ```shell
-    git clone https://github.com/OpenVisualCloud/Smart-City-Sample.git
-    cd Smart-City-Sample
+    git submodule update --init
+    cd app
     ```
 
 5. Build the Smart City application with VCAC-A acceleration enabled
@@ -105,7 +105,7 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
 7. Install the application using the Helm chart
 
     ```shell
-    helm install smart-city-app Smart-City-Sample/deployment/kubernetes/helm/smtc
+    helm install smart-city-app app/deployment/kubernetes/helm/smtc
     ```
 
 8.  From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
