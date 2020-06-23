@@ -8,6 +8,7 @@ import sys
 import json
 import logging
 import argparse
+import shlex
 import subprocess
 import zmq
 import zmq.auth
@@ -72,7 +73,7 @@ def put_zmqkeys(appname):
 def enable_etcd_auth(password):
     """ Enable Auth for etcd and Create root user with root role """
     try:
-        subprocess.check_output(["etcdctl", "user", "add", "root:"+password], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "user", "add", shlex.quote("root:"+password)], stderr=subprocess.STDOUT)
         subprocess.check_output(["etcdctl", "role", "add", "root"], stderr=subprocess.STDOUT)
         subprocess.check_output(["etcdctl", "user", "grant-role", "root", "root"], stderr=subprocess.STDOUT)
         subprocess.check_output(["etcdctl", "auth", "enable"], stderr=subprocess.STDOUT)
@@ -88,7 +89,7 @@ def etcd_put(key, value):
     :param value: value will be added to etcd
     """
     try:
-        subprocess.check_output(["etcdctl", "put", "--", key, value], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "put", "--", shlex.quote(key), shlex.quote(value)], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         logging.error("Error returned while adding the {} key to the etcd: {}".format(key, e))
         raise EisIntegError(CODES.EXT_CMD_ERROR)
@@ -109,19 +110,19 @@ def create_etcd_users(appname):
     :type appname: String
     """
     try:
-        subprocess.check_output(["etcdctl", "user", "add", appname, "--no-password"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "user", "add", shlex.quote(appname), "--no-password"], stderr=subprocess.STDOUT)
         logging.info("User {} has been created.".format(appname))
     except subprocess.CalledProcessError as e:
         logging.error("Error while creating {} user: {}".format(appname, e))
         raise EisIntegError(CODES.EXT_CMD_ERROR)
 
     try:
-        subprocess.check_output(["etcdctl", "role", "add", appname], stderr=subprocess.STDOUT)
-        subprocess.check_output(["etcdctl", "user", "grant-role", appname, appname], stderr=subprocess.STDOUT)
-        subprocess.check_output(["etcdctl", "role", "grant-permission", appname, "read", "/"+appname+"/", "--prefix"], stderr=subprocess.STDOUT)
-        subprocess.check_output(["etcdctl", "role", "grant-permission", appname, "readwrite", "/"+appname+"/datastore", "--prefix"], stderr=subprocess.STDOUT)
-        subprocess.check_output(["etcdctl", "role", "grant-permission", appname, "read", "/Publickeys/", "--prefix"], stderr=subprocess.STDOUT)
-        subprocess.check_output(["etcdctl", "role", "grant-permission", appname, "read", "/GlobalEnv/", "--prefix"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "role", "add", shlex.quote(appname)], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "user", "grant-role", shlex.quote(appname), shlex.quote(appname)], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "role", "grant-permission", shlex.quote(appname), "read", shlex.quote("/"+appname+"/"), "--prefix"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "role", "grant-permission", shlex.quote(appname), "readwrite", shlex.quote("/"+appname+"/datastore"), "--prefix"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "role", "grant-permission", shlex.quote(appname), "read", "/Publickeys/", "--prefix"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "role", "grant-permission", shlex.quote(appname), "read", "/GlobalEnv/", "--prefix"], stderr=subprocess.STDOUT)
         logging.info("Role {} has been created.".format(appname))
     except subprocess.CalledProcessError as e:
         logging.error("Error while creating {} role: {}".format(appname, e))
@@ -135,7 +136,7 @@ def read_config(client):
     :type client: String
     """
     logging.info("Read the configuration from etcd")
-    subprocess.run(["etcdctl", "get", client, "--prefix"])
+    subprocess.run(["etcdctl", "get", shlex.quote(client), "--prefix"])
 
 
 def get_etcd_users():
@@ -151,7 +152,7 @@ def remove_user_privilege(name):
     :type file: String
     """
     try:
-        subprocess.check_output(["etcdctl", "role", "remove", name], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "role", "remove", shlex.quote(name)], stderr=subprocess.STDOUT)
         logging.info("Role {} has been removed.".format(name))
     except subprocess.CalledProcessError as e:
         logging.error("Error returned while removing the {} role: {}".format(name, e))
@@ -163,7 +164,7 @@ def remove_user(name):
     :type file: String
     """
     try:
-        subprocess.check_output(["etcdctl", "user", "delete", name], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "user", "delete", shlex.quote(name)], stderr=subprocess.STDOUT)
         logging.info("User {} has been removed.".format(name))
     except subprocess.CalledProcessError as e:
         logging.error("Error returned while removing the {} user: {}".format(name, e))
@@ -182,7 +183,7 @@ def remove_eis_application():
 
 def remove_eis_key(key):
     """ Remove existing eis key. """
-    subprocess.run(["etcdctl", "del", key, "--prefix"])
+    subprocess.run(["etcdctl", "del", shlex.quote(key), "--prefix"])
 
 
 def init_logger():

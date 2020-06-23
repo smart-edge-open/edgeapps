@@ -39,5 +39,5 @@ if __name__ == '__main__':
     try:
         sys.exit(main(parse_arguments(sys.argv[1:])).value)
     except eis_integ.EisIntegError as exception:
-        traceback.print_exc(file=sys.stderr)
+        logging.error("Error while generating ZMQ keys: {}".format(exception))
         sys.exit(exception.code.value)
