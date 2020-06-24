@@ -20,6 +20,8 @@ RUN cd /tmp && \
 	mv go /usr/local && \
 	rm -rf /tmp/go*
 
-COPY ./build/start.sh ./
-COPY ./cmd ./
+WORKDIR /root
+
+COPY build/start.sh ./
+COPY cmd/ ./
 ENTRYPOINT ["./start.sh"]
