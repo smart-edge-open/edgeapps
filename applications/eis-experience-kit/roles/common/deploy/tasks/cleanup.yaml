@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Get node IP
+  shell: kubectl get nodes -o jsonpath="{.items[0].status.addresses[?(@.type==\"InternalIP\")].address}"
+  register: nodeip
+  changed_when: false
+
+- name: Remove {{ eis_install_path }} from the node
+  shell: ssh {{ nodeip.stdout  }} 'rm -rf {{ eis_install_path }}'
+  delegate_to: localhost
+  changed_when: true
+
+- name: Remove {{ eis_install_path }} from the master node
+  file:
+    path: "{{ eis_install_path }}"
+    state: absent
