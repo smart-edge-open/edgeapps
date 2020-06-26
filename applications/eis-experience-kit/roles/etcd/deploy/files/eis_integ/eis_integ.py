@@ -89,7 +89,7 @@ def etcd_put(key, value):
     :param value: value will be added to etcd
     """
     try:
-        subprocess.check_output(["etcdctl", "put", "--", shlex.quote(key), shlex.quote(value)], stderr=subprocess.STDOUT)
+        subprocess.check_output(["etcdctl", "put", "--", shlex.quote(key), shlex.quote(value.decode('utf-8'))], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         logging.error("Error returned while adding the {} key to the etcd: {}".format(key, e))
         raise EisIntegError(CODES.EXT_CMD_ERROR)
