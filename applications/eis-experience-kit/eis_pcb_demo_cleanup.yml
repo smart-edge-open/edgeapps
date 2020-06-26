@@ -78,3 +78,6 @@
 
   - name: Cleanup Visualizer
     include_tasks: ./roles/visualizer/deploy/tasks/cleanup.yaml
+
+  - name: Cleanup Common
+    include_tasks: ./roles/common/deploy/tasks/cleanup.yaml
