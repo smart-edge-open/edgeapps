@@ -27,4 +27,4 @@ WORKDIR /root
 
 COPY build/start.sh ./
 COPY cmd/ ./
-#ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["./start.sh"]
