@@ -11,7 +11,7 @@ ENV GOPATH=/root/go
 ENV GOROOT=/usr/local/go
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-RUN yum install -y wget
+RUN yum install -y wget git
 
 # Install Go
 RUN cd /tmp && \
@@ -20,8 +20,11 @@ RUN cd /tmp && \
 	mv go /usr/local && \
 	rm -rf /tmp/go*
 
+# Get go dependencies
+RUN go get github.com/levigross/grequests
+
 WORKDIR /root
 
 COPY build/start.sh ./
 COPY cmd/ ./
-ENTRYPOINT ["./start.sh"]
+#ENTRYPOINT ["./start.sh"]
