@@ -5,7 +5,7 @@ FROM centos:7.6.1810
 
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
-ENV no_proxy=$no_proxy,eaa.openness,media.openness
+ENV no_proxy=$no_proxy,eaa.openness,analytics-ffmpeg,analytics-gstreamer,media.openness
 
 ENV GOPATH=/root/go
 ENV GOROOT=/usr/local/go

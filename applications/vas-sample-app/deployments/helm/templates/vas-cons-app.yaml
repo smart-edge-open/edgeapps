@@ -10,6 +10,7 @@ metadata:
   labels:
     name: {{ .Release.Name }}-vas-cons-app
 spec:
+  restartPolicy: Never
   containers:
   - name: {{ .Release.Name }}-vas-cons-app
     image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

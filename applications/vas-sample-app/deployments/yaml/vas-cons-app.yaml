@@ -10,6 +10,7 @@ metadata:
   labels:
     name: vas-cons-app
 spec:
+  restartPolicy: Never
   containers:
   - name: vas-cons-app
     image: vas-cons-app:1.0

@@ -139,7 +139,7 @@ func main() {
 
 	myURN = URN{
 		ID:        "consumer",
-		Namespace: "media",
+		Namespace: "openvino",
 	}
 
 	// Authentication (CSR)
