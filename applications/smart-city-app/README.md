@@ -17,9 +17,9 @@ Smart City application is a sample application that is built on top of the OpenV
 ## Installing OpenNESS
 The OpenNESS must be installed before going forward with Smart City application deployment. Installation is performed through [OpenNESS playbooks](https://github.com/otcshare/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md).
 
-> **NOTE:** At the time of writing this guide, there was no [Network Policy for Kubernetes](https://kubernetes.io/docs/concepts/services-networking/network-policies/) defined yet for the Smart City application. So, it is advised to remove the default OpenNESS network policies using this command:
+> **NOTE:** At the time of writing this guide, there was no [Network Policy for Kubernetes](https://kubernetes.io/docs/concepts/services-networking/network-policies/) defined yet for the Smart City application. So, it is advised to remove **all** the network policies existing in the `default` namespace such as:
 > ```shell
-> kubectl delete netpol block-all-ingress cdi-upload-proxy-policy
+> kubectl delete netpol block-all-ingress
 > ```
 
 Details on deploying the application is provided in the following sections.
@@ -36,6 +36,11 @@ This mode provide an easy and quick start with executing the application in the 
     ```
 
 2. Build the Smart City application
+
+    > **NOTE:** Install `cmake` and `m4` tools if not installed already
+    >  ```shell
+    >  yum install cmake m4 -y
+    >  ```
 
     ```shell
     mkdir build
@@ -55,7 +60,7 @@ This mode provide an easy and quick start with executing the application in the 
 4. Install the application using the Helm chart
 
     ```shell
-    helm install smart-city-app app/deployment/kubernetes/helm/smtc
+    helm install smart-city-app smart-city-app app/deployment/kubernetes/helm/smtc
     ```
 
 5. From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
@@ -105,7 +110,7 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
 7. Install the application using the Helm chart
 
     ```shell
-    helm install smart-city-app app/deployment/kubernetes/helm/smtc
+    helm install smart-city-app smart-city-app app/deployment/kubernetes/helm/smtc
     ```
 
 8.  From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
@@ -119,6 +124,7 @@ To uninstall the Smart City application, execute the following commands,
 helm uninstall smart-city-app
 ./clean.sh
 ```
+
 
 ## References
 
