@@ -1,0 +1,99 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name:  {{ .Release.Name }}-ru
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: ru
+spec:
+  containers:
+  - securityContext:
+      privileged: {{ .Values.securityContext.privileged }}
+      capabilities:
+        add:
+          - IPC_LOCK
+          - SYS_NICE
+    name: {{ .Release.Name }}-ru-app
+    image: "{{ .Values.image.registryIpAddress }}:{{ .Values.image.registryPort }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+    imagePullPolicy:  {{ .Values.image.pullPolicy }}
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "./start_ru.sh && while true; do sleep 300000; done;" ]
+    volumeMounts:
+    - mountPath: /hugepages
+      name: hugepage
+    - name: time
+      mountPath: /etc/localtime
+      readOnly: false
+    - name: testres
+      mountPath: /opt/flexran_xran/results
+      readOnly: false
+    resources:
+      requests:
+        intel.com/{{ .Values.ruResources.requests.sriovResName }}: '{{ .Values.ruResources.requests.sriovResAmount }}'
+        {{ .Values.ruResources.requests.hugepageSize }}: {{ .Values.ruResources.requests.hugepageAmount }}
+        memory: {{ .Values.ruResources.requests.memorySize }}
+      limits:
+        intel.com/{{ .Values.ruResources.limits.sriovResName }}: '{{ .Values.ruResources.requests.sriovResAmount }}'
+        {{ .Values.ruResources.limits.hugepageSize }}: {{ .Values.ruResources.limits.hugepageAmount }}
+        memory: {{ .Values.ruResources.limits.memorySize }}
+    env:
+      - name: XRAN_DEF_APP_MODE
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-ru-config
+            key: defAppMode
+      - name: XRAN_DEF_TECH
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-ru-config
+            key: defTech
+      - name: XRAN_DEF_CAT
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-ru-config
+            key: defCat
+      - name: XRAN_DEF_MU
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-ru-config
+            key: defMu
+      - name: XRAN_DEF_BW
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-ru-config
+            key: defBw
+      - name: XRAN_DEF_TC
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-ru-config
+            key: defTc
+  volumes:
+  - name: hugepage
+    emptyDir:
+      medium: HugePages
+  - name: time
+    hostPath:
+      path: "/etc/localtime"
+  - name: testres
+    hostPath:
+      path: "/opt/flexran_xran/results"
+  nodeSelector:
+    feature.node.kubernetes.io/cpu-cpuid.AVX: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX2: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512BW: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512CD: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512DQ: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512F: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512VL: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTL3CA: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTMBA: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ_FULL: 'true'
+    feature.node.kubernetes.io/kernel-config.PREEMPT: 'true'
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+    feature.node.kubernetes.io/kernel-version.full: '{{ .Values.nodeSelector.kernelVersionFull }}'
+    feature.node.kubernetes.io/system-os_release.ID: '{{ .Values.nodeSelector.systemOS }}'
+

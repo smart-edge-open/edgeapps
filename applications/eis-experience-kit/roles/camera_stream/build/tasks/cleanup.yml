@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Removing {{ docker_image_name }} docker image
+  command: docker rmi {{ docker_image_tag }} {{ docker_registry_address }}/{{ docker_image_tag }}
+  changed_when: false
+  ignore_errors: yes

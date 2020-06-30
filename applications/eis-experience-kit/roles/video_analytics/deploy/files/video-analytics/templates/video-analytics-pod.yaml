@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    name: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image }}
+          volumeMounts:
+            - mountPath: "{{ .Values.eisSecretsPath }}"
+              name: etcd-certs
+              readOnly: true
+          ports:
+          - name: stream-port
+            containerPort: {{ .Values.cameraStreamPort }}
+          - name: stream-res-port
+            containerPort: {{ .Values.cameraStreamResultsPort }}
+          env:
+            - name: AppName
+              value: "{{ .Values.appName }}"
+            - name: DEV_MODE
+              value: "{{ .Values.devMode }}"
+            - name: PROFILING_MODE
+              value: "false"
+            - name: ETCD_HOST
+              value: ia-etcd-service
+            - name: Clients
+              value: "{{ .Values.clientsList }}"
+            - name: CertType
+              value: "zmq"
+            - name: ZMQ_RECV_HWM
+              value: "1000"
+            - name: SubTopics
+              value: "VideoIngestion/camera1_stream"
+            - name: camera1_stream_cfg
+              value: "zmq_tcp,{{ .Values.publisherPodService }}:{{ .Values.cameraStreamPort }}"
+            - name: PubTopics
+              value: "camera1_stream_results"
+            - name: camera1_stream_results_cfg
+              value: "zmq_tcp,0.0.0.0:{{ .Values.cameraStreamResultsPort }}"
+            - name: CONFIGMGR_CERT
+              value: "{{ .Values.certPath }}"
+            - name: CONFIGMGR_KEY
+              value: "{{ .Values.keyPath }}"
+            - name: CONFIGMGR_CACERT
+              value: "{{ .Values.rootCACertPath }}"
+      volumes:
+        - name: etcd-certs
+          projected:
+            sources:
+            - secret:
+                name: {{ .Values.secrets.etcdCertsSecretName }}
+            - secret:
+                name: {{ .Values.secrets.rootCaSecretName }}

@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Create folder for Helm Charts
+  file:
+    path: "{{ helm_charts_location }}"
+    state: directory
+    mode: 0744
+
+- name: Copy {{ app_name }} Helm Charts to the Master Node
+  copy:
+    src: "camera-stream"
+    dest: "{{ helm_charts_location }}"
+
+- name: Generate values file for {{ app_name }} Helm Chart from template
+  template:
+    src: camera-stream-values.yaml.j2
+    dest: "{{ helm_chart_camstream }}/camera-stream-values.yaml"
+    mode: 0744
+
+- name: Deploy {{ app_name }} using Helm
+  command: >
+    helm install --namespace {{ k8s_eis_namespace }} -f {{ helm_chart_camstream }}/camera-stream-values.yaml {{ helm_release_name }}
+    {{ helm_chart_camstream }}
+  changed_when: true
+

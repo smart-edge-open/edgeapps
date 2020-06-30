@@ -1,0 +1,99 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+#name: upf-cpp
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}
+  namespace: default
+  annotations:
+    k8s.v1.cni.cncf.io/networks: sriov-openness
+spec:
+  nodeName: {{ .Values.node.name }}
+  containers:
+    - name: {{ .Release.Name }}
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      securityContext:
+        allowPrivilegeEscalation: {{ .Values.allowPrivilegeEscalation }}
+        privileged: {{ .Values.isPrivileged }}
+      command: ["/bin/bash", "-c", "--"]
+      args:
+      - |
+        while true ; do
+          sleep 90000000
+        done
+      imagePullPolicy: {{ .Values.image.pullPolicy }}
+      env:
+        - name: CONFIG_VF_IF_NAME
+          value: {{ .Values.upf.vf_if_name }}
+        - name: CONFIG_PCI_BUS_ADDR
+          value: {{ .Values.upf.pci_bus_addr }}
+        - name: CONFIG_UIO_DRIVER
+          value: {{ .Values.upf.uio_driver }}
+        - name: CONFIG_HUGE_MEMORY
+          value: {{ .Values.upf.huge_memory }}
+        - name: CONFIG_MAIN_CORE
+          value: "{{ .Values.upf.main_core }}"
+        - name: CONFIG_WORKER_CORES
+          value: "{{ .Values.upf.worker_cores }}"
+        - name: CONFIG_PFCP_THREAD_CORES
+          value: "{{ .Values.upf.pfcp_thread.cores }}"
+        - name: CONFIG_NO_OF_PFCP_THREADS
+          value: "{{ .Values.upf.pfcp_thread.count }}"
+        - name: CONFIG_N3_IP_ADDR
+          value: {{ .Values.upf.n3_addr }}
+        - name: CONFIG_N4_IP_ADDR
+          value: {{ .Values.upf.n4_addr }}
+        - name: CONFIG_N6_IP_ADDR
+          value: {{ .Values.upf.n6_addr }}
+        - name: CONFIG_N6_GW_IP_ADDR
+          value: {{ .Values.upf.n6_gw_addr }}
+      volumeMounts:
+        - name: hugepages
+          mountPath: /hugepages
+        - name: class
+          mountPath: /sys/devices
+          readOnly: false
+        - name: upf-vol
+          mountPath: /root/upf
+          readOnly: false
+        - name: sysfs
+          mountPath: /sys
+          readOnly: false
+        - name: host-proc
+          mountPath: /host/proc
+        - name: varvol
+          mountPath: /var/run
+          readOnly: false
+      resources:
+        requests:
+          {{ .Values.hugePageSize }} : {{ .Values.hugePageAmount }}
+          memory: {{ .Values.memory }}
+          intel.com/intel_sriov_dpdk: "1"
+        limits:
+          {{ .Values.hugePageSize }} : {{ .Values.hugePageAmount }}
+          memory: {{ .Values.memory }}
+          intel.com/intel_sriov_dpdk: "1"
+  volumes:
+  - name: hugepages
+    emptyDir:
+      medium: HugePages
+  - name: class
+    hostPath:
+      path: /sys/devices
+  - name: sysfs
+    hostPath:
+        path: /sys
+  - name: upf-vol
+    hostPath:
+      path: {{ .Values.node.path }}
+  - name: host-proc
+    hostPath:
+        path: /proc
+  - name: varvol
+    hostPath:
+        path: /var/run
+
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: "true"

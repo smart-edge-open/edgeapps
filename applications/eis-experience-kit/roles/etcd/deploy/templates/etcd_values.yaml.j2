@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
+dockerRegistryEndpoint: "{{ docker_registry_address }}"
+devMode: "{{ dev_mode }}"
+
+etcdClientPort: {{ etcd_client_port }}
+etcdPeerPort: {{ etcd_peer_port }}
+etcdInitialClusterToken: "{{ etcd_initial_cluster_token }}"
+etcdInitialClusterState: "{{ etcd_initial_cluster_state }}"
+etcdListenClientUrls: "{{ etcd_listen_client_urls }}"
+etcdCertsPodMountPath: "{{ etcd_certs_pod_mount_path }}"
+rootCACertName: "{{ rootca_cert_name }}"
+etcdDataDir: "{{ etcd_data_dir }}"
+etcdCertsPodMountPath: "{{ etcd_certs_pod_mount_path }}"
+etcdDataHostMountPath: "{{ etcd_data_host_mount_path }}"

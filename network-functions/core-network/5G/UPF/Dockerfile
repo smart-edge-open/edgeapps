@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
 FROM ubuntu:18.04
 
 ENV http_proxy=$http_proxy
@@ -11,4 +14,6 @@ RUN apt-get update && \
 
 WORKDIR /root
 
-COPY 5g_upf_vpp ./5g_upf_vpp
+COPY run_upf.sh ./run_upf.sh
+# update with the location of the upf source
+#COPY 5g_upf_vpp ./5g_upf_vpp

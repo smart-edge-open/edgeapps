@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: make sure /root/.docker directory exists
+  file:
+    name: /root/.docker
+    state: directory
+
+- name: check if previous docker config exists
+  stat:
+    path: /root/.docker/config.json
+  register: docker_user_config_file
+
+- name: create /root/.docker/temp-proxy.json from template
+  template:
+    src: config.json.j2
+    dest: /root/.docker/temp-proxy.json
+
+- name: add proxy to already existing config.json
+  block:
+  - name: add proxy to already existing config.json
+    shell: "jq -s '.[0] + .[1]' /root/.docker/config.json /root/.docker/temp-proxy.json | sponge /root/.docker/config.json"
+  - name: remove temporary /root/.docker/temp-proxy.json
+    file:
+      path: /root/.docker/temp-proxy.json
+      state: absent
+  when: docker_user_config_file.stat.exists
+
+- name: rename temp-proxy.json to config.json
+  command: mv /root/.docker/temp-proxy.json /root/.docker/config.json
+  args:
+    creates: /root/.docker/config.json
+  when: not docker_user_config_file.stat.exists
+
+- name: create http-proxy.conf for docker service
+  block:
+    - name: create Docker system config directory
+      file:
+        name: /etc/systemd/system/docker.service.d
+        state: directory
+    - name: create http-proxy.conf from template
+      template:
+        src: http-proxy.conf.j2
+        dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+      notify:
+      - enable and start docker service

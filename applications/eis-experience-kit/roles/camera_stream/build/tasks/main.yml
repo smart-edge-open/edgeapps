@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Copy streaming file from EIS repo to folder having Dockerfile
+  copy:
+    src: "{{ cam_stream_source }}"
+    dest: "{{ docker_src_folder }}"
+
+- name: Build {{ docker_image_name }} docker image
+  command: "docker build --network=host -t {{ docker_image_tag }} -t {{ docker_registry_address }}/{{ docker_image_tag }} roles/camera_stream/build/files"
+  changed_when: true
+
+- name: Push the image to the Docker Registry
+  command: docker push {{ docker_registry_address }}/{{ docker_image_tag }}
+  changed_when: true

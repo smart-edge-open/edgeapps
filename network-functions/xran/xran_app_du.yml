@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: xran-du 
+  namespace: default
+spec:
+  containers:
+  - securityContext:
+      privileged: true
+      capabilities:
+        add:
+          - IPC_LOCK
+          - SYS_NICE
+    name: xran-du-app
+    image: xran-sample-app:1.0
+    imagePullPolicy: Never
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "./start_du.sh && while true; do sleep 300000; done;" ]
+    volumeMounts:
+    - name: hugepage
+      mountPath: /hugepages
+    - name: time
+      mountPath: /etc/localtime
+      readOnly: false
+    - name: testres
+      mountPath: /opt/flexran_xran/results
+      readOnly: false
+    resources:
+      requests:
+        intel.com/intel_sriov_dpdk: '2'
+        hugepages-1Gi: 20Gi
+        memory: 20Gi
+      limits:
+        intel.com/intel_sriov_dpdk: '2'
+        hugepages-1Gi: 20Gi
+        memory: 20Gi
+    env:
+      - name: XRAN_DEF_APP_MODE
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defAppMode
+      - name: XRAN_DEF_TECH
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defTech
+      - name: XRAN_DEF_CAT
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defCat
+      - name: XRAN_DEF_MU
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defMu
+      - name: XRAN_DEF_BW
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defBw
+      - name: XRAN_DEF_TC
+        valueFrom:
+          configMapKeyRef:
+            name: xran-app-du-config
+            key: defTc
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - ru
+        topologyKey: "kubernetes.io/hostname"
+  volumes:
+  - name: hugepage
+    emptyDir:
+      medium: HugePages
+  - hostPath:
+      path: "/etc/localtime"
+    name: time
+  - name: testres
+    hostPath:
+      path: "/opt/flexran_xran/results"    
+  nodeSelector:
+    feature.node.kubernetes.io/cpu-cpuid.AVX: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX2: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512BW: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512CD: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512DQ: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512F: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512VL: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTL3CA: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTMBA: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ_FULL: 'true'
+    feature.node.kubernetes.io/kernel-config.PREEMPT: 'true'
+    feature.node.kubernetes.io/kernel-version.full: '3.10.0-1062.12.1.rt56.1042.el7.x86_64'
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+    feature.node.kubernetes.io/system-os_release.ID: 'centos'

@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+# versions should be 2 for helm-chart 3.0 version
+apiVersion: v2
+name: upf
+description: A reference Helm chart for VPP based application (i.e UPF) deployment
+
+type: application
+
+version: 0.1.0
+
+appVersion: 0.1.0

@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+service:
+  name: ia-video-ingestion-service
+  type: ClusterIP
+
+secrets:
+  etcdCertsSecretName: videoingestion
+  rootCaSecretName: rootca
+  etcdCertName: etcd_VideoIngestion_cert
+  etcdKeyName: etcd_VideoIngestion_key
