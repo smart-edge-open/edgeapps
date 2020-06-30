@@ -88,5 +88,5 @@ After all the configuration is done, script `deploy_eis_pcb_demo.sh` needs to be
 To clean up the platform from EIS applications `cleanup_eis_pcb_demo.sh` script can be used. It runs Ansible playbook `eis_pcb_demo_cleanup.yml` and processes all the roles defined there. Inventory file is used for getting Controller Node IP.
 
 ## References
-- [Industrial Edge Insights Application on OpenNESS - Solution Overview](https://github.com/otcshare/specs/blob/master/doc/applications/openness_eis.md)
+- [Industrial Edge Insights Application on OpenNESS - Solution Overview](https://github.com/open-ness/specs/blob/master/doc/applications/openness_eis.md)
 - [Intel’s Edge Insights for Industrial](https://www.intel.com/content/www/us/en/internet-of-things/industrial-iot/edge-insights-industrial.html)
