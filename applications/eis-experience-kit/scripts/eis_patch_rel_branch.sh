@@ -1,11 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-dirname="/tmp/eispatch"
-release_pkg_extract="/tmp/eispatch/release_temp"
-
-usage() { echo "Usage: $0 [-s <source path including zip file>] [-d <Destination path having zip file name>]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-s <Full path to the release package archive file>] [-d <Full destination path having zip file name>]" 1>&2; exit 1; }
 
 while getopts ":s:d:" o; do
     case "${o}" in
@@ -26,31 +23,32 @@ if [ -z "${s}" ] || [ -z "${d}" ]; then
     usage
 fi
 
+tempdir="/tmp/eispatch"
 release_source_path=${s}
 release_destination_path=${d}
 
-#create main directory if not exist
-if [ ! -d "$dirname" ]
+# Create temp directory if not exist
+if [ ! -d "$tempdir" ]
 then
-    echo "File doesn't exist. Creating now"
-    mkdir $dirname
-fi
-#create sub directory if not exist
-if [ ! -d "$release_pkg_extract" ]
-then
-    echo "File doesn't exist. Creating now"
-    mkdir $release_pkg_extract
+    echo "Directory doesn't exist. Creating now"
+    mkdir $tempdir
 fi
 
-#Extract release package to apply patch
-tar xvzf $release_source_path -C $release_pkg_extract
+# Extract release package to apply patch
+tar xvzf $release_source_path -C $tempdir
 
-#save current working directory to get patch file path and move to release source path
+# Save current working directory to get patch file path and move to release source path
 cwd=$(pwd)
-cd $release_pkg_extract
+package_dir=($tempdir/*)
+sources_dir=$tempdir/$(basename $package_dir)/IEdgeInsights
+cd $sources_dir
 
-#Apply patch 
-patch -ruN -p2 < "$cwd"/eis_diff_patch.patch
+# Apply patch
+patch -ruN -p1 < "$cwd"/eis_diff_patch.patch
 
-#zip the folder after applying patch
-zip -r $release_destination_path $release_pkg_extract
+# Zip the folder after applying patch
+cd $tempdir
+tar zcvf $release_destination_path $(basename $package_dir)
+
+# Remove temporary diretory
+rm -rf $tempdir
