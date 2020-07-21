@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: check if docker is installed
+  shell: command -v docker >/dev/null 2>&1
+  register: docker_exec
+  ignore_errors: yes
+  changed_when: false
+
+- name: prune everything
+  command: docker system prune --all --force
+  when: docker_exec.rc == 0
+  ignore_errors: yes

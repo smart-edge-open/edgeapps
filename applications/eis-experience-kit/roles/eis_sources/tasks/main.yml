@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: create directory if not exist
+  file:
+    path: "{{ eis_sources_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: EIS code repository using git clone
+  git:
+    repo: '{{ eis_repo_url }}'
+    dest: '{{ eis_sources_dir }}'
+    version: "{{ eis_repo_branch }}"
+    force: yes
+  when: eis_source == "gitclone"
+
+- name: EIS code repository from baseline release
+  block:
+    - name: Create temporary directory
+      tempfile:
+        state: directory
+        suffix: eis_sources
+      register: temp_dir
+    - name: Unarchive release package
+      unarchive:
+        src: "{{ release_package_path }}"
+        dest: "{{ temp_dir.path }}"
+        remote_src: no
+    - name: Move source directory to the expected location
+      shell: >-
+        package_dir=({{ temp_dir.path }}/*) &&
+        sources_dir={{ temp_dir.path }}/$(basename $package_dir)/IEdgeInsights &&
+        mv $sources_dir/* {{ eis_sources_dir }}
+      changed_when: true
+    - name: Remove temporary directory
+      file:
+        path: "{{ temp_dir.path }}"
+        state: absent
+      when: temp_dir.path is defined
+  when: eis_source == "release"

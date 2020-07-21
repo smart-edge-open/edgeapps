@@ -13,4 +13,4 @@ function create_secret {
 create_secret 2>/dev/null || (kubectl delete secret self-signed-certificate; create_secret)
 
 # create configmap
-kubectl create configmap sensor-info "--from-file=${DIR}/sensor-info.json"
+kubectl create configmap sensor-info "--from-file=${DIR}/app/maintenance/db-init/sensor-info.json"

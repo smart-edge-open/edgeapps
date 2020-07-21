@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Create set of directories for certificates
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0744'
+  with_items:
+  - "{{ rootca_location }}/certs"
+
+- name: Touch empty files for rootCA
+  file:
+    path: "{{ item }}"
+    state: touch
+    mode: u+rw,g-wx,o-rwx
+  with_items:
+  - "{{ rootca_location }}/index.txt"
+  - "{{ rootca_location }}/index.txt.attr"
+  - "{{ rootca_location }}/serial"
+
+- name: Write serial for RootCA
+  copy:
+    content: "01"
+    dest: "{{ rootca_location }}/serial"
+
+- name: Change common_name in openssl.cnf to root_ca
+  lineinfile:
+    path: "{{ etcd_certs_location }}/openssl.cnf"
+    regexp: '^common_name'
+    line: "common_name = root_ca"
+
+- name: Generate RootCA certificate
+  command: >-
+      openssl req -config  {{ etcd_certs_location }}/openssl.cnf
+      -x509
+      -days {{ cert_days }}
+      -newkey rsa:{{ ca_default_bits }}
+      -keyout {{ rootca_key }}
+      -out {{ rootca_cert }}
+      -outform PEM
+      -subj {{ rootca_subj }}
+      -nodes
+  changed_when: true

@@ -1,0 +1,9 @@
+{
+    "/GlobalEnv/": {
+        "PY_LOG_LEVEL": "INFO",
+        "GO_LOG_LEVEL": "INFO",
+        "C_LOG_LEVEL": "INFO",
+        "GO_VERBOSE": "0",
+        "ETCD_KEEPER_PORT": "7070"
+    }
+}

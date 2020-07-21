@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+docker_compose_version: "1.24.1"
+docker_compose_package: "docker-compose=={{ docker_compose_version }}"
+docker_version: "19.03.2"
+docker_packages: "docker-ce-{{ docker_version }},docker-ce-cli-{{ docker_version }},containerd.io"
+
+docker_repository_url: "https://download.docker.com/linux/centos/7/$basearch/stable"
+docker_repository_key: "https://download.docker.com/linux/centos/gpg"
+
+docker_packages_to_remove: "docker,docker-client,docker-client-latest,docker-common,docker-latest,docker-latest-logrotate,docker-logrotate,docker-engine,docker-ce,docker-ce-cli,containerd.io"

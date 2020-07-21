@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
+dockerRegistryEndpoint: "{{ docker_registry_address }}"
+cameraStreamPort: {{ camera_stream_port }}
+clientsList: "{{ clients_list }}"
+appName: "{{ app_name }}"
+devMode: "{{ dev_mode }}"
+eisSecretsPath: "{{ eis_secrets_path }}"
+certPath: "{{ eis_secrets_path }}/{{ cert_name }}"
+keyPath: "{{ eis_secrets_path }}/{{ key_name }}"
+rootCACertPath: "{{ eis_secrets_path }}/{{ rootca_cert_name }}"
+

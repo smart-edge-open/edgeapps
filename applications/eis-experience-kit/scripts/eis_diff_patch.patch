@@ -1,0 +1,268 @@
+diff --git a/VideoAnalytics/src/main.cpp b/VideoAnalytics/src/main.cpp
+index 96c2e09..fb1317a 100644
+--- a/VideoAnalytics/src/main.cpp
++++ b/VideoAnalytics/src/main.cpp
+@@ -76,6 +76,14 @@ void get_config_mgr(){
+         pub_cert_file = "/run/secrets/etcd_" + app_name + "_cert";
+         pri_key_file = "/run/secrets/etcd_" + app_name + "_key";
+         trust_file = "/run/secrets/ca_etcd";
++        char* confimgr_cert = getenv("CONFIGMGR_CERT");
++        char* confimgr_key = getenv("CONFIGMGR_KEY");
++        char* confimgr_cacert = getenv("CONFIGMGR_CACERT");
++        if(confimgr_cert && confimgr_key && confimgr_key) {
++            pub_cert_file = confimgr_cert;
++            pri_key_file = confimgr_key;
++            trust_file = confimgr_cacert;
++        }
+     }
+ 
+     g_config_mgr = config_mgr_new("etcd",
+diff --git a/VideoIngestion/src/gstreamer_ingestor.cpp b/VideoIngestion/src/gstreamer_ingestor.cpp
+index 0a53e3d..3f0d9de 100644
+--- a/VideoIngestion/src/gstreamer_ingestor.cpp
++++ b/VideoIngestion/src/gstreamer_ingestor.cpp
+@@ -71,18 +71,6 @@ GstreamerIngestor::GstreamerIngestor(config_t* config, FrameQueue* frame_queue,
+     LOG_INFO("Pipeline: %s", m_pipeline.c_str());
+     config_value_destroy(cvt_pipeline);
+ 
+-    config_value_t* cvt_poll_interval = config->get_config_value(
+-            config->cfg, POLL_INTERVAL);
+-    if(cvt_poll_interval != NULL) {
+-        if(cvt_poll_interval->type != CVT_FLOATING) {
+-            LOG_INFO_0("Poll interval must be a number");
+-            config_value_destroy(cvt_poll_interval);
+-        }
+-        m_poll_interval = cvt_poll_interval->body.floating;
+-        config_value_destroy(cvt_poll_interval);
+-    }
+-    LOG_INFO("Poll interval: %lf", m_poll_interval);
+-
+ #ifdef WITH_PROFILE
+     m_frame_count = 0;
+ #endif
+diff --git a/VideoIngestion/src/ingestor.cpp b/VideoIngestion/src/ingestor.cpp
+index 1a4197d..486a88c 100644
+--- a/VideoIngestion/src/ingestor.cpp
++++ b/VideoIngestion/src/ingestor.cpp
+@@ -43,9 +43,23 @@ using namespace eis::udf;
+ Ingestor::Ingestor(config_t* config, FrameQueue* frame_queue, EncodeType enc_type=EncodeType::NONE, int enc_lvl=0) :
+     m_th(NULL), m_initialized(false), m_stop(false),
+     m_udf_input_queue(frame_queue),  m_enc_type(enc_type), m_enc_lvl(enc_lvl) {
+-        // Setting default poll interval
+-        // This will be over written with the sub class poll interval
+-        m_poll_interval = 0;
++        config_value_t* cvt_poll_interval = config->get_config_value(config->cfg, POLL_INTERVAL);
++        if(cvt_poll_interval != NULL) {
++            if(cvt_poll_interval->type != CVT_FLOATING && cvt_poll_interval->type != CVT_INTEGER) {
++                const char* err = "Poll interval must be a number";
++                LOG_ERROR("%s for \'%s\'", err, PIPELINE);
++                config_value_destroy(cvt_poll_interval);
++                throw(err);
++            } else {
++                if(cvt_poll_interval->type == CVT_FLOATING) {
++                    m_poll_interval = cvt_poll_interval->body.floating;
++                } else if(cvt_poll_interval->type == CVT_INTEGER) {
++                    m_poll_interval = (double)cvt_poll_interval->body.integer;
++                }
++            }
++            config_value_destroy(cvt_poll_interval);
++        }
++        LOG_INFO("Poll interval: %lf", m_poll_interval);
+         this->m_profile = new Profiling();
+ }
+ 
+diff --git a/VideoIngestion/src/main.cpp b/VideoIngestion/src/main.cpp
+index b34c9b6..5d80743 100644
+--- a/VideoIngestion/src/main.cpp
++++ b/VideoIngestion/src/main.cpp
+@@ -75,6 +75,14 @@ void get_config_mgr(){
+         pub_cert_file = "/run/secrets/etcd_" + app_name + "_cert";
+         pri_key_file = "/run/secrets/etcd_" + app_name + "_key";
+         trust_file = "/run/secrets/ca_etcd";
++        char* confimgr_cert = getenv("CONFIGMGR_CERT");
++        char* confimgr_key = getenv("CONFIGMGR_KEY");
++        char* confimgr_cacert = getenv("CONFIGMGR_CACERT");
++        if(confimgr_cert && confimgr_key && confimgr_key) {
++            pub_cert_file = confimgr_cert;
++            pri_key_file = confimgr_key;
++            trust_file = confimgr_cacert;
++        }
+     }
+ 
+     g_config_mgr = config_mgr_new("etcd",
+diff --git a/VideoIngestion/src/opencv_ingestor.cpp b/VideoIngestion/src/opencv_ingestor.cpp
+index 8683c4e..33d681a 100644
+--- a/VideoIngestion/src/opencv_ingestor.cpp
++++ b/VideoIngestion/src/opencv_ingestor.cpp
+@@ -67,18 +67,6 @@ OpenCvIngestor::OpenCvIngestor(config_t* config, FrameQueue* frame_queue, Encode
+     LOG_INFO("Pipeline: %s", m_pipeline.c_str());
+     config_value_destroy(cvt_pipeline);
+ 
+-    config_value_t* cvt_poll_interval = config->get_config_value(
+-            config->cfg, POLL_INTERVAL);
+-    if(cvt_poll_interval != NULL) {
+-        if(cvt_poll_interval->type != CVT_FLOATING) {
+-            LOG_INFO_0("Poll interval must be a number");
+-            config_value_destroy(cvt_poll_interval);
+-        }
+-        m_poll_interval = cvt_poll_interval->body.floating;
+-        config_value_destroy(cvt_poll_interval);
+-    }
+-    LOG_INFO("Poll interval: %lf", m_poll_interval);
+-
+     config_value_t* cvt_loop_video = config->get_config_value(
+             config->cfg, LOOP_VIDEO);
+     if(cvt_loop_video != NULL) {
+diff --git a/common/libs/ConfigManager/c/src/env_config.c b/common/libs/ConfigManager/c/src/env_config.c
+index 2372a09..685ba8c 100644
+--- a/common/libs/ConfigManager/c/src/env_config.c
++++ b/common/libs/ConfigManager/c/src/env_config.c
+@@ -55,10 +55,16 @@ static void free_mem(char** arr){
+ }
+ 
+ static char** get_topics_from_env(const char* topic_type) {
+-    char* topic_list = NULL;
+-    char env_topics[SIZE] = {0,};
++    char* env_topics = NULL;
+     char* individual_topic = NULL;
+     char* topics_env = NULL;
++    size_t env_topics_len;
++    size_t individual_topic_len;
++    char* ref_ptr = NULL;
++    char* str = NULL;
++    int ret = 0;
++    int j;
++
+     if(!strcmp(topic_type, PUB)){
+         topics_env = PUBTOPICS_ENV;
+     }
+@@ -68,41 +74,46 @@ static char** get_topics_from_env(const char* topic_type) {
+         LOG_ERROR("topic type: %s is not supported", topic_type);
+         return NULL;
+     }
+-    int ret = 0;
+-    ret = strncpy_s(env_topics, SIZE, getenv(topics_env), SIZE);
+-    if(ret != 0) {
+-        LOG_ERROR("String copy failed (errno: %d): Failed to copy topics_env", ret);
+-        return NULL;
+-    }
+ 
+-    topic_list = env_topics;
+-    if(topic_list == NULL) {
++    env_topics = getenv(topics_env);
++    if(env_topics == NULL) {
+         LOG_ERROR("%s env doesn't exist", topics_env);
+         return NULL;
+     }
+ 
+-    char **topics = (char **)calloc(SIZE, sizeof(char*));
++    env_topics_len = strlen(env_topics);
++    char topic_list[env_topics_len + 1];
++    ret = strncpy_s(topic_list, env_topics_len + 1, env_topics, env_topics_len);
++    if(ret != 0){
++        LOG_ERROR("String copy failed (errno: %d): Failed to copy topics_env", ret);
++        return NULL;
++    }
++    char **topics = (char **)calloc(env_topics_len + 1, sizeof(char*));
+     if(topics == NULL) {
+         LOG_ERROR_0("Calloc failed for topics");
+         return NULL;
+     }
+-    int j=0;
+-    while((individual_topic = strtok_r(topic_list, ",", &topic_list))) {
++    
++    for(j = 0, str = topic_list; ; str = NULL, j++) {
++        individual_topic = strtok_r(str, ",", &ref_ptr);
++        if(individual_topic == NULL){
++            break;
++        }
++        individual_topic_len = strlen(individual_topic);
+         if(topics[j] == NULL){
+-            topics[j] = (char*) malloc(strlen(individual_topic));
++            topics[j] = (char*) malloc(individual_topic_len + 1);
+         }
+         if(topics[j] == NULL){
+             LOG_ERROR_0("Malloc failed for individual topics");
+             free_mem(topics);
+             return NULL;
+         }
+-        ret = strncpy_s(topics[j], SIZE, individual_topic, strlen(individual_topic));
++        ret = strncpy_s(topics[j], individual_topic_len + 1, individual_topic, individual_topic_len);
+         if(ret != 0) {
+             LOG_ERROR("String copy failed (errno: %d): Failed to copy individual_topic to topics", ret);
+             free_mem(topics);
+             return NULL;
+         }
+-        j++;
+     }
+     topics[j] = NULL;
+     // freeing up the "char** topics" memory has to be done from caller's (application's) side, with the help of free_mem() api.
+@@ -144,22 +155,25 @@ static config_t* get_messagebus_config(const config_mgr_t* configmgr, char* topi
+     int i;
+     int j;
+ 
++    char** host_port = NULL;
++    char** allowed_clients = NULL;
++    char** pub_topic = NULL;
+     char** mode_address = (char **)calloc(SIZE, sizeof(char*));
+     if(mode_address == NULL) {
+         LOG_ERROR_0("Calloc failed for mode_address");
+         goto err;
+     }
+-    char** host_port = (char **)calloc(SIZE, sizeof(char*));
++    host_port = (char **)calloc(SIZE, sizeof(char*));
+     if(host_port == NULL) {
+         LOG_ERROR_0("Calloc failed for host_port");
+         goto err;
+     }
+-    char** allowed_clients = (char **)calloc(SIZE, sizeof(char*));
++    allowed_clients = (char **)calloc(SIZE, sizeof(char*));
+     if(allowed_clients == NULL) {
+         LOG_ERROR_0("Calloc failed for allowed_clients");
+         goto err;
+     }
+-    char **pub_topic = (char **)calloc(SIZE, sizeof(char*));
++    pub_topic = (char **)calloc(SIZE, sizeof(char*));
+     if(pub_topic == NULL) {
+         LOG_ERROR_0("Calloc failed for pub_topic");
+         goto err;
+diff --git a/common/util/util.go b/common/util/util.go
+index 3b93972..1f7451e 100644
+--- a/common/util/util.go
++++ b/common/util/util.go
+@@ -99,6 +99,15 @@ func GetCryptoMap(appName string) map[string]string {
+ 		conf["certFile"] = "/run/secrets/etcd_" + appName + "_cert"
+ 		conf["keyFile"] = "/run/secrets/etcd_" + appName + "_key"
+ 		conf["trustFile"] = "/run/secrets/ca_etcd"
++
++		configmgr_cert := os.Getenv("CONFIGMGR_CERT")
++		configmgr_key := os.Getenv("CONFIGMGR_KEY")
++		configmgr_cacert := os.Getenv("CONFIGMGR_CACERT")
++		if (configmgr_cert != "") && (configmgr_key != "") && (configmgr_cacert != "") {
++			conf["certFile"] = configmgr_cert
++			conf["keyFile"] = configmgr_key
++			conf["trustFile"] = configmgr_cacert
++		}
+ 	}
+ 
+ 	return conf
+diff --git a/common/util/util.py b/common/util/util.py
+index 538e777..a1747c4 100644
+--- a/common/util/util.py
++++ b/common/util/util.py
+@@ -89,5 +89,15 @@ class Util:
+             conf["certFile"] = "/run/secrets/etcd_" + app_name + "_cert" 
+             conf["keyFile"] = "/run/secrets/etcd_" + app_name + "_key"
+             conf["trustFile"] = "/run/secrets/ca_etcd"
++            try:
++                configmgr_cert = os.environ['CONFIGMGR_CERT']
++                configmgr_key = os.environ['CONFIGMGR_KEY']
++                configmgr_cacert = os.environ['CONFIGMGR_CACERT']
++            except Exception as e:
++                log.debug("Using Config mgr certs from default path")
++
++            conf["certFile"] = configmgr_cert
++            conf["keyFile"] = configmgr_key
++            conf["trustFile"] = configmgr_cacert
+         
+         return conf

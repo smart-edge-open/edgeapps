@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+docker_name: "ia_video_ingestion"
+docker_image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
+camera_stream_port: 9000
+clients_list: "VideoAnalytics,Visualizer"
+app_name: "VideoIngestion"
+peer: "client"
+cert_name: "etcd_{{ app_name }}_cert"
+key_name: "etcd_{{ app_name }}_key"
+helm_release_name: "video-ingestion-release"
+helm_chart_ingestion: "{{ helm_charts_location }}/video-ingestion"

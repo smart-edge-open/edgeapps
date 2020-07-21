@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- debug:
+    msg: "Installing the following packages: {{ os_yum_base_packages }}"
+- name: Install base OS rpm packages
+  yum:
+    name: "{{ os_yum_base_packages }}"
+    state: present
+    skip_broken: yes

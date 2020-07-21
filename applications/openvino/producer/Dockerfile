@@ -16,11 +16,13 @@ ENV PATH=$PATH:$GOPATH/bin:$GOROOT/bin
 ENV OPENVINO_ACCL=CPU
 
 RUN mkdir $GOPATH
+# hadolint ignore=DL3008,DL3009,DL3015
 RUN apt-get update && \
-    apt-get -y install wget git
+    apt-get -y install wget git && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Go
-RUN cd /tmp
+WORKDIR /tmp
 RUN wget https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz
 RUN tar -xvf go1.12.4.linux-amd64.tar.gz
 RUN mv go /usr/local

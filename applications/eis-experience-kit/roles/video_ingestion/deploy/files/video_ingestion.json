@@ -1,0 +1,26 @@
+{
+    "/VideoIngestion/config": {
+        "encoding": {
+            "type": "jpeg",
+            "level": 95
+        },
+        "ingestor": {
+            "type": "opencv",
+            "pipeline": "rtspsrc location=\"rtsp://ia-camera-stream-service:8554/\" latency=100 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink max_buffers=100 drop=true",
+            "loop_video": "true",
+            "queue_size": 10,
+            "poll_interval": 0.2
+        },
+        "max_jobs": 20,
+        "max_workers":4,
+        "udfs": [{
+            "name": "pcb.pcb_filter",
+            "type": "python",
+            "scale_ratio": 4,
+            "training_mode": "false",
+            "n_total_px": 300000,
+            "n_left_px": 1000,
+            "n_right_px": 1000
+        }]
+    }
+}

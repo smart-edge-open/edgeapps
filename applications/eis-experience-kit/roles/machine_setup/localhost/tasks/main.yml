@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- debug:
+    msg: "Setting up OS on the localhost"
+
+- include_tasks: proxy_yum_remove.yml
+- include_tasks: proxy_yum_add.yml
+- include_tasks: proxy_os_env_remove.yml
+- include_tasks: proxy_os_env_add.yml
+- include_tasks: install_epel_repository.yml
+- include_tasks: install_base_os_packages.yml

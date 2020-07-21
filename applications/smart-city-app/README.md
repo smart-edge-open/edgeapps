@@ -15,11 +15,11 @@ Smart City application is a sample application that is built on top of the OpenV
 - [References](#references)
 
 ## Installing OpenNESS
-The OpenNESS must be installed before going forward with Smart City application deployment. Installation is performed through [OpenNESS playbooks](https://github.com/otcshare/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md).
+The OpenNESS must be installed before going forward with Smart City application deployment. Installation is performed through [OpenNESS Deployment Flavors](https://github.com/otcshare/specs/blob/master/doc/flavors.md).
 
-> **NOTE:** At the time of writing this guide, there was no [Network Policy for Kubernetes](https://kubernetes.io/docs/concepts/services-networking/network-policies/) defined yet for the Smart City application. So, it is advised to remove the default OpenNESS network policies using this command:
+> **NOTE:** At the time of writing this guide, there was no [Network Policy for Kubernetes](https://kubernetes.io/docs/concepts/services-networking/network-policies/) defined yet for the Smart City application. So, it is advised to remove **all** the network policies existing in the `default` namespace such as:
 > ```shell
-> kubectl delete netpol block-all-ingress cdi-upload-proxy-policy
+> kubectl delete netpol block-all-ingress
 > ```
 
 Details on deploying the application is provided in the following sections.
@@ -28,19 +28,24 @@ Details on deploying the application is provided in the following sections.
 
 This mode provide an easy and quick start with executing the application in the OpenNESS environment.
 
-1. On the OpenNESS Controller node, clone the Smart City reference pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git)
+1. Initialize the git submodule that will clone the Smart City reference pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git)
 
     ```shell
-    git clone https://github.com/OpenVisualCloud/Smart-City-Sample.git
-    cd Smart-City-Sample
+    git submodule update --init
+    cd app
     ```
 
 2. Build the Smart City application
 
+    > **NOTE:** Install `cmake` and `m4` tools if not installed already
+    >  ```shell
+    >  yum install cmake m4 -y
+    >  ```
+
     ```shell
     mkdir build
     cd build
-    cmake -DREGISTRY=<controller-node-ip>:5000 
+    cmake -DREGISTRY=<controller-node-ip>:5000 .. 
     make
     ```
 
@@ -55,7 +60,7 @@ This mode provide an easy and quick start with executing the application in the 
 4. Install the application using the Helm chart
 
     ```shell
-    helm install smart-city-app Smart-City-Sample/deployment/kubernetes/helm/smtc
+    helm install smart-city-app smart-city-app app/deployment/kubernetes/helm/smtc
     ```
 
 5. From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
@@ -65,7 +70,7 @@ This mode provide an easy and quick start with executing the application in the 
 
 Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card comprising of Intel Core i3-7100U Processor with Intel HD Graphics 620 and 12 Movidius VPUs. Provisioning the network edge with VCAC-A acceleration through OpenNESS Experience Kits enables dense and performant Smart City video analytics and transcoding pipelines.
 
-1. Enable VCAC-A playbook by placing the OpenNESS edge node hostname, that has the VCAC-A card(s) plugged-in, in `[edgenode_vca_group]` group in `inventory.ini` file of the openness-experience-kit.
+1. Deploy the OpenNESS [Media Analytics Flavor with VCAC-A](https://github.com/otcshare/specs/blob/master/doc/flavors.md#media-analytics-flavor-with-vcac-a) and place the OpenNESS edge node hostname, that has the VCAC-A card(s) plugged-in, in `[edgenode_vca_group]` group in `inventory.ini` file of the openness-experience-kit.
 
 2. Configure openness-experience-kit to deploy "Weave Net" CNI by editing `group_vars/all/10-default.yml`
 
@@ -78,11 +83,11 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
 
 3. Set the line `k8s_device_plugins_enable: true` in `group_vars/all/10-default.yml`
 
-4. On the OpenNESS Controller node, clone the Smart City reference pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git)
+4. Initialize the git submodule that will clone the Smart City reference pipeline source code from [GitHub](https://github.com/OpenVisualCloud/Smart-City-Sample.git)
 
     ```shell
-    git clone https://github.com/OpenVisualCloud/Smart-City-Sample.git
-    cd Smart-City-Sample
+    git submodule update --init
+    cd app
     ```
 
 5. Build the Smart City application with VCAC-A acceleration enabled
@@ -105,7 +110,7 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
 7. Install the application using the Helm chart
 
     ```shell
-    helm install smart-city-app Smart-City-Sample/deployment/kubernetes/helm/smtc
+    helm install smart-city-app smart-city-app app/deployment/kubernetes/helm/smtc
     ```
 
 8.  From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
@@ -119,6 +124,7 @@ To uninstall the Smart City application, execute the following commands,
 helm uninstall smart-city-app
 ./clean.sh
 ```
+
 
 ## References
 

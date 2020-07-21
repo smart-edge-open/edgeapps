@@ -1,0 +1,3 @@
+[submodule "applications/smart-city-app/app"]
+	path = applications/smart-city-app/app
+	url = https://github.com/OpenVisualCloud/Smart-City-Sample.git
