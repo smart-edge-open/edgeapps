@@ -139,7 +139,7 @@ func main() {
 
 	myURN = URN{
 		ID:        "consumer",
-		Namespace: "openvino",
+		Namespace: "default",
 	}
 
 	// Authentication (CSR)
@@ -184,6 +184,8 @@ func main() {
                            log.Println(err)
                         }                         
                         postVAServingRequest(s.EndpointURI, vasInfo.Pipelines[0]) 
-		}
+		} else {
+                        log.Println("Namespace mismatch, myURN namespace:",myURN.Namespace)
+                }
 	}
 }
