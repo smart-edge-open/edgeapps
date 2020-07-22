@@ -169,8 +169,15 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+
+        sum := 0
         var vasInfo VasConfig 
-	for _, s := range servList.Services {
+        for _, s := range servList.Services {
+                sum ++
+                if sum > 100 {
+		      log.Fatal("abnormal services num")
+		      return
+                }
                 log.Println("Discoverd serive:")
                 log.Println("    URN.ID:       ", s.URN.ID)
                 log.Println("    URN.Namespace:", s.URN.Namespace)
@@ -187,5 +194,5 @@ func main() {
 		} else {
                         log.Println("Namespace mismatch, myURN namespace:",myURN.Namespace)
                 }
-	}
+        }
 }
