@@ -61,13 +61,13 @@ func callOpenVINO(model string, accl string) {
 
 	go func() {
 		stdout, _ := cmd.StdoutPipe()
-		if _, err = io.Copy(os.Stdout, stdout); err != nil {
+		if _, err := io.Copy(os.Stdout, stdout); err != nil {
 			log.Println(err)
 		}
 	}()
 	go func() {
 		stderr, _ := cmd.StderrPipe()
-		if _, err = io.Copy(os.Stderr, stderr); err != nil {
+		if _, err := io.Copy(os.Stderr, stderr); err != nil {
 			log.Println(err)
 		}
 	}()
