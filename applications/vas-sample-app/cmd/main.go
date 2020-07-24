@@ -170,29 +170,29 @@ func main() {
 		return
 	}
 
-        sum := 0
-        var vasInfo VasConfig 
-        for _, s := range servList.Services {
-                sum ++
-                if sum > 100 {
-		      log.Fatal("abnormal services num")
-		      return
-                }
-                log.Println("Discoverd serive:")
-                log.Println("    URN.ID:       ", s.URN.ID)
-                log.Println("    URN.Namespace:", s.URN.Namespace)
-                log.Println("    Description:  ", s.Description)
-                log.Println("    EndpointURI:  ", s.EndpointURI)
+	sum := 0
+	var vasInfo VasConfig 
+	for _, s := range servList.Services {
+		sum ++
+		if sum > 100 {
+			log.Fatal("abnormal services num")
+			return
+		}
+		log.Println("Discoverd serive:")
+		log.Println("    URN.ID:       ", s.URN.ID)
+		log.Println("    URN.Namespace:", s.URN.Namespace)
+		log.Println("    Description:  ", s.Description)
+		log.Println("    EndpointURI:  ", s.EndpointURI)
 		// Subscribe to all services related to my Namespace
 		if myURN.Namespace == s.URN.Namespace {
 			// Service Request to VA-Serving 
-                        err := json.Unmarshal(s.Info, &vasInfo)
-                        if err != nil {
-                           log.Println(err)
-                        }                         
-                        postVAServingRequest(s.EndpointURI, vasInfo.Pipelines[0]) 
-		} else {
-                        log.Println("Namespace mismatch, myURN namespace:",myURN.Namespace)
-                }
-        }
+			err := json.Unmarshal(s.Info, &vasInfo)
+			if err != nil {
+				log.Println(err)
+			}                   
+			postVAServingRequest(s.EndpointURI, vasInfo.Pipelines[0]) 
+			} else {
+			log.Println("Namespace mismatch, myURN namespace:",myURN.Namespace)
+		}
+	}
 }
