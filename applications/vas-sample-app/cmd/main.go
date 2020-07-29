@@ -15,7 +15,6 @@ import (
 	"encoding/pem"
 	"log"
 	"net/http"
-
 )
 
 // Connectivity constants
@@ -27,7 +26,6 @@ const (
 )
 
 var myURN URN
-
 
 // VasConfig describes VAS JSON config file
 type VasConfig struct {
@@ -171,9 +169,9 @@ func main() {
 	}
 
 	sum := 0
-	var vasInfo VasConfig 
+	var vasInfo VasConfig
 	for _, s := range servList.Services {
-		sum ++
+		sum++
 		if sum > 100 {
 			log.Fatal("abnormal services num")
 			return
@@ -185,14 +183,14 @@ func main() {
 		log.Println("    EndpointURI:  ", s.EndpointURI)
 		// Subscribe to all services related to my Namespace
 		if myURN.Namespace == s.URN.Namespace {
-			// Service Request to VA-Serving 
+			// Service Request to VA-Serving
 			err := json.Unmarshal(s.Info, &vasInfo)
 			if err != nil {
 				log.Println(err)
-			}                   
-			postVAServingRequest(s.EndpointURI, vasInfo.Pipelines[0]) 
-			} else {
-			log.Println("Namespace mismatch, myURN namespace:",myURN.Namespace)
+			}
+			postVAServingRequest(s.EndpointURI, vasInfo.Pipelines[0])
+		} else {
+			log.Println("Namespace mismatch, myURN namespace:", myURN.Namespace)
 		}
 	}
 }

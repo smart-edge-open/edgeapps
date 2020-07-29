@@ -40,7 +40,7 @@ type Service struct {
 	EndpointURI   string                   `json:"endpoint_uri,omitempty"`
 	Status        string                   `json:"status,omitempty"`
 	Notifications []NotificationDescriptor `json:"notifications,omitempty"`
-        Info          json.RawMessage          `json:"info,omitempty"`
+	Info          json.RawMessage          `json:"info,omitempty"`
 }
 
 // SubscriptionList JSON struct
