@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# PDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
 sudo docker build -f ./build/Dockerfile \
