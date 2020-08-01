@@ -20,7 +20,7 @@ n6_ip=$CONFIG_N6_IP_ADDR
 
 
 # remove the subnet from the n3_ip address
-n3_ip_plain=`echo $n3_ip | awk -F'/' '{ print $1 }'`
+n3_ip_plain=$(echo "$n3_ip" | awk -F'/' '{ print $1 }')
 # n4 ip address without subnet
 n4_ip=$CONFIG_N4_IP_ADDR
 # Gateway IP address
@@ -334,7 +334,7 @@ echo 2 > /proc/sys/fs/suid_dumpable
 export LD_LIBRARY_PATH=$upf_path/install-vpp-native/vpp/lib:$LD_LIBRARY_PATH
 echo "=========== Start =========" > /root/upf/run.log
 
-echo $LD_LIBRARY_PATH >> $upf_path/run.log
+echo "$LD_LIBRARY_PATH" >> $upf_path/run.log
 echo "at step-1" >> $upf_path/run.log
 cd $upf_path
 echo "at step-2" >> $upf_path/run.log
