@@ -8,10 +8,10 @@ if [ "$#" -ne 1 ]; then
 fi
 
 # get eis_sources_dir location from ./group_vars/all.yml
-sources=$(cat $1/group_vars/all.yml | sed -n -e 's/^eis_sources_dir: //p' | sed 's@"@@g')
+sources=$(sed -n -e 's/^eis_sources_dir: //p' < "$1/group_vars/all.yml" | sed 's@"@@g')
 
 # combine two elements and get .env file location
-env=$(cat $1/host_vars/localhost.yml | sed -n -e 's/^eis_env_file: //p' | sed  -e "s@{{ eis_sources_dir }}@$sources@" | sed 's@"@@g')
+env=$(sed -n -e 's/^eis_env_file: //p' < "$1/host_vars/localhost.yml" | sed  -e "s@{{ eis_sources_dir }}@$sources@" | sed 's@"@@g')
 
 if [ ! -f "$env" ]; then
     echo "$env  doesn't exist. Terminating."
@@ -19,5 +19,5 @@ if [ ! -f "$env" ]; then
 fi
 
 set -a
-source $env
+source "$env"
 set +a
