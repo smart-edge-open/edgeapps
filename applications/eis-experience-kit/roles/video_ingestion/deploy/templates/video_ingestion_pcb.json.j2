@@ -6,7 +6,7 @@
         },
         "ingestor": {
             "type": "opencv",
-            "pipeline": "rtspsrc location=\"rtsp://ia-camera-stream-service:8554/\" latency=100 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink max_buffers=100 drop=true",
+            "pipeline": "rtspsrc location=\"rtsp://{{ rtsp_camera_stream_ip }}:{{ rtsp_camera_stream_port }}/\" latency=100 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink max_buffers=100 drop=true",
             "loop_video": "true",
             "queue_size": 10,
             "poll_interval": 0.2

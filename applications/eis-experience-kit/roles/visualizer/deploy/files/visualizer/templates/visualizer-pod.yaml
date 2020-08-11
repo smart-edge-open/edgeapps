@@ -53,6 +53,10 @@ spec:
               value: "{{ .Values.keyPath }}"
             - name: CONFIGMGR_CACERT
               value: "{{ .Values.rootCACertPath }}"
+            - name: DISPLAY
+              value: "{{ .Values.visualizer_display }}"
+            - name: no_proxy
+              value: "{{ .Values.eis_no_proxy }}"
       volumes:
         - name: etcd-certs
           projected:

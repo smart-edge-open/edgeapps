@@ -3,9 +3,14 @@
 
 ---
 
-- name: Copy streaming file from EIS repo to folder having Dockerfile
+- name: Copy pcb streaming file from EIS repo to folder having Dockerfile
   copy:
-    src: "{{ cam_stream_source }}"
+    src: "{{ pcb_cam_stream_source }}"
+    dest: "{{ docker_src_folder }}"
+
+- name: Copy Safety Hat streaming file from EIS repo to folder having Dockerfile
+  copy:
+    src: "{{ safety_cam_stream_source }}"
     dest: "{{ docker_src_folder }}"
 
 - name: Build {{ docker_image_name }} docker image

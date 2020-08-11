@@ -20,6 +20,7 @@
     - role: machine_setup/k8s_master
     - role: common/deploy
     - role: camera_stream/deploy
+      when: camera_stream_pod | default(True)
     - role: etcd/deploy
     - role: video_analytics/deploy
     - role: visualizer/deploy
