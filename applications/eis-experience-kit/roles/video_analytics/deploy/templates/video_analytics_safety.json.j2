@@ -1,0 +1,18 @@
+{
+    "/VideoAnalytics/config": {
+        "encoding": {
+            "type": "jpeg",
+            "level": 95
+        },
+        "queue_size": 10,
+        "max_jobs": 20,
+        "max_workers":4,
+        "udfs": [{
+            "name": "safety_gear_demo",
+            "type": "native",
+            "model_xml": "common/udfs/native/safety_gear_demo/ref/frozen_inference_graph.xml",
+            "model_bin": "common/udfs/native/safety_gear_demo/ref/frozen_inference_graph.bin",
+            "device": "CPU"
+        }]
+    }
+}

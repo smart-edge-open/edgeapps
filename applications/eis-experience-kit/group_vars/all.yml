@@ -15,3 +15,13 @@ etcd_version: "{{ lookup('env', 'ETCD_VERSION') }}"
 dev_mode: "{{ lookup('env', 'DEV_MODE') }}"
 
 eis_sources_dir: "/opt/eis_repo"
+
+demo_type: "safety"      # set  "pcb" for pcp demo or "safety" for Safety Hat demo.
+camera_stream_pod: true  # enabled if rtsp stream receive from camera stream pod    
+
+rtsp_camera_stream_ip: "ia-camera-stream-service" # set remote rtsp camera IP
+rtsp_camera_stream_port: 8554               # set remote rtsp stream port no
+
+display_host_ip: "192.168.0.1"              # update ip for visualizer HOST GUI.
+display_no: "1"                             # update DISPLAY number for visualizer GUI output
+
