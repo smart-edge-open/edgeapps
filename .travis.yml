@@ -8,6 +8,9 @@ go:
 
 before_install:
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOPATH/bin v1.25.1
+  - sudo apt-get install -y shellcheck
+  - sudo apt-get install -y python3-pip
+  - sudo pip3 install pylint
 
 script:
-  - golangci-lint run
+  - ./run_ci_build.sh
