@@ -20,7 +20,6 @@ const (
 var cmd *exec.Cmd
 
 func callOpenVINO(model string, accl string) {
-	var err error
 
 	// validate accelerator type
 	switch accl {
@@ -34,7 +33,7 @@ func callOpenVINO(model string, accl string) {
 
 	// kill already running process if not the first time
 	if cmd != nil {
-		err = cmd.Process.Kill()
+		err := cmd.Process.Kill()
 		if err != nil {
 			log.Fatal("Failed to kill OpenVINO process:", err)
 		}
@@ -62,18 +61,18 @@ func callOpenVINO(model string, accl string) {
 
 	go func() {
 		stdout, _ := cmd.StdoutPipe()
-		if _, err = io.Copy(os.Stdout, stdout); err != nil {
+		if _, err := io.Copy(os.Stdout, stdout); err != nil {
 			log.Println(err)
 		}
 	}()
 	go func() {
 		stderr, _ := cmd.StderrPipe()
-		if _, err = io.Copy(os.Stderr, stderr); err != nil {
+		if _, err := io.Copy(os.Stderr, stderr); err != nil {
 			log.Println(err)
 		}
 	}()
 
-	err = cmd.Start()
+	err := cmd.Start()
 	if err != nil {
 		log.Fatal("Failed to run OpenVINO process:", err)
 	}

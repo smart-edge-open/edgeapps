@@ -14,9 +14,10 @@
   changed_when: true
 
 - name: Copy {{ app_name }} config file
-  copy:
-    src: "video_analytics.json"
-    dest: "{{ eis_integ_path }}/configs/"
+  template:
+    src: "video_analytics_{{ demo_type }}.json.j2"
+    dest: "{{ eis_integ_path }}/configs/video_analytics.json"
+    mode: 0744
 
 - name: Initialize {{ app_name }} config in ETCD
   command: ./etcd_write.py ./configs/video_analytics.json

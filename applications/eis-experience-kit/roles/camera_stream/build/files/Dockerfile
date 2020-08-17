@@ -9,4 +9,4 @@ RUN useradd -m vlcuser
 COPY streamstart.sh /tmp/
 RUN chmod +x /tmp/streamstart.sh
 COPY pcb_d2000.avi /tmp/
-ENTRYPOINT ["/tmp/streamstart.sh"]
+COPY Safety_Full_Hat_and_Vest.mp4 /tmp/

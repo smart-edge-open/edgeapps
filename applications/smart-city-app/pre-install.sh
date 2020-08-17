@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-DIR=$(dirname $(readlink -f "$0"))
+LNK=$(readlink -f "$0")
+DIR=$(dirname "$LNK")
 
 function create_secret {
     kubectl create secret generic self-signed-certificate "--from-file=${DIR}/certs/self.crt" "--from-file=${DIR}/certs/self.key"

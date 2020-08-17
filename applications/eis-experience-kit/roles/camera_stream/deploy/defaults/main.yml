@@ -6,7 +6,6 @@
 app_name: "CameraStream"
 docker_name: "ia_camera_stream"
 docker_image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
-camera_stream_port: 8554
 helm_release_name: "camera-stream-release"
 helm_chart_camstream: "{{ helm_charts_location }}/camera-stream"
 

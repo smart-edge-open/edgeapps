@@ -35,20 +35,21 @@ then
 fi
 
 # Extract release package to apply patch
-tar xvzf $release_source_path -C $tempdir
+tar xvzf "$release_source_path" -C "$tempdir"
 
 # Save current working directory to get patch file path and move to release source path
 cwd=$(pwd)
 package_dir=($tempdir/*)
-sources_dir=$tempdir/$(basename $package_dir)/IEdgeInsights
-cd $sources_dir
+bdir=$(basename "${package_dir[0]}")
+sources_dir="$tempdir/$bdir/IEdgeInsights"
+cd "$sources_dir"
 
 # Apply patch
 patch -ruN -p1 < "$cwd"/eis_diff_patch.patch
 
 # Zip the folder after applying patch
 cd $tempdir
-tar zcvf $release_destination_path $(basename $package_dir)
+tar zcvf "$release_destination_path" "$bdir"
 
 # Remove temporary diretory
 rm -rf $tempdir
