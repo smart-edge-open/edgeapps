@@ -7,5 +7,5 @@ docker_image_name: "ia_camera_stream"
 docker_image_tag: "{{ docker_image_name }}:{{ eis_version }}"
 
 pcb_cam_stream_source: "{{ eis_sources_dir }}/VideoIngestion/test_videos/pcb_d2000.avi"
-safety_cam_stream_source: "{{ eis_sources_dir }}/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.mp4"
+safety_cam_stream_source: "{{ eis_sources_dir }}/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.avi"
 docker_src_folder: "roles/camera_stream/build/files"

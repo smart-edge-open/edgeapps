@@ -23,6 +23,6 @@ proxy_yum_url: "http://proxy.example.org:3128"
 eis_source: "gitclone"      # set string  as "gitclone" or "release" 
 release_package_path: ""    # provide release package archive path when eis_source set to "release"
 
-eis_env_file: "{{ eis_sources_dir }}/docker_setup/.env"
+eis_env_file: "{{ eis_sources_dir }}/build/.env"
 
 os_yum_base_packages: "jq,vim-common,curl,yum-utils,python2-pip,wget,git,python-devel,moreutils"

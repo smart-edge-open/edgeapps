@@ -7,7 +7,7 @@ docker_name: "ia_video_analytics"
 docker_image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
 camera_stream_port: 9000
 camera_stream_results_port: 65013
-clients_list: "Visualizer"
+clients_list: "Visualizer,WebVisualizer"
 app_name: "VideoAnalytics"
 peer: "client"
 cert_name: "etcd_{{ app_name }}_cert"

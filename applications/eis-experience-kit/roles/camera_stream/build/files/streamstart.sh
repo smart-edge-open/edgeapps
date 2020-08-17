@@ -15,7 +15,7 @@ then
 elif [ $1 == "safety" ]
 then
     echo "Set Safety Hat demo rtsp stream file"
-    name="/tmp/Safety_Full_Hat_and_Vest.mp4"
+    name="/tmp/Safety_Full_Hat_and_Vest.avi"
 
 else
    echo "Wrong argument pass for rtsp stream demo"
