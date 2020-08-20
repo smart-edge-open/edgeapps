@@ -15,3 +15,5 @@ key_name: "etcd_{{ app_name }}_key"
 publisher_pod_service: "ia-video-ingestion-service"
 helm_release_name: "video-analytics-release"
 helm_chart_analytics: "{{ helm_charts_location }}/video-analytics"
+zmq_keys_gen_force: false
+del_zmq_keys: false
