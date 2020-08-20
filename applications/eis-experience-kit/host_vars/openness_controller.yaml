@@ -21,7 +21,7 @@ k8s_eis_namespace: "eis"
 san_ca: "DNS:{{ pod_name }}-service"
 
 cert_days: 3650
-eis_openssl_cnf: "{{ eis_sources_dir }}/docker_setup/provision/config/openssl.cnf"
+eis_openssl_cnf: "{{ eis_sources_dir }}/build/provision/config/openssl.cnf"
 
 rootca_cert_name: "ca_certificate.pem"
 rootca_key_name: "ca_key.pem"

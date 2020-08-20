@@ -6,7 +6,7 @@
 docker_name: "ia_video_ingestion"
 docker_image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
 camera_stream_port: 9000
-clients_list: "VideoAnalytics,Visualizer"
+clients_list: "VideoAnalytics,Visualizer,WebVisualizer"
 app_name: "VideoIngestion"
 peer: "client"
 cert_name: "etcd_{{ app_name }}_cert"

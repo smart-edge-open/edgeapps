@@ -3,25 +3,9 @@
 
 ---
 
-- name: Get Openvino archive name
-  shell: var={{ openvino_download_url }}; var=${var##*/}; echo ${var%.tgz}
-  register: output
-  changed_when: false
-
-- name: Check if openvino is already downloaded
-  find:
-    paths: "{{ eis_sources_dir }}/common/openvino/{{ output.stdout }}"
-  register: openvino_detected
-
-- name: Download and unarchive OpenVino
-  unarchive:
-    src: "{{ openvino_download_url }}"
-    dest: "{{ eis_sources_dir }}/common/openvino"
-    remote_src: yes
-  when: openvino_detected.matched == 0
 
 - name: Build EIS common docker images
   shell: "docker-compose build {{ eis_base_images_names }}"
   args:
-    chdir: "{{ eis_sources_dir }}/docker_setup"
+    chdir: "{{ eis_sources_dir }}/build"
   changed_when: true

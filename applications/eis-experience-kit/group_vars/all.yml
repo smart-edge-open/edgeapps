@@ -14,7 +14,9 @@ eis_version: "{{ lookup('env', 'EIS_VERSION') }}"
 etcd_version: "{{ lookup('env', 'ETCD_VERSION') }}"
 dev_mode: "{{ lookup('env', 'DEV_MODE') }}"
 
-eis_sources_dir: "/opt/eis_repo"
+eis_repo_dir: "/opt/eis_repo"
+eis_sources_dir: "/opt/eis_repo/IEdgeInsights"
+
 
 demo_type: "safety"      # set  "pcb" for pcp demo or "safety" for Safety Hat demo.
 camera_stream_pod: true  # enabled if rtsp stream receive from camera stream pod    
