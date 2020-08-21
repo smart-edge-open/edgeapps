@@ -1,6 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-benchmark
+data:
+  env.txt: |
+    NIREQ=4
+    NITER=10
+    # target_device:  CPU, GPU, FPGA, HDDL or MYRIAD are acceptable
+    TARGET_DEVICE=CPU
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -20,11 +32,13 @@ spec:
           image: docker
           imagePullPolicy: IfNotPresent
           command: [ "/bin/sh" ]
-          args: ["-c", "/usr/local/bin/docker run --rm --device-cgroup-rule='c 10:* rmw' --device-cgroup-rule='c 89:* rmw' --device-cgroup-rule='c 189:* rmw' --device-cgroup-rule='c 180:* rmw' -v /dev:/dev -v /var/tmp:/var/tmp openvino-benchmark:1.0 /do_benchmark.sh"]
+          args: ["-c", "/usr/local/bin/docker run --rm --device-cgroup-rule='c 10:* rmw' --device-cgroup-rule='c 89:* rmw' --device-cgroup-rule='c 189:* rmw' --device-cgroup-rule='c 180:* rmw' -v /dev:/dev -v /var/tmp:/var/tmp --env-file /dockerenv/env.txt openvino-benchmark:1.0 /do_benchmark.sh"]
           securityContext:
             readOnlyRootFilesystem: false
             privileged: true
           volumeMounts:
+              - name: dockerenv
+                mountPath: /dockerenv
               - name: dockersock
                 mountPath: /var/run/docker.sock
               - name: usrsrc
@@ -37,6 +51,9 @@ spec:
               - name: vartmp
                 mountPath: /var/tmp
       volumes:
+          - name: dockerenv
+            configMap:
+              name: cm-benchmark
           - name: dockersock
             hostPath:
                 path: /var/run/docker.sock
