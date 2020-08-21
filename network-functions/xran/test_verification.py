@@ -142,37 +142,39 @@ def get_re_map(nrb, direction):
 
     return prb_map
 
-def compare_resuts(rantech, cat, m_u, xran_path, direction):
+def compare_results(rantech, cat, m_u, xran_path, direction, context):
     """method to compare results"""
     res = 0
     re_map = []
     if rantech == 1:
         if m_u == 0:
-            n_dirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(nDLBandwidth))]
-            n_uirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(nULBandwidth))]
+            n_dirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(context["nDLBandwidth"]))]
+            n_uirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(context["nULBandwidth"]))]
         else:
             print("Incorrect arguments\n")
             res = -1
             return res
     elif rantech == 0:
         if m_u < 3:
-            n_dirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(nDLBandwidth))]
-            n_uirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(nULBandwidth))]
+            n_dirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(context["nDLBandwidth"]))]
+            n_uirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(context["nULBandwidth"]))]
         elif (m_u >= 2) & (m_u <= 3):
-            n_dirb = N_NUM_RBS_PER_SYM_F2[m_u - 2][N_RCH_BW_OPTIONS_MU2AND3.get(str(nDLBandwidth))]
-            n_uirb = N_NUM_RBS_PER_SYM_F2[m_u - 2][N_RCH_BW_OPTIONS_MU2AND3.get(str(nULBandwidth))]
+            n_dirb = N_NUM_RBS_PER_SYM_F2[m_u - 2][N_RCH_BW_OPTIONS_MU2AND3.get(
+                                str(context["nDLBandwidth"]))]
+            n_uirb = N_NUM_RBS_PER_SYM_F2[m_u - 2][N_RCH_BW_OPTIONS_MU2AND3.get(
+                                str(context["nULBandwidth"]))]
             print(n_dirb, n_uirb)
         else:
             print("Incorrect arguments\n")
             res = -1
             return res
 
-    if 'compression' in globals():
+    if "compression" in context:
         comp = 'compression'
     else:
         comp = 0
 
-    if 'srsEanble' in globals():
+    if "srsEanble" in context:
         srs_enb = 'srsEanble'
     else:
         srs_enb = 0
@@ -184,39 +186,39 @@ def compare_resuts(rantech, cat, m_u, xran_path, direction):
     #    return res
 
     #get slot config
-    if nFrameDuplexType == 1:
+    if context["nFrameDuplexType"] == 1:
         slot_config = []
-        for i in range(nTddPeriod):
+        for i in range(context["nTddPeriod"]):
             if i == 0:
-                slot_config.insert(i, sslot_config0)
+                slot_config.insert(i, context["sslot_config0"])
             elif i == 1:
-                slot_config.insert(i, sslot_config1)
+                slot_config.insert(i, context["sslot_config1"])
             elif i == 2:
-                slot_config.insert(i, sslot_config2)
+                slot_config.insert(i, context["sslot_config2"])
             elif i == 3:
-                slot_config.insert(i, sslot_config3)
+                slot_config.insert(i, context["sslot_config3"])
             elif i == 4:
-                slot_config.insert(i, sslot_config4)
+                slot_config.insert(i, context["sslot_config4"])
             elif i == 5:
-                slot_config.insert(i, sslot_config5)
+                slot_config.insert(i, context["sslot_config5"])
             elif i == 6:
-                slot_config.insert(i, sslot_config6)
+                slot_config.insert(i, context["sslot_config6"])
             elif i == 7:
-                slot_config.insert(i, sslot_config7)
+                slot_config.insert(i, context["sslot_config7"])
             elif i == 8:
-                slot_config.insert(i, sslot_config8)
+                slot_config.insert(i, context["sslot_config8"])
             elif i == 9:
-                slot_config.insert(i, sslot_config9)
+                slot_config.insert(i, context["sslot_config9"])
             else:
                 raise Exception('i should not exceed nTddPeriod %d. The value of i was: {}'
-                                .format(nTddPeriod, i))
+                                .format(context["nTddPeriod"], i))
         #print(SlotConfig, type(sSlotConfig0))
     try:
 
         if (direction == 1) & (cat == 1): #UL
-            flow_id = ccNum*antNumUL
+            flow_id = context["ccNum"]*context["antNumUL"]
         else:
-            flow_id = ccNum*antNum
+            flow_id = context["ccNum"]*context["antNum"]
 
         if direction == 0:
             re_map = get_re_map(n_dirb, direction)
@@ -279,20 +281,20 @@ def compare_resuts(rantech, cat, m_u, xran_path, direction):
             file_tst.close()
             file_ref.close()
 
-            print(numSlots)
+            print(context["numSlots"])
 
-            for slot_idx in range(0, numSlots):
+            for slot_idx in range(0, context["numSlots"]):
                 for sym_idx in range(0, 14):
-                    if nFrameDuplexType == 1:
+                    if context["nFrameDuplexType"] == 1:
                         #skip sym if TDD
                         if direction == 0:
                             #DL
-                            sym_dir = slot_config[slot_idx%nTddPeriod][sym_idx]
+                            sym_dir = slot_config[slot_idx%context["nTddPeriod"]][sym_idx]
                             if sym_dir != 0:
                                 continue
                         elif direction == 1:
                             #UL
-                            sym_dir = slot_config[slot_idx%nTddPeriod][sym_idx]
+                            sym_dir = slot_config[slot_idx%context["nTddPeriod"]][sym_idx]
                             if sym_dir != 1:
                                 continue
 
@@ -349,9 +351,9 @@ def compare_resuts(rantech, cat, m_u, xran_path, direction):
     print("compare results: {} [compression {}]\n".format('SRS', comp))
 
     #srs
-    symb_mask = srsSym
+    symb_mask = context["srsSym"]
     try:
-        flow_id = ccNum*antElmTRx
+        flow_id = context["ccNum"]*context["antElmTRx"]
         for i in range(0, flow_id):
             #read ref and test files
             tst = []
@@ -400,22 +402,22 @@ def compare_resuts(rantech, cat, m_u, xran_path, direction):
             file_tst.close()
             file_ref.close()
 
-            print(numSlots)
+            print(context["numSlots"])
 
-            for slot_idx in range(0, numSlots):
+            for slot_idx in range(0, context["numSlots"]):
                 for sym_idx in range(0, 14):
                     if symb_mask & (1 << sym_idx):
                         print("SRS check sym ", sym_idx)
-                        if nFrameDuplexType == 1:
+                        if context["nFrameDuplexType"] == 1:
                             #skip sym if TDD
                             if direction == 0:
                                 #DL
-                                sym_dir = slot_config[slot_idx%nTddPeriod][sym_idx]
+                                sym_dir = slot_config[slot_idx%context["nTddPeriod"]][sym_idx]
                                 if sym_dir != 0:
                                     continue
                             elif direction == 1:
                                 #UL
-                                sym_dir = slot_config[slot_idx%nTddPeriod][sym_idx]
+                                sym_dir = slot_config[slot_idx%context["nTddPeriod"]][sym_idx]
                                 if sym_dir != 1:
                                     continue
 
@@ -490,19 +492,7 @@ def parse_dat_file(test_cfg):
         code = compile(str(exe_line), '<string>', 'exec')
         exec(code, global_env, local_env)
 
-    for k, var in local_env.items():
-        globals()[k] = var
-        print(k, var)
-
     return local_env
-
-def del_dat_file_vars(local_env):
-    """method for deleting variables in file"""
-    for k, in local_env.items():
-        del globals()[k]
-
-    return 0
-
 
 def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path):
     """ method for runing test cases"""
@@ -541,13 +531,13 @@ def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path):
 
     usecase_cfg = parse_dat_file(test_cfg)
 
-    res = compare_resuts(rantech, cat, m_u, xran_path, 0)
+    res = compare_results(rantech, cat, m_u, xran_path, 0, usecase_cfg)
     if res != 0:
         os.chdir(w_d)
         print("FAIL")
         return res
 
-    res = compare_resuts(rantech, cat, m_u, xran_path, 1)
+    res = compare_results(rantech, cat, m_u, xran_path, 1, usecase_cfg)
     if res != 0:
         os.chdir(w_d)
         print("FAIL")
@@ -555,8 +545,6 @@ def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path):
 
     os.chdir(w_d)
     print("PASS")
-
-    del_dat_file_vars(usecase_cfg)
 
     return res
 
