@@ -6,3 +6,4 @@ source scripts/ansible-precheck.sh  # check if ansibles are already installed
                                     # and ready to use
 
 ansible-playbook -vv ./eis_pcb_demo_cleanup.yml --inventory inventory.ini
+exit $?
