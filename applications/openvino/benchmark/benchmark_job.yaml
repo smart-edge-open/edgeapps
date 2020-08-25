@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -20,7 +20,7 @@ metadata:
   labels:
     jobgroup: openvino-benchmark
 spec:
-  parallelism: 1
+  parallelism: 2
   template:
     metadata:
       labels:
