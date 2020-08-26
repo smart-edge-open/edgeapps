@@ -159,10 +159,10 @@ def remove_user_privilege(name):
     :type file: String
     """
     try:
-        subprocess.check_output(["etcdctl", "role", "remove", name], stderr=subprocess.STDOUT)
-        logging.info("Role %s has been removed.", name)
+        subprocess.check_output(["etcdctl", "role", "delete", name], stderr=subprocess.STDOUT)
+        logging.info("Role {} has been removed.".format(name))
     except subprocess.CalledProcessError as err:
-        logging.error("Error returned while removing the %s role: %s", name, err)
+        logging.error("Error returned while removing the {} role: {}".format(name, err))
         raise EisIntegError(CODES.EXT_CMD_ERROR)
 
 def remove_user(name):
