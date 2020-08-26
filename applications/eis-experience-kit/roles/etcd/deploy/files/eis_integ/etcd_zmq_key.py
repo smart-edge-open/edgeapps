@@ -14,8 +14,7 @@ def parse_arguments(_cli_args):
     """ Parse argument passed to function """
     parser = argparse.ArgumentParser(description="Specify Application name")
     parser.add_argument("app", help="Name of the client application")
-    parser.add_argument("--force", action='store_true',
-                        help="Force putting new generated ZMQ keys without checking" +
+    parser.add_argument("--force", action='store_true', help="Force putting new generated ZMQ keys without checking" +
                         "if they already exist")
     return parser.parse_args()
 
