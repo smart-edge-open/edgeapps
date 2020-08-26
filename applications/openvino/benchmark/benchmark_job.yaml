@@ -8,10 +8,15 @@ metadata:
   name: cm-benchmark
 data:
   env.txt: |
-    NIREQ=4
-    NITER=10
+    NIREQ=32
+    NITER=50000
     # target_device:  CPU, GPU, FPGA, HDDL or MYRIAD are acceptable
     TARGET_DEVICE=CPU
+    IMAGE=/opt/intel/openvino/deployment_tools/demo/car.png
+    MODEL=/root/openvino_models/ir/public/squeezenet1.1/FP16/squeezenet1.1.xml
+    # sync/async
+    API=async
+    BATCH_SIZE=1
 ---
 apiVersion: batch/v1
 kind: Job
@@ -20,7 +25,7 @@ metadata:
   labels:
     jobgroup: openvino-benchmark
 spec:
-  parallelism: 2
+  parallelism: 1
   template:
     metadata:
       labels:
