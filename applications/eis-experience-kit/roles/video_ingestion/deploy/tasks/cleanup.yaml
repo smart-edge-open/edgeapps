@@ -13,6 +13,28 @@
     path: "{{ helm_chart_ingestion }}"
     state: absent
 
+- name: Remove {{ app_name }} ETCD config, user and role
+  command: "./etcd_remove.py {{ app_name }}"
+  args:
+    chdir: "{{ eis_integ_path }}"
+  environment:
+    ETCDCTL_CACERT: "{{ rootca_cert }}"
+    ETCDCTL_CERT: "{{ root_client_cert }}"
+    ETCDCTL_KEY: "{{ root_client_key }}"
+  changed_when: true
+  when: del_zmq_keys == false
+
+- name: Remove {{ app_name }} ETCD config, user and role including ZMQ keys
+  command: "./etcd_remove.py {{ app_name }} --delete-keys"
+  args:
+    chdir: "{{ eis_integ_path }}"
+  environment:
+    ETCDCTL_CACERT: "{{ rootca_cert }}"
+    ETCDCTL_CERT: "{{ root_client_cert }}"
+    ETCDCTL_KEY: "{{ root_client_key }}"
+  changed_when: true
+  when: del_zmq_keys == true
+
 - name: Remove {{ app_name }} ETCD certificates
   file:
     path: "{{ etcd_certs_location }}/{{ app_name }}"

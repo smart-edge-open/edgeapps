@@ -12,6 +12,7 @@
     ETCDCTL_CERT: "{{ root_client_cert }}"
     ETCDCTL_KEY: "{{ root_client_key }}"
   changed_when: true
+  ignore_errors: true
 
 - name: Copy {{ app_name }} config file
   template:

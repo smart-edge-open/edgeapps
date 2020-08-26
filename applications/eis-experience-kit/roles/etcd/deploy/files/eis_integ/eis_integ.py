@@ -68,6 +68,30 @@ def put_zmqkeys(appname):
     except RuntimeError:
         logging.error("Error putting Etcd private key for %s", appname)
 
+def check_zmqkeys(appname):
+    """ Check if public/private key already exist in etcd for given app. Returns
+        true if keys exist, otherwise false
+
+    :param appname: App Name
+    :type file: String
+    """
+    try:
+        app_pub_key = subprocess.check_output(["etcdctl", "get", "--", "/Publickeys/" + appname], stderr=subprocess.STDOUT).decode('utf-8')
+    except subprocess.CalledProcessError as e:
+        logging.error("Error returned while getting the public key for {} app from etcd: {}".format(appname, e))
+        raise EisIntegError(CODES.EXT_CMD_ERROR)
+
+    try:
+        app_priv_key = subprocess.check_output(["etcdctl", "get", "--", "/" + appname + "/private_key"], stderr=subprocess.STDOUT).decode('utf-8')
+    except subprocess.CalledProcessError as e:
+        logging.error("Error returned while getting the private key for {} app from etcd: {}".format(appname, e))
+        raise EisIntegError(CODES.EXT_CMD_ERROR)
+
+    if not app_priv_key or not app_pub_key:
+        return False
+    else:
+        return True
+
 def enable_etcd_auth(password):
     """ Enable Auth for etcd and Create root user with root role """
     try:
@@ -101,7 +125,6 @@ def etcd_put_json(json_data):
     for key, value in json_data.items():
         etcd_put(key, bytes(json.dumps(value, indent=4).encode()))
         logging.info("Value for the %s key has been added to the etcd.", key)
-
 
 def create_etcd_users(appname):
     """ Create etcd user and role for given app. Allow Read only access
@@ -145,17 +168,20 @@ def read_config(client):
     logging.info("Read the configuration from etcd")
     subprocess.run(["etcdctl", "get", client, "--prefix"], check=True)
 
+def etcd_remove_key(key):
+    """ Remove key from etcd
 
-def get_etcd_users():
-    """ Read all the member info from etcd. """
-
-
-def grant_user_privilege():
-    """ Give access right to the specific user. """
+    :param key: key will be removed from etcd
+    """
+    try:
+        subprocess.check_output(["etcdctl", "del", "--", key], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        logging.error("Error returned while removing the {} key from etcd: {}".format(key, e))
+        raise EisIntegError(CODES.EXT_CMD_ERROR)
 
 def remove_user_privilege(name):
     """Removes role
-    :param name: Rolre name
+    :param name: Role name
     :type file: String
     """
     try:
@@ -177,16 +203,26 @@ def remove_user(name):
         logging.error("Error returned while removing the %s user: %s", name, err)
         raise EisIntegError(CODES.EXT_CMD_ERROR)
 
-def add_user_role():
-    """ Add role to the specific user. """
-
-
 def deploy_eis_app():
     """ Deploy another eis application, e.g. second video stream. """
 
+def remove_zmq_keys(appname):
+    """ Remove ZMQ private/public keys pair for app """
+    etcd_remove_key("/" + appname + "/private_key")
+    etcd_remove_key("/Publickeys/" + appname)
 
-def remove_eis_application():
+def remove_app_config(appname, del_keys):
+    """ Remove EIS application config including ZMQ keys """
+    if del_keys:
+        remove_zmq_keys(appname)
+
+    etcd_remove_key("/" + appname + "/config")
+
+def remove_eis_app(appname, del_keys=False):
     """ Remove existing eis application. """
+    remove_app_config(appname, del_keys)
+    remove_user_privilege(appname)
+    remove_user(appname)
 
 def remove_eis_key(key):
     """ Remove existing eis key. """

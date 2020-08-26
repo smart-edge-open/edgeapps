@@ -13,3 +13,5 @@ cert_name: "etcd_{{ app_name }}_cert"
 key_name: "etcd_{{ app_name }}_key"
 helm_release_name: "video-ingestion-release"
 helm_chart_ingestion: "{{ helm_charts_location }}/video-ingestion"
+zmq_keys_gen_force: false
+del_zmq_keys: false
