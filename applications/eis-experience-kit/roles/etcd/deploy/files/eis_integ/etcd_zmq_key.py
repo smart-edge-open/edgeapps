@@ -15,7 +15,7 @@ def parse_arguments(_cli_args):
     parser = argparse.ArgumentParser(description="Specify Application name")
     parser.add_argument("app", help="Name of the client application")
     parser.add_argument("--force", action='store_true', help="Force putting new generated ZMQ keys without checking" +
-                        "if they already exist")
+        "if they already exist")
     return parser.parse_args()
 
 def main(args):
@@ -36,8 +36,7 @@ def main(args):
         skip_gen = eis_integ.check_zmqkeys(args.app)
 
     if not skip_gen:
-        logging.info("Generate ZMQ pair keys for {} and put them to the etcd database"
-                     .format(args.app))
+        logging.info("Generate ZMQ pair keys for {} and put them to the etcd database".format(args.app))
         eis_integ.put_zmqkeys(args.app)
     else:
         logging.info("ZMQ pair keys generation skipped for {} app".format(args.app))
