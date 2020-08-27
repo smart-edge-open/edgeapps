@@ -2,43 +2,53 @@
 # Copyright (c) 2020 Intel Corporation
 
 ---
-image:
-    # Change Me! - please provide IP address and port of docker registry in
-    # the format  <ip_address>:<port>/<image-name>
-    # <ip_address>:<port>/intel/upf
-    # of Docker registry where UPF docker image is uploaded
-  repository: upf-cnf
-  tag: "1.0"               # The tag identifying the upf docker image,
-  pullPolicy: IfNotPresent # Pull policy for docker image
+  image:
+      # Change Me! - please provide IP address and port of docker registry in
+      # the format  <ip_address>:<port>/<image-name>
+      # <ip_address>:<port>/intel/upf
+      # of Docker registry where UPF docker image is uploaded
+    repository: upf-cnf
+    tag: "1.0"               # The tag identifying the upf docker image,
+    pullPolicy: IfNotPresent # Pull policy for docker image
+  
+  restartPolicy: Never        # Restart policy for the pod
+  allowPrivilegeEscalation: true # Allow privilege escalation level values: true false
+  isPrivileged: true          # Pod privilege level, possible values: true false
+  
+  #huge pages information
+  hugePageSize: hugepages-1Gi # Possible values: hugepages-1Gi hugepages-2Mi
+  hugePageAmount: 4Gi         # Amount of hugepages to be reserved for the pod
+  memory: 6Gi                 # Amount of memory to be reserved for the pod
+  
+  #node information
+  node:
+    name: upf-node          # Node on which the upf needs to be run
+    path: /root/upf         # Path on the node where the upf binary is stored
+  
+  # upf configuration
+  upf:
+    vf_if_name: VirtualFunctionEthernetaf/a/0     # VF Interface name
+    pci_bus_addr: 0000:af:0a.0                    # full format of the PCI bus addr of the VF interface the UPF needs to be attached
+    uio_driver: igb_uio                           # UIO driver used. Options are: igb_uio, vfio-pci
+    huge_memory: 4G                               # huge page amount
+    main_core: "1"                                # main core
+    worker_cores: "2,3"                           # worker cores
+    pfcp_thread:
+      cores: "4"                                  # cores for the pfcp thread
+      count: "1"                                  # number of pfcp threads
+    n3_addr: 192.179.120.170/24                   # ip address of the n3 interface along with subnet
+    n4_addr: 192.179.120.170                      # ip address of the n4 interface along with subnet
+    n6_addr: 192.168.1.170/24                     # ip address of the n6 interface along with subnet
+    n6_gw_addr: 192.168.1.170                     # ip address of the n6 gateway
+  
+  # extended upf configuration
+  
+  n3_if_name: ""        # VF Interface name
+  n3_if_mac: ""         # VF Interface MAC address
+  n3_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
+  n3_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
 
-restartPolicy: Never        # Restart policy for the pod
-allowPrivilegeEscalation: true # Allow privilege escalation level values: true false
-isPrivileged: true          # Pod privilege level, possible values: true false
-
-#huge pages information
-hugePageSize: hugepages-1Gi # Possible values: hugepages-1Gi hugepages-2Mi
-hugePageAmount: 4Gi         # Amount of hugepages to be reserved for the pod
-memory: 6Gi                 # Amount of memory to be reserved for the pod
-
-#node information
-node:
-  name: upf-node          # Node on which the upf needs to be run
-  path: /root/upf         # Path on the node where the upf binary is stored
-
-# upf configuration
-upf:
-  vf_if_name: VirtualFunctionEthernetaf/a/0    # VF Interface name
-  pci_bus_addr: 0000:af:0a.0                    # full format of the PCI bus addr of the VF interface the UPF needs to be attached
-  uio_driver: igb_uio                           # UIO driver used. Options are: igb_uio, vfio-pci
-  huge_memory: 4G                               # huge page amount
-  main_core: "1"                                # main core
-  worker_cores: "2,3"                           # worker cores
-  pfcp_thread:
-    cores: "4"                                  # cores for the pfcp thread
-    count: "1"                                  # number of pfcp threads
-  n3_addr: 192.179.120.170/24                   # ip address of the n3 interface along with subnet
-  n4_addr: 192.179.120.170                      # ip address of the n4 interface along with subnet
-  n6_addr: 192.168.1.170/24                     # ip address of the n6 interface along with subnet
-  n6_gw_addr: 192.168.1.170                     # ip address of the n6 gateway
-
-
+  n4_if_name: ""        # VF Interface name
+  n4_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
+  n4_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
+  

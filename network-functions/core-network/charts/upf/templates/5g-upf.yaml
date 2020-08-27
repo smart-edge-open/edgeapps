@@ -19,10 +19,7 @@ spec:
         privileged: {{ .Values.isPrivileged }}
       command: ["/bin/bash", "-c", "--"]
       args:
-      - |
-        while true ; do
-          sleep 90000000
-        done
+      - "/root/run_upf.sh"
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
         - name: CONFIG_VF_IF_NAME
@@ -49,6 +46,21 @@ spec:
           value: {{ .Values.upf.n6_addr }}
         - name: CONFIG_N6_GW_IP_ADDR
           value: {{ .Values.upf.n6_gw_addr }}
+        - name: CONFIG_N3_IF_NAME
+          value: {{ .Values.n3_if_name }}
+        - name: CONFIG_N3_IF_MAC
+          value: {{ .Values.n3_if_mac }}
+        - name: CONFIG_N3_PCI_BUS_ADDR
+          value: {{ .Values.n3_pci_bus_addr }}
+        - name: CONFIG_N3_UIO_DRIVER
+          value: {{ .Values.n3_uio_driver }}
+        - name: CONFIG_N4_IF_NAME
+          value: {{ .Values.n4_if_name }}
+        - name: CONFIG_N4_PCI_BUS_ADDR
+          value: {{ .Values.n4_pci_bus_addr }}
+        - name: CONFIG_N4_UIO_DRIVER
+          value: {{ .Values.n4_uio_driver }}
+        
       volumeMounts:
         - name: hugepages
           mountPath: /hugepages
