@@ -12,7 +12,7 @@ img_file=${1}/ubuntu-18.04-minimal-cloudimg-amd64.qcow2
 astri_dir=${2}
 
 if [[ ! -f ${img_file} ]]; then
-    curl https://cloud-images.ubuntu.com/minimal/releases/bionic/release/ubuntu-18.04-minimal-cloudimg-amd64.img -o ${img_file}
+    curl https://cloud-images.ubuntu.com/minimal/releases/bionic/release/ubuntu-18.04-minimal-cloudimg-amd64.img -o "${img_file}"
     if [[ ${?} -ne 0 ]]; then
         echo "ERROR: Failed to download Ubuntu image."
         exit 1
@@ -21,12 +21,12 @@ else
     echo "Skipping image download - file already exists."
 fi
 
-virt-customize -a ${img_file} \
+virt-customize -a "${img_file}" \
     --root-password password:root \
     --update \
     --install qemu-guest-agent,iputils-ping,iproute2,screen,libpcap-dev,tcpdump,libsctp-dev,apache2,python-pip,sudo,ssh \
     --mkdir /root/amf-smf \
-    --copy-in /root/flexcore-5g-rel/astri-1907-rc6-0114-ulcl:/root/amf-smf
+    --copy-in "${astri_dir}:/root/amf-smf"
 
 if [[ ${?} -ne 0 ]]; then
     echo "ERROR: Failed to customize the image."
