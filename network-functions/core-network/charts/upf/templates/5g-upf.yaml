@@ -19,7 +19,17 @@ spec:
         privileged: {{ .Values.isPrivileged }}
       command: ["/bin/bash", "-c", "--"]
       args:
-      - "/root/run_upf.sh"
+{{- if eq .Values.upf_autostart true }}
+        - |
+          /root/run_upf.sh; while true ; do
+            sleep 90000000
+          done
+{{ else }}
+        - |
+          while true ; do
+            sleep 90000000
+          done
+{{ end }}
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
         - name: CONFIG_VF_IF_NAME
