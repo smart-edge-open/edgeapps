@@ -55,3 +55,4 @@ upf_extended:
   n4_if_name: ""        # VF Interface name
   n4_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
   n4_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
+  
