@@ -4,17 +4,29 @@
 # Copyright (c) 2020 Intel Corporation
 
 if [[ ${#} -ne 2 ]]; then
-    echo "Wrong arguments pased. Usage: ${0} <ubuntu_image_dest_dir> <astri_dir>"
+    echo "Wrong arguments passed. Usage: ${0} <ubuntu_image_full_path> <astri_dir>"
     exit 1
 fi
 
-img_file=${1}/ubuntu-18.04-minimal-cloudimg-amd64.qcow2
+img_file=${1}
 astri_dir=${2}
 
 if [[ ! -f ${img_file} ]]; then
     curl https://cloud-images.ubuntu.com/minimal/releases/bionic/release/ubuntu-18.04-minimal-cloudimg-amd64.img -o "${img_file}"
     if [[ ${?} -ne 0 ]]; then
         echo "ERROR: Failed to download Ubuntu image."
+        exit 1
+    fi
+
+    # Check SHA256 if downloaded file is correct
+    curl https://cloud-images.ubuntu.com/minimal/releases/bionic/release/SHA256SUMS -o SHA256SUMS
+    if [[ ${?} -ne 0 ]]; then
+        echo "ERROR: Failed to download SHA256SUMS file."
+        exit 1
+    fi
+    grep -q "$(sha256sum "${img_file}" | awk '{ print $1 }')" SHA256SUMS
+    if [[ ${?} -ne 0 ]]; then
+        echo "ERROR: Invalid checksum of downloaded file."
         exit 1
     fi
 else

@@ -32,7 +32,7 @@ make
 make install
 ```
 
-It is require also to have FlexCORE binaries already downloaded.
+It is also required to have FlexCORE binaries already downloaded.
 
 ### Running the script
 Script takes two parameters - one is the destination path for the image and second is the path to the FlexCORE binaries directory. Usage looks like:
@@ -41,6 +41,6 @@ Script takes two parameters - one is the destination path for the image and seco
 ./build_amf_smf_image.sh <ubuntu_image_dest_dir> <astri_dir>
 ```
 
-As a result after successful run, customized image ready to be used by kubevirt virtual machine should be created in destination path.
+As a result of successful run, the customized image (ready to be used by kubevirt virtual machine) should be created in destination path.
 
-Image is based on *Ubuntu 18.04 LTS Minimal* image provided by Ubuntu site.
+Image is based on *Ubuntu 18.04 LTS Minimal* provided by Ubuntu site.
