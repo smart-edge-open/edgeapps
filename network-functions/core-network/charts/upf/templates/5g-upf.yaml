@@ -56,6 +56,8 @@ spec:
           value: {{ .Values.upf.n6_addr }}
         - name: CONFIG_N6_GW_IP_ADDR
           value: {{ .Values.upf.n6_gw_addr }}
+        - name: CONFIG_UPF_PATH
+          value: {{ .Values.upf.path }}
         - name: CONFIG_N3_IF_NAME
           value: {{ .Values.upf_extended.n3_if_name }}
         - name: CONFIG_N3_IF_MAC

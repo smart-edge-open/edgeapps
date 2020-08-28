@@ -26,7 +26,7 @@ n4_ip=$CONFIG_N4_IP_ADDR
 # Gateway IP address
 n6_gw_ip=$CONFIG_N6_GW_IP_ADDR
 
-upf_path=/root/upf
+upf_path=$CONFIG_UPF_PATH
 
 uio_drv=$CONFIG_UIO_DRIVER       
 
