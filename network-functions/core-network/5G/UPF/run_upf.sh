@@ -81,9 +81,8 @@ comment {set N3 gtpu endpoint}
 upf gtpu endpoint ip $n3_ip_plain nwi epc TEID-Range-Indication 2
 
 EOF
-fi
 #I-UPF config:
-if [ -n "$CONFIG_N3_IF_NAME" ] && [ -n "$CONFIG_N4_IF_NAME" ]
+elif [ -n "$CONFIG_N3_IF_NAME" ] && [ -n "$CONFIG_N4_IF_NAME" ]
 then
 cat <<EOF > $upf_config
 
@@ -114,10 +113,8 @@ comment {set N3 gtpu endpoint}
 upf gtpu endpoint ip $n3_ip_plain nwi epc TEID-Range-Indication 2
 
 EOF
-fi
-
 #PSA-UPF config:
-if [ -z "$CONFIG_N3_IF_NAME" ] && [ -n "$CONFIG_N4_IF_NAME" ]
+elif [ -z "$CONFIG_N3_IF_NAME" ] && [ -n "$CONFIG_N4_IF_NAME" ]
 then
 cat <<EOF > $upf_config
 

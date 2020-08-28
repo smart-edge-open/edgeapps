@@ -45,13 +45,13 @@ upf:
 upf_autostart: false             # auto-start upf on default
 
 # extended upf configuration
+upf_extended:
+  n3_if_name: ""        # VF Interface name
+  n3_if_mac: ""         # VF Interface MAC address
+  n3_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
+  n3_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
 
-n3_if_name: ""        # VF Interface name
-n3_if_mac: ""         # VF Interface MAC address
-n3_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
-n3_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
-
-n4_if_name: ""        # VF Interface name
-n4_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
-n4_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
+  n4_if_name: ""        # VF Interface name
+  n4_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
+  n4_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
   
