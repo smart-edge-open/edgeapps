@@ -50,7 +50,7 @@ Insert the configMap content to the top of `benchmark_job.yaml` file.
    ... ...
    ./demo_squeezenet_download_convert_run.sh -d ${TARGET_DEVICE}
    
-   /root/inference_engine_samples_build/intel64/Release/benchmark_app -i /opt/intel/openvino/deployment_tools/demo/car.png -m /root/openvino_models/ir/public/squeezenet1.1/FP16/squeezenet1.1.xml -d ${TARGET_DEVICE} -nireq ${NIREQ} -niter ${NITER} -api async
+   /root/inference_engine_samples_build/intel64/Release/benchmark_app -i ${IMAGE} -m ${MODEL} -d ${TARGET_DEVICE} -nireq ${NIREQ} -niter ${NITER} -api ${API} -b ${BATCH_SIZE}
    ```
 
    
