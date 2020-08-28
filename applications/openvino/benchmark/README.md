@@ -14,10 +14,15 @@ use k8s configMap to store all the parameters passed to `benchmark_app` command 
      name: cm-benchmark
    data:
      env.txt: |
-       NIREQ=4
-       NITER=10
+       NIREQ=32
+       NITER=50000
        # target_device:  CPU, GPU, FPGA, HDDL or MYRIAD are acceptable
        TARGET_DEVICE=CPU
+       IMAGE=/opt/intel/openvino/deployment_tools/demo/car.png
+       MODEL=/root/openvino_models/ir/public/squeezenet1.1/FP16/squeezenet1.1.xml
+       # API: sync/async
+       API=async
+       BATCH_SIZE=1
    ---
    ```
 
