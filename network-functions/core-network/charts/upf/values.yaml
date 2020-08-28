@@ -40,7 +40,6 @@ upf:
   n4_addr: 192.179.120.170                      # ip address of the n4 interface along with subnet
   n6_addr: 192.168.1.170/24                     # ip address of the n6 interface along with subnet
   n6_gw_addr: 192.168.1.170                     # ip address of the n6 gateway
-  path: /root/upf                               # upf path
 
 #auto-startup of upf
 upf_autostart: false             # auto-start upf on default
