@@ -54,7 +54,9 @@ uio_drv=$CONFIG_UIO_DRIVER
 
 upf_config=/tmp/upf.conf
 rm -f $upf_config
-
+#default edgeapp config:
+if [ -z "$CONFIG_N3_IF_NAME" ] && [ -z "$CONFIG_N4_IF_NAME" ]
+then
 cat <<EOF > $upf_config
 
 comment {set N6 interface}
@@ -78,6 +80,69 @@ upf nwi name sgi vrf 0
 comment {set N3 gtpu endpoint}
 upf gtpu endpoint ip $n3_ip_plain nwi epc TEID-Range-Indication 2
 
+EOF
+#I-UPF config:
+elif [ -n "$CONFIG_N3_IF_NAME" ] && [ -n "$CONFIG_N4_IF_NAME" ]
+then
+cat <<EOF > $upf_config
+
+comment {set N6 interface}
+set int ip address $n6_iface $n6_ip
+set int state $n6_iface up
+
+comment {set N3 interface}
+set interface mac address $CONFIG_N3_IF_NAME $CONFIG_N3_IF_MAC
+set int ip address $CONFIG_N3_IF_NAME $CONFIG_N3_IP_ADDR
+set int state $CONFIG_N3_IF_NAME up
+
+comment {set N4 interface}
+set int ip address $CONFIG_N4_IF_NAME ${CONFIG_N4_IP_ADDR}/24
+set int state $CONFIG_N4_IF_NAME up
+
+comment {set route}             
+ip route add 0.0.0.0/0 table 0 via $n6_gw_ip $n6_iface
+
+comment {set N4 pfcp endpoint} 
+upf pfcp endpoint ip $CONFIG_N4_IP_ADDR vrf 0
+comment {upf pfcp endpoint ip $CONFIG_N4_IP_ADDR vrf 0}
+
+upf nwi name epc vrf 0
+upf nwi name sgi vrf 0
+
+comment {set N3 gtpu endpoint}
+upf gtpu endpoint ip $n3_ip_plain nwi epc TEID-Range-Indication 2
+
+EOF
+#PSA-UPF config:
+elif [ -z "$CONFIG_N3_IF_NAME" ] && [ -n "$CONFIG_N4_IF_NAME" ]
+then
+cat <<EOF > $upf_config
+
+comment {set N6 interface}
+set int ip address $n6_iface $n6_ip
+set int state $n6_iface up
+
+comment {set N3 interface}
+set int ip address $CONFIG_N4_IF_NAME ${CONFIG_N4_IP_ADDR}/24
+set int state $CONFIG_N4_IF_NAME up
+
+comment {set route}             
+ip route add 0.0.0.0/0 table 0 via $n6_gw_ip $n6_iface
+
+comment {set N4 pfcp endpoint} 
+upf pfcp endpoint ip $CONFIG_N4_IP_ADDR vrf 0
+comment {upf pfcp endpoint ip $CONFIG_N4_IP_ADDR vrf 0}
+
+upf nwi name epc vrf 0
+upf nwi name sgi vrf 0
+
+comment {set N3 gtpu endpoint}
+upf gtpu endpoint ip $CONFIG_N4_IP_ADDR nwi epc TEID-Range-Indication 2
+
+EOF
+fi
+#the and of the config is common:
+cat <<EOF >> $upf_config
 comment {for pfcp-thread}
 upf enable-disable
 
@@ -217,6 +282,42 @@ dpdk {
                 #num-rx-desc 4096
     }
 
+
+EOF
+
+if [ -n "$CONFIG_N3_PCI_BUS_ADDR" ]
+then
+cat <<EOF >> $upf_vpp_config
+
+	dev $CONFIG_N3_PCI_BUS_ADDR {
+                num-rx-queues 1
+                num-rx-desc 2048
+				#ddp-enabled
+				#flow-control high 940 low 920 pause 50 xon 1
+                #workers 0 1 2 3 4 5 6 7
+                #num-rx-desc 4096
+    }
+
+EOF
+fi
+
+if [ -n "$CONFIG_N4_PCI_BUS_ADDR" ]
+then
+cat <<EOF >> $upf_vpp_config
+
+	dev $CONFIG_N4_PCI_BUS_ADDR {
+                num-rx-queues 1
+                num-rx-desc 2048
+				#ddp-enabled
+				#flow-control high 940 low 920 pause 50 xon 1
+                #workers 0 1 2 3 4 5 6 7
+                #num-rx-desc 4096
+    }
+
+EOF
+fi
+
+cat <<EOF >> $upf_vpp_config
 
 	## Specify bonded interface and its slaves via PCI addresses
 	##
