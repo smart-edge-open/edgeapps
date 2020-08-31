@@ -1,19 +1,25 @@
-# Optimize the OpenNESS with K8s Benchmark APP for CPU and HDDL-R mode
+```
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2020 Intel Corporation
+```
 
-use k8s configMap to store all the parameters passed to `benchmark_app` command which is in the `do_benchmark.sh` shell script file.
+# OpenVINO Benchmark Performance Test
 
-### The details are as follows:
+> Notes: The following all steps assumes that OpenNESS were installed through [OpenNESS playbooks](https://github.com/otcshare/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md).
 
-1. First, create a configMap named `cm-benchmark` defining a file containing all environment variables for the `benchmark_app` command executed in `docker` container.\
+- [Precondition](#precondition)
+- [Build benchamrk image](#build-benchamrk-image)
+- [Deploy](#deploy)
+- [Troubleshooting](#troubleshooting)
+
+### Precondition
+
+1. **configuration preparation**
+
+   edit `benchmark_job.yaml` file and modify the `data` field in `configMap` section. All the following environment variables is used by `benchmark_app` command.
 
    ```yaml
-   ---
-   apiVersion: v1
-   kind: ConfigMap
-   metadata:
-     name: cm-benchmark
-   data:
-     env.txt: |
+   ... ...    
        NIREQ=32
        NITER=50000
        # target_device:  CPU, GPU, FPGA, HDDL or MYRIAD are acceptable
@@ -23,35 +29,56 @@ use k8s configMap to store all the parameters passed to `benchmark_app` command 
        # API: sync/async
        API=async
        BATCH_SIZE=1
-   ---
-   ```
-
-Insert the configMap content to the top of `benchmark_job.yaml` file.
-
-2. modify the `benchmark_job.yaml` file, add a item to `volumeMounts` and `volumes` fields respectively and add a `--env-file` option to docker run command at args field.
-
-   ```yaml
    ... ...
-             args: ["-c", "/usr/local/bin/docker run --rm --device-cgroup-rule='c 10:* rmw' --device-cgroup-rule='c 89:* rmw' --device-cgroup-rule='c 189:* rmw' --device-cgroup-rule='c 180:* rmw' -v /dev:/dev -v /var/tmp:/var/tmp --env-file /dockerenv/env.txt openvino-benchmark:1.0 /do_benchmark.sh"]
-   ... ...       
-             volumeMounts:
-                 - name: dockerenv
-                   mountPath: /dockerenv
-   ... ... 
-          volumes:
-             - name: dockerenv
-               configMap:
-                 name: cm-benchmark
    ```
 
-3. Edit the `do_benchmark.sh` file and replace the parameter by environment variables defined at step 1.
+### Build benchamrk image
+
+1. Download edgeapp on both master and node, go to dir edgeapps/applications/openvino/benchmark/
+
+2.  Build benchmark on node by:
+
+   ```
+   sh build_image.sh
+   ```
+
+3.  change `parallelism: 1` to pod number in `benchmark_job.yaml` file on master.
+
+### Deploy 
+
+1. Query which jobs are currently running.
+
+   ```
+   kubectl get jobs
+   ```
+
+   If a job named `openvino-benchmark-job` in k8s cluster is exist, delete it.
+
+   ```
+   kubectl delete jobs openvino-benchmark-job 
+   ```
+
+2.  On master execute following command to start the job and get logs of each pod 
+
+   ```
+   kubectl apply -f  benchmark_job.yaml
+   ```
+
+3.  After `openvino-benchmark-job` job launched in step 2 is completed, on node `docker ps`  and `docker logs` to get all deamon log 
+
+### Troubleshooting
+
+In this section some issues in implementation process are covered
+
+1. Benchmark image build failed. When `sh build_image.sh` on node, interrupted by some errors such as following:
 
    ```sh
    ... ...
-   ./demo_squeezenet_download_convert_run.sh -d ${TARGET_DEVICE}
-   
-   /root/inference_engine_samples_build/intel64/Release/benchmark_app -i ${IMAGE} -m ${MODEL} -d ${TARGET_DEVICE} -nireq ${NIREQ} -niter ${NITER} -api ${API} -b ${BATCH_SIZE}
+   E: Release file for http://archive.ubuntu.com/ubuntu/dists/bionic-backports/InRelease is not valid yet (invalid for another 5h 41min 27s). Updates for this repository will not be applied.
+   The command '/bin/sh -c apt-get update && apt-get install -y --no-install-recommends     cpio     sudo     python3-pip     python3-setuptools     libboost-filesystem1.65     libboost-thread1.65     libboost-program-options1.65     lsb-release     libjson-c-dev' returned a non-zero code: 100
    ```
 
-   
+   **Solution**:
+
+    make sure that system time to be synchronized among all nodes and controllers in a system.
 
