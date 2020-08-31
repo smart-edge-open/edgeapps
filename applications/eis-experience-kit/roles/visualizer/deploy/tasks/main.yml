@@ -12,11 +12,13 @@
     ETCDCTL_CERT: "{{ root_client_cert }}"
     ETCDCTL_KEY: "{{ root_client_key }}"
   changed_when: true
+  ignore_errors: true
 
 - name: Copy {{ app_name }} config file
-  copy:
-    src: "visualizer.json"
-    dest: "{{ eis_integ_path }}/configs/"
+  template:
+    src: "visualizer_{{ demo_type }}.json.j2"
+    dest: "{{ eis_integ_path }}/configs/visualizer.json"
+    mode: 0744
 
 - name: Initialize {{ app_name }} config in ETCD
   command: ./etcd_write.py ./configs/visualizer.json

@@ -6,10 +6,12 @@
 docker_name: "ia_video_ingestion"
 docker_image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
 camera_stream_port: 9000
-clients_list: "VideoAnalytics,Visualizer"
+clients_list: "VideoAnalytics,Visualizer,WebVisualizer"
 app_name: "VideoIngestion"
 peer: "client"
 cert_name: "etcd_{{ app_name }}_cert"
 key_name: "etcd_{{ app_name }}_key"
 helm_release_name: "video-ingestion-release"
 helm_chart_ingestion: "{{ helm_charts_location }}/video-ingestion"
+zmq_keys_gen_force: false
+del_zmq_keys: false

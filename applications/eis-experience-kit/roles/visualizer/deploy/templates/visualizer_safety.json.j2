@@ -1,13 +1,9 @@
 {
     "/Visualizer/config": {
-        "display": "false",
-        "save_image": "true",
+        "display": "{{ display_gui }}",
+        "save_image": "{{ save_image }}",
         "labels" : {
-            "camera1_stream_results": {
-                "0": "MISSING",
-                "1": "SHORT"
-            },
-            "camera2_stream_results":{
+            "camera1_stream_results":{
                 "1": "safety_helmet",
                 "2": "safety_jacket",
                 "3": "Safe",

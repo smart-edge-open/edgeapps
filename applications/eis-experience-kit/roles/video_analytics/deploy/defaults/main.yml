@@ -7,7 +7,7 @@ docker_name: "ia_video_analytics"
 docker_image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
 camera_stream_port: 9000
 camera_stream_results_port: 65013
-clients_list: "Visualizer"
+clients_list: "Visualizer,WebVisualizer"
 app_name: "VideoAnalytics"
 peer: "client"
 cert_name: "etcd_{{ app_name }}_cert"
@@ -15,3 +15,5 @@ key_name: "etcd_{{ app_name }}_key"
 publisher_pod_service: "ia-video-ingestion-service"
 helm_release_name: "video-analytics-release"
 helm_chart_analytics: "{{ helm_charts_location }}/video-analytics"
+zmq_keys_gen_force: false
+del_zmq_keys: false
