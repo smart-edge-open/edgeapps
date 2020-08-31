@@ -10,7 +10,8 @@ eis_install_path: "/opt/eis"
 helm_charts_location: "{{ eis_install_path }}/charts"
 eis_integ_path: "{{ eis_install_path }}/etcd/eis_integ"
 etcd_certs_location: "{{ eis_install_path }}/etcd/Certificates"
-
+zmq_keys_gen_force: false
+del_zmq_keys: false
 
 os_yum_base_packages: "python3,python3-pip"
 ca_default_bits: "{{ lookup('env', 'SSL_KEY_LENGTH') }}"
@@ -21,7 +22,7 @@ k8s_eis_namespace: "eis"
 san_ca: "DNS:{{ pod_name }}-service"
 
 cert_days: 3650
-eis_openssl_cnf: "{{ eis_sources_dir }}/docker_setup/provision/config/openssl.cnf"
+eis_openssl_cnf: "{{ eis_sources_dir }}/build/provision/config/openssl.cnf"
 
 rootca_cert_name: "ca_certificate.pem"
 rootca_key_name: "ca_key.pem"
