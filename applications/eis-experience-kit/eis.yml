@@ -9,6 +9,7 @@
     - role: docker
     - role: docker_registry/localhost
     - role: common/build
+      when: build_eis_base_images | default(True)
     - role: camera_stream/build
     - role: etcd/build
     - role: video_ingestion/build
