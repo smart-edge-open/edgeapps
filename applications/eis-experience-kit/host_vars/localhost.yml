@@ -26,3 +26,6 @@ release_package_path: ""    # provide release package archive path when eis_sour
 eis_env_file: "{{ eis_sources_dir }}/build/.env"
 
 os_yum_base_packages: "jq,vim-common,curl,yum-utils,python2-pip,wget,git,python-devel,moreutils"
+
+docker_format_command: !unsafe 'docker images --format "{{.Repository}}:{{.Tag}}"'
+build_eis_base_images: true
