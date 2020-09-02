@@ -74,11 +74,16 @@ In this section some issues in implementation process are covered
 
    ```sh
    ... ...
+   E: Release file for http://security.ubuntu.com/ubuntu/dists/bionic-security/InRelease is not valid yet (invalid for another 5h 38min 40s). Updates for this repository will not be applied.
+   E: Release file for http://archive.ubuntu.com/ubuntu/dists/bionic-updates/InRelease is not valid yet (invalid for another 5h 39min 53s). Updates for this repository will not be applied.
    E: Release file for http://archive.ubuntu.com/ubuntu/dists/bionic-backports/InRelease is not valid yet (invalid for another 5h 41min 27s). Updates for this repository will not be applied.
-   The command '/bin/sh -c apt-get update && apt-get install -y --no-install-recommends     cpio     sudo     python3-pip     python3-setuptools     libboost-filesystem1.65     libboost-thread1.65     libboost-program-options1.65     lsb-release     libjson-c-dev' returned a non-zero code: 100
+The command '/bin/sh -c apt-get update && apt-get install -y --no-install-recommends     cpio     sudo     python3-pip     python3-setuptools     libboost-filesystem1.65     libboost-thread1.65     libboost-program-options1.65     lsb-release     libjson-c-dev' returned a non-zero code: 100
    ```
 
-   **Solution**:
-
-    make sure that system time to be synchronized among all nodes and controllers in a system.
-
+   Invalid time causes the server to be unable to use  Ubuntu’s packaging system apt .
+   
+   >  **The solution is to synchronize your clock manually or use a service (the better way)!**
+   
+   **Reference:**
+   
+    https://ahelpme.com/linux/ubuntu/ubuntu-apt-inrelease-is-not-valid-yet-invalid-for-another-151d-18h-5min-59s/ 
