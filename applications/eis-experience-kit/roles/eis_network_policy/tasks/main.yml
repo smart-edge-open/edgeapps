@@ -3,16 +3,6 @@
 
 ---
 
-- name: Create EIS namespace if needed
-  block:
-  - name: Check if namespace '{{ k8s_eis_namespace }}' already exists
-    command: kubectl get ns {{ k8s_eis_namespace }}
-    ignore_errors: yes
-    register: get_ns_eis
-  - name: Create namespace {{ k8s_eis_namespace }}
-    command: kubectl create namespace {{ k8s_eis_namespace }}
-    when: get_ns_eis.rc == 1
-
 - name: Create directory for network policy
   file:
     path: {{ eis_netork_policy_path }}
@@ -22,7 +12,7 @@
 - name: Copy network policy to host
   copy:
     src: "eis_network_policy.yaml"
-    dest: "{{ eis_netork_policy_path }}"
+    dest: "{{ cera_charts_path }}"
 
 - name: Apply EIS network policy
   command: kubectl apply -n {{ k8s_eis_namespace }} -f eis_network_policy.yaml
