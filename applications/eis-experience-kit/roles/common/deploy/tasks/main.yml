@@ -15,16 +15,16 @@
 
 - name: Create directory for network policy
   file:
-    path: {{ eis_netork_policy_path }}
+    path: {{ eis_network_policy_path }}
     state: directory
     recurse: yes
 
 - name: Copy network policy to host
   copy:
     src: "eis_network_policy.yaml"
-    dest: "{{ eis_netork_policy_path }}"
+    dest: "{{ eis_network_policy_path }}"
 
 - name: Apply EIS network policy
   command: kubectl apply -n {{ k8s_eis_namespace }} -f eis_network_policy.yaml
   args:
-    chdir: "{{ eis_netork_policy_path }}"
+    chdir: "{{ eis_network_policy_path }}"
