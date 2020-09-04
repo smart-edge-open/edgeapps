@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-in-eis
+spec:
+# this selects all pods from choosen namespace (by -n option)
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+# this allows ingress from all pods from choosen namespace (by -n option)
+    - podSelector: {}
