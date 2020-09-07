@@ -18,7 +18,7 @@ eis_repo_dir: "/opt/eis_repo"
 eis_sources_dir: "/opt/eis_repo/IEdgeInsights"
 
 
-demo_type: "safety"      # set  "pcb" for pcp demo or "safety" for Safety Hat demo.
+demo_type: "pcb"      # set  "pcb" for pcp demo or "safety" for Safety Hat demo.
 camera_stream_pod: true  # enabled if rtsp stream receive from camera stream pod    
 
 rtsp_camera_stream_ip: "ia-camera-stream-service" # set remote rtsp camera IP
