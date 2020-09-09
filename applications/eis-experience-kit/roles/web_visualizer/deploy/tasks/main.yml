@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Create {{ app_name }} user in ETCD
+  command: ./etcd_users.py --create {{ app_name }}
+  args:
+    chdir: "{{ eis_integ_path }}"
+  environment:
+    ETCDCTL_CACERT: "{{ rootca_cert }}"
+    ETCDCTL_CERT: "{{ root_client_cert }}"
+    ETCDCTL_KEY: "{{ root_client_key }}"
+  changed_when: true
+
+- name: Copy {{ app_name }} config file
+  template:
+    src: "web_visualizer_{{ demo_type }}.json.j2"
+    dest: "{{ eis_integ_path }}/configs/web_visualizer.json"
+    mode: 0744
+
+- name: Initialize {{ app_name }} config in ETCD
+  command: ./etcd_write.py ./configs/web_visualizer.json
+  args:
+    chdir: "{{ eis_integ_path }}"
+  environment:
+    ETCDCTL_CACERT: "{{ rootca_cert }}"
+    ETCDCTL_CERT: "{{ root_client_cert }}"
+    ETCDCTL_KEY: "{{ root_client_key }}"
+  changed_when: true
+
+- name: Generate {{ app_name }} client certificates
+  include_tasks: ./roles/common/deploy/tasks/gen_etcd_client_cert.yml
+
+- name: Generate ZMQ keys and put them to the ETCD
+  include_tasks: ./roles/common/deploy/tasks/gen_zmq_keys.yaml
+
+- name: Create folder for Helm Charts
+  file:
+    path: "{{ helm_charts_location }}"
+    state: directory
+    mode: '0744'
+
+- name: Copy {{ app_name }} Helm Charts to the Master Node
+  copy:
+    src: "web-visualizer"
+    dest: "{{ helm_charts_location }}"
+
+- name: Generate values file for {{ app_name }} Helm Chart from template
+  template:
+    src: web-visualizer-values.yaml.j2
+    dest: "{{ helm_chart_web_visualizer }}/web-visualizer-values.yaml"
+    mode: 0744
+
+- name: Create folder for {{ app_name }} ETCD certificates
+  file:
+    path: "{{ helm_chart_web_visualizer }}/secrets"
+    state: directory
+    mode: '0744'
+
+- name: Copy certificates to the Helm Chart directory
+  copy:
+    src: "{{ etcd_certs_location }}/{{ app_name }}/"
+    dest: "{{ helm_chart_web_visualizer }}/secrets"
+    remote_src: yes
+
+- name: Copy web_access.sh  file
+  template:
+    src: "web_access.sh.j2"
+    dest: "{{ helm_chart_web_visualizer }}/secrets/web_access.sh"
+    mode: 0744
+
+- name: write web access key and cert in ETCD
+  command: ./web_access.sh
+  args:
+    chdir: "{{ helm_chart_web_visualizer }}/secrets"
+  changed_when: true
+
+- name: Deploy {{ app_name }} using Helm
+  command: >
+    helm install --namespace {{ k8s_eis_namespace }} -f {{ helm_chart_web_visualizer }}/web-visualizer-values.yaml {{ helm_release_name }}
+    {{ helm_chart_web_visualizer }}
+  changed_when: true

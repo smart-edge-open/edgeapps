@@ -10,6 +10,9 @@ docker_registry_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] 
 docker_registry_address: "{{ docker_registry_ip }}:{{ docker_registry_port }}"
 docker_registry_dir: "/opt/docker-registry/"
 
+web_visualizer_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] }}"
+web_visualizer_port: 5050
+
 eis_version: "{{ lookup('env', 'EIS_VERSION') }}"
 etcd_version: "{{ lookup('env', 'ETCD_VERSION') }}"
 dev_mode: "{{ lookup('env', 'DEV_MODE') }}"
@@ -18,12 +21,13 @@ eis_repo_dir: "/opt/eis_repo"
 eis_sources_dir: "/opt/eis_repo/IEdgeInsights"
 
 
-demo_type: "pcb"      # set  "pcb" for pcp demo or "safety" for Safety Hat demo.
-camera_stream_pod: true  # enabled if rtsp stream receive from camera stream pod    
+demo_type: "pcb"                   # set  "pcb" for pcp demo or "safety" for Safety Hat demo.
+camera_stream_pod: true            # enabled if rtsp stream receive from camera stream pod    
 
 rtsp_camera_stream_ip: "ia-camera-stream-service" # set remote rtsp camera IP
-rtsp_camera_stream_port: 8554               # set remote rtsp stream port no
+rtsp_camera_stream_port: 8554           # set remote rtsp stream port no
 
-display_host_ip: "192.168.0.1"              # update ip for visualizer HOST GUI.
-display_no: "1"                             # update DISPLAY number for visualizer GUI output
+display_visualizer_host: false          # enabled if visualizer output view on  display host.
+display_host_ip: "192.168.0.1"          # update ip for visualizer HOST GUI.
+display_no: "1"                         # update DISPLAY number for visualizer GUI output
 

@@ -15,6 +15,7 @@
     - role: video_ingestion/build
     - role: video_analytics/build
     - role: visualizer/build
+    - role: web_visualizer/build
 
 - hosts: controller_group
   roles:
@@ -25,4 +26,6 @@
     - role: etcd/deploy
     - role: video_analytics/deploy
     - role: visualizer/deploy
+      when: display_visualizer_host | default(False)
+    - role: web_visualizer/deploy
     - role: video_ingestion/deploy
