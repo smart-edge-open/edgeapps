@@ -11,7 +11,8 @@ metadata:
 data:
   otel-agent-config.yaml: |
     receivers:
-      opencensus: "{{ .Values.agent.receiver.opencensus.endpoint }}"
+      opencensus:
+        endpoint: "{{ .Values.agent.receiver.opencensus.endpoint }}"
       
     exporters:
       opencensus:
