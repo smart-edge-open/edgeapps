@@ -1,6 +1,6 @@
 module github.com/otcshare/edgeapps/applications/sample-app
 
-go 1.14.2
+go 1.14
 
 require (
 	github.com/gorilla/websocket v1.4.2
