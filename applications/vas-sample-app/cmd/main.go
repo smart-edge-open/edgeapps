@@ -66,14 +66,17 @@ func authenticate(prvKey *ecdsa.PrivateKey) (*x509.CertPool, tls.Certificate) {
 	log.Println("CSR POST /auth")
 	resp, err := http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
 		"", bytes.NewBuffer(reqBody))
+	if err != nil {
+		log.Fatal(err)
+	}
 	for resp.StatusCode == http.StatusServiceUnavailable {
 		log.Println("EAA service is not currently available, trying again")
 		time.Sleep(time.Duration(5) * time.Second)
 		resp, err = http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
 			"", bytes.NewBuffer(reqBody))
-	}
-	if err != nil {
-		log.Fatal(err)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	var conCreds AuthCredentials
@@ -123,14 +126,18 @@ func discoverServices(client *http.Client) (ServiceList, error) {
 	}
 
 	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Service-discovery request failed:", err)
+		return ServList, err
+	}
 	for resp.StatusCode == http.StatusServiceUnavailable {
 		log.Println("EAA service is not currently available, trying again")
 		time.Sleep(time.Duration(5) * time.Second)
 		resp, err = client.Do(req)
-	}
-	if err != nil {
-		log.Println("Service-discovery request failed:", err)
-		return servList, err
+		if err != nil {
+			log.Println("Service-discovery request failed:", err)
+			return servList, err
+		}
 	}
 
 	// TODO check if service list is empty -> handle & exit program
