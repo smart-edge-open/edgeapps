@@ -33,8 +33,16 @@ else
     echo "Skipping image download - file already exists."
 fi
 
+qemu-img resize "${img_file}" +5G
+if [[ ${?} -ne 0 ]]; then
+    echo "ERROR: Failed to resize the image."
+    exit 1
+fi
+
 virt-customize -a "${img_file}" \
     --root-password password:root \
+    --run-command "sudo growpart /dev/sda 1" \
+    --run-command "sudo resize2fs /dev/sda1" \
     --update \
     --install qemu-guest-agent,iputils-ping,iproute2,screen,libpcap-dev,tcpdump,libsctp-dev,apache2,python-pip,sudo,ssh \
     --mkdir /root/amf-smf \
