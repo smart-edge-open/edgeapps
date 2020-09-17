@@ -9,7 +9,7 @@ metadata:
 data:
   env.txt: |
     NIREQ=32
-    NITER=999999
+    NITER=99999
     # target_device:  CPU, GPU, FPGA, HDDL or MYRIAD are acceptable
     TARGET_DEVICE=HDDL
     IMAGE=/opt/intel/openvino/deployment_tools/demo/car.png
