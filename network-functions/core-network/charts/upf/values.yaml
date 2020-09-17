@@ -41,4 +41,17 @@ upf:
   n6_addr: 192.168.1.170/24                     # ip address of the n6 interface along with subnet
   n6_gw_addr: 192.168.1.170                     # ip address of the n6 gateway
 
+#auto-startup of upf
+upf_autostart: false             # auto-start upf on default
 
+# extended upf configuration
+upf_extended:
+  n3_if_name: ""        # VF Interface name
+  n3_if_mac: ""         # VF Interface MAC address
+  n3_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
+  n3_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
+
+  n4_if_name: ""        # VF Interface name
+  n4_pci_bus_addr: ""   # full format of the PCI bus addr of the VF interface the UPF needs to be attached
+  n4_uio_driver: ""     # UIO driver used. Options are: igb_uio, vfio-pci
+  

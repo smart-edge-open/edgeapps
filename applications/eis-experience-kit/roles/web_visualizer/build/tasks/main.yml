@@ -2,11 +2,11 @@
 # Copyright (c) 2020 Intel Corporation
 
 ---
-
-- name: Check if VideoIngestion image is already built
+- name: Check if WebVisualizer image is already built
   shell: "{{ docker_format_command }} | grep {{ docker_image_tag }}"
   register: image_built
   ignore_errors: true
+
 
 - name: Build {{ docker_image_name }} docker image
   shell: docker-compose build {{ docker_image_name }}

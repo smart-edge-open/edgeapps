@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: v2
+name: ia-web-visualizer
+description: A Helm chart for Web Visualizer app
+type: application
+version: 2.2

@@ -12,3 +12,19 @@
   - name: Create namespace {{ k8s_eis_namespace }}
     command: kubectl create namespace {{ k8s_eis_namespace }}
     when: get_ns_eis.rc == 1
+
+- name: Create directory for network policy
+  file:
+    path: {{ eis_network_policy_path }}
+    state: directory
+    recurse: yes
+
+- name: Copy network policy to host
+  copy:
+    src: "eis_network_policy.yaml"
+    dest: "{{ eis_network_policy_path }}"
+
+- name: Apply EIS network policy
+  command: kubectl apply -n {{ k8s_eis_namespace }} -f eis_network_policy.yaml
+  args:
+    chdir: "{{ eis_network_policy_path }}"

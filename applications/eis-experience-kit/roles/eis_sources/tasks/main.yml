@@ -9,7 +9,7 @@
     state: directory
     mode: '0755'
 
-- name: download repo tool for multi-repo codebase checkout.
+- name: download repo tool for multi-repo codebase checkout
   shell: "{{ item }}"
   with_items:
     - curl {{ repo_tool }} > repo
@@ -26,7 +26,6 @@
   with_items:
     - repo init -u "{{ eis_repo_url }}"  -b {{ eis_repo_branch }}
     - cd .repo/manifests; repo init -m video.xml; repo sync
-    - cd IEdgeInsights/build; pip3 install -r requirements.txt; python3 eis_builder.py
   args:
     chdir: "{{ eis_repo_dir }}"
   changed_when: true
@@ -47,8 +46,8 @@
     - name: Move source directory to the expected location
       shell: >-
         package_dir=({{ temp_dir.path }}/*) &&
-        sources_dir={{ temp_dir.path }}/$(basename $package_dir)/IEdgeInsights &&
-        mv $sources_dir/* {{ eis_sources_dir }}
+        sources_dir={{ temp_dir.path }}/$(basename $package_dir)/ &&
+        mv $sources_dir/* {{ eis_repo_dir }}
       changed_when: true
     - name: Remove temporary directory
       file:
@@ -56,3 +55,11 @@
         state: absent
       when: temp_dir.path is defined
   when: eis_source == "release"
+
+- name: generate eis  config build file
+  shell : "{{ item }}"
+  with_items:
+    - cd IEdgeInsights/build; pip3 install -r requirements.txt; python3 eis_builder.py
+  args:
+    chdir: "{{ eis_repo_dir }}"
+  changed_when: true

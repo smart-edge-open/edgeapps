@@ -26,6 +26,9 @@ Currently, `eis-experience-kit` supports EIS in version 2.2.
     - [Deploy Settings](#deploy-settings)
     - [Inventory](#inventory)
     - [Playbook Main File](#playbook-main-file)
+    - [EIS Demo Setting](#eis-demo-setting)
+        - [RTSP Stream Setting](#rtsp-stream-setting)
+    - [View Visualizer Setting](#view-visualizer-setting)
 - [Installation](#installation)
 - [Removal](#removal)
 - [References](#references)
@@ -80,6 +83,84 @@ User needs to set the OpenNESS Master Node IP address. It can be done in `invent
 
 ### Playbook Main File
 The main file for playbook is `eis_pcb_demo.yml`. User can define here which roles should be run during the build & deployment. They can be switch by using comments for unnecessary roles.
+
+### EIS Demo Setting
+eis-experience-kit currently  we can configure for  Demo type as 
+
+- PCB Demo
+- Safety Demo
+
+Following flags controll for configuring demo type on `group_vars/all.yml
+```sh
+demo_type: "safety"  -> for Safety Demo
+demo_type: "pcb"     -> for PCB Demo
+```
+#### RTSP Stream Setting
+Currently RTSP camera steam data can be received follwing source  
+   - rtsp stream from  camera-stream pod
+   - rtsp stream from Linux host
+   - rtsp stream from Window host
+
+on eis-experience-kit  demo  default rtsp strem  will recive from camera-stream pod.
+Follwing flags are contrl for receving receiving rtsp strem on `group_vars/all.yml`
+
+#### Enable rtsp stream from  camera-stream pod(Default)
+```sh
+    camera_stream_pod: true  
+    rtsp_camera_stream_ip: "ia-camera-stream-service" 
+    rtsp_camera_stream_port: 8554               
+```
+#### Enable rtsp stream from  extrnal Linux/Window host
+ ```sh
+    camera_stream_pod: false  
+    rtsp_camera_stream_ip: "192.169.1.1"   < update Linux/window external rtsp server IP>
+    rtsp_camera_stream_port: 8554               
+```
+
+####  Send rtsp stream from external Linux (CentOS)
+```sh
+yum install -y epel-release  https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+yum install -y vlc
+sed -i 's/geteuid/getppid/' /usr/bin/vlc
+./send_rtsp_stream_linux.sh <file_name> <port_name>
+```
+####  Send rtsp stream from external Linux (ubuntu)
+
+```sh
+apt-get install vlc
+sed -i 's/geteuid/getppid/' /usr/bin/vlc
+./send_rtsp_stream_linux.sh <file_name> <port_name>
+```
+####  Send rtsp stream from external Windows Host
+
+```sh
+#install  vlc player <https://www.videolan.org/vlc/download-windows.html>
+#update follwing varaible on  send_rtsp_stream_linux.sh
+set vlc_path="c:\Program Files (x86)\VideoLAN\VLC"
+set file_name="c:\Data\Safety_Full_Hat_and_Vest.avi"  < update Demo file name>
+set port="8554"
+#next run   send_rtsp_stream_win.bat file 
+```
+
+**Note**: Following script and demo video file should copied from ansible host machine
+
+    `/eis-experience-kit/scripts/send_rtsp_stream_linux.sh`
+    `/eis-experience-kit/scripts/send_rtsp_stream_win.bat`
+    `/opt/eis_repo/IEdgeInsights/VideoIngestion/test_videos/pcb_d2000.avi`
+    `/opt/eis_repo/IEdgeInsights/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.avi`
+
+
+### View Visualizer Setting
+
+Update IP Adddress of host where we want to see the GUI ouput, Visualizer container will expose the GUI output on display host. 
+
+display_host_ip: "192.168.0.1"     < Update Display Host IP>
+display_no: "1"              
+
+**Note**: 
+- Display host shoud have GUI/VNC access and check the Display by echo $DISPLAY 
+update the display on above `display_no` .
+- configure  `xhost +` on Display host for receiving  video GUI  
 
 ## Installation
 After all the configuration is done, script `deploy_eis_pcb_demo.sh` needs to be executed to start the deployment process. No more actions are required, all the installation steps are fully automated. 
