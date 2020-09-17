@@ -3,19 +3,28 @@
 
 ---
 
-- name: Copy pcb streaming file from EIS repo to folder having Dockerfile
-  copy:
-    src: "{{ pcb_cam_stream_source }}"
-    dest: "{{ docker_src_folder }}"
+- name: Check if camera_stream image is already built
+  shell: "{{ docker_format_command }} | grep {{ docker_image_tag }}"
+  register: image_built
+  ignore_errors: true
 
-- name: Copy Safety Hat streaming file from EIS repo to folder having Dockerfile
-  copy:
-    src: "{{ safety_cam_stream_source }}"
-    dest: "{{ docker_src_folder }}"
+- name: Prepare camera_stream image build
+  block:
+  - name: Copy pcb streaming file from EIS repo to folder having Dockerfile
+    copy:
+      src: "{{ pcb_cam_stream_source }}"
+      dest: "{{ docker_src_folder }}"
+  - name: Copy Safety Hat streaming file from EIS repo to folder having Dockerfile
+    copy:
+      src: "{{ safety_cam_stream_source }}"
+      dest: "{{ docker_src_folder }}"
+  - name: Build {{ docker_image_name }} docker image
+    command: "docker build --network=host -t {{ docker_image_tag }} roles/camera_stream/build/files"
+    changed_when: true
+  when: image_built is failed
 
-- name: Build {{ docker_image_name }} docker image
-  command: "docker build --network=host -t {{ docker_image_tag }} -t {{ docker_registry_address }}/{{ docker_image_tag }} roles/camera_stream/build/files"
-  changed_when: true
+- name: Tag camera_stream image
+  command: docker tag {{ docker_image_tag }} {{ docker_registry_address }}/{{ docker_image_tag }}
 
 - name: Push the image to the Docker Registry
   command: docker push {{ docker_registry_address }}/{{ docker_image_tag }}

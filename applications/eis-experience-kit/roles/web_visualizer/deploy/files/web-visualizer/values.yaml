@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+service:
+  name: ia-web-visualizer-service
+  type: ClusterIP
+
+secrets:
+  etcdCertsSecretName: webvisualizer
+  rootCaSecretName: rootca
+  etcdCertName: etcd_WebVisualizer_cert
+  etcdKeyName: etcd_WebVisualizer_key

@@ -15,6 +15,7 @@ import (
 	"encoding/pem"
 	"log"
 	"net/http"
+	"time"
 )
 
 // Connectivity constants
@@ -65,12 +66,23 @@ func authenticate(prvKey *ecdsa.PrivateKey) (*x509.CertPool, tls.Certificate) {
 	log.Println("CSR POST /auth")
 	resp, err := http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
 		"", bytes.NewBuffer(reqBody))
+	for resp.StatusCode == http.StatusServiceUnavailable {
+		log.Println("EAA service is not currently available, trying again")
+		time.Sleep(time.Duration(5) * time.Second)
+		resp, err = http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
+			"", bytes.NewBuffer(reqBody))
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var conCreds AuthCredentials
 	err = json.NewDecoder(resp.Body).Decode(&conCreds)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = resp.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -111,6 +123,11 @@ func discoverServices(client *http.Client) (ServiceList, error) {
 	}
 
 	resp, err := client.Do(req)
+	for resp.StatusCode == http.StatusServiceUnavailable {
+		log.Println("EAA service is not currently available, trying again")
+		time.Sleep(time.Duration(5) * time.Second)
+		resp, err = client.Do(req)
+	}
 	if err != nil {
 		log.Println("Service-discovery request failed:", err)
 		return servList, err
@@ -176,7 +193,7 @@ func main() {
 			log.Fatal("abnormal services num")
 			return
 		}
-		log.Println("Discoverd serive:")
+		log.Println("Discovered service:")
 		log.Println("    URN.ID:       ", s.URN.ID)
 		log.Println("    URN.Namespace:", s.URN.Namespace)
 		log.Println("    Description:  ", s.Description)
