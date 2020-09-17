@@ -34,7 +34,7 @@ Copyright (c) 2020 Intel Corporation
 
 ### Build benchamrk image
 
-1. Download edgeapp on both master and node, go to dir edgeapps/applications/openvino/benchmark/
+1. Download edgeapp on both controller and node machine, go to dir edgeapps/applications/openvino/benchmark/
 
 2.  Build benchmark on node by:
 
@@ -42,7 +42,7 @@ Copyright (c) 2020 Intel Corporation
    sh build_image.sh
    ```
 
-3.  change `parallelism: 1` to pod number in `benchmark_job.yaml` file on master.
+3.  change `parallelism: 1` to pod number in `benchmark_job.yaml` file on controller machine.
 
 ### Deploy 
 
@@ -58,7 +58,7 @@ Copyright (c) 2020 Intel Corporation
    kubectl delete jobs openvino-benchmark-job 
    ```
 
-2.  On master execute following command to start the job and get logs of each pod 
+2.  On controller machine execute following command to start the job and get logs of each pod 
 
    ```
    kubectl apply -f  benchmark_job.yaml
