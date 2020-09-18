@@ -69,7 +69,9 @@ func authenticate(prvKey *ecdsa.PrivateKey) (*x509.CertPool, tls.Certificate) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for resp.StatusCode == http.StatusServiceUnavailable {
+	reconnectTries := 0
+	for resp.StatusCode == http.StatusServiceUnavailable && reconnectTries < 10 {
+		reconnectTries++
 		log.Println("EAA service is not currently available, trying again")
 		time.Sleep(time.Duration(5) * time.Second)
 		resp, err = http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
@@ -77,6 +79,9 @@ func authenticate(prvKey *ecdsa.PrivateKey) (*x509.CertPool, tls.Certificate) {
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+	if reconnectTries == 10 {
+		log.Fatal("Number of connection retries to EAA Auth exceeded, exiting")
 	}
 
 	var conCreds AuthCredentials
@@ -130,7 +135,9 @@ func discoverServices(client *http.Client) (ServiceList, error) {
 		log.Println("Service-discovery request failed:", err)
 		return ServList, err
 	}
-	for resp.StatusCode == http.StatusServiceUnavailable {
+	reconnectTries := 0
+	for resp.StatusCode == http.StatusServiceUnavailable && reconnectTries < 10 {
+		recoonectTries++
 		log.Println("EAA service is not currently available, trying again")
 		time.Sleep(time.Duration(5) * time.Second)
 		resp, err = client.Do(req)
@@ -138,6 +145,9 @@ func discoverServices(client *http.Client) (ServiceList, error) {
 			log.Println("Service-discovery request failed:", err)
 			return servList, err
 		}
+	}
+	if reconnectTries == 10 {
+		log.Fatal("Number of connection retries to EAA Service Discovery exceeded, exiting")
 	}
 
 	// TODO check if service list is empty -> handle & exit program
