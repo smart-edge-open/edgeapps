@@ -59,13 +59,22 @@ func postVAServingRequest(vaEndPoint string, vaPipeline string) error {
 	}
 
 	VASPostResp, err := http.Post(endPointStr, "application/json; charset=UTF-8", bytes.NewBuffer(VASReqPayload))
-	for VASPostResp.StatusCode == http.StatusServiceUnavailable {
+	if err != nil {
+		log.Fatal(err)
+	}
+	postReconnectTries := 0
+	for VASPostResp.StatusCode == http.StatusServiceUnavailable && postReconnectTries < 10 {
+		postReconnectTries++
 		log.Println("Pipeline service is not currently available, trying again")
 		time.Sleep(time.Duration(5) * time.Second)
 		VASPostResp, err = http.Post(endPointStr, "", bytes.NewBuffer(VASReqPayload))
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
-	if err != nil {
-		log.Fatal(err)
+
+	if postReconnectTries == 10 {
+		log.Fatal("Number of connection retries to ", endPointStr, "exceeded, exiting")
 	}
 
 	var VASRespBody interface{}
@@ -89,13 +98,22 @@ func postVAServingRequest(vaEndPoint string, vaPipeline string) error {
 		getEndPointStr := endPointStr + "/" + instanceID + "/status"
 		log.Println("Starting status check: ", getEndPointStr)
 		VASGetResp, err := http.Get(getEndPointStr)
-		for VASGetResp.StatusCode == http.StatusServiceUnavailable {
+		if err != nil {
+			log.Fatal(err)
+		}
+		getReconnectTries := 0
+		for VASGetResp.StatusCode == http.StatusServiceUnavailable && getReconnectTries < 10 {
+			getReconnectTries++
 			log.Println("Pipeline status service is not currently available, trying again")
 			time.Sleep(time.Duration(5) * time.Second)
 			VASGetResp, err = http.Get(getEndPointStr)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
-		if err != nil {
-			log.Fatal(err)
+
+		if getReconnectTries == 10 {
+			log.Fatal("Number of connection retries to ", getEndPointStr, "exceeded, exiting")
 		}
 
 		var statusResp VASInstanceStatus
