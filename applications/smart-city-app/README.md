@@ -60,7 +60,7 @@ This mode provide an easy and quick start with executing the application in the 
 4. Install the application using the Helm chart
 
     ```shell
-    helm install smart-city-app smart-city-app app/deployment/kubernetes/helm/smtc
+    helm install smart-city-app app/deployment/kubernetes/helm/smtc
     ```
 
 5. From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
@@ -110,7 +110,7 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
 7. Install the application using the Helm chart
 
     ```shell
-    helm install smart-city-app smart-city-app app/deployment/kubernetes/helm/smtc
+    helm install smart-city-app app/deployment/kubernetes/helm/smtc
     ```
 
 8.  From a web browser, launch the Smart City web UI at URL `https://<controller-node-ip>/`
