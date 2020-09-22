@@ -137,7 +137,7 @@ func discoverServices(client *http.Client) (ServiceList, error) {
 	}
 	reconnectTries := 0
 	for resp.StatusCode == http.StatusServiceUnavailable && reconnectTries < 10 {
-		recoonectTries++
+		reconnectTries++
 		log.Println("EAA service is not currently available, trying again")
 		time.Sleep(time.Duration(5) * time.Second)
 		resp, err = client.Do(req)
