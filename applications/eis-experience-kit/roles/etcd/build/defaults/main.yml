@@ -6,5 +6,5 @@
 docker_image_name: ia_etcd
 docker_image_tag: "{{ docker_image_name }}:{{ eis_version }}"
 
-docker_compose_file: "{{ eis_sources_dir }}/docker_setup/provision/dep/docker-compose-provision.yml"
+docker_compose_file: "{{ eis_sources_dir }}/build/provision/dep/docker-compose-provision.yml"
 

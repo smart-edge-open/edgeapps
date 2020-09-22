@@ -43,7 +43,7 @@ spec:
             - name: CertType
               value: "zmq"
             - name: ZMQ_RECV_HWM
-              value: "1000"
+              value: "50"
             - name: PubTopics
               value: "camera1_stream"          
             - name: camera1_stream_cfg
@@ -54,6 +54,10 @@ spec:
               value: "{{ .Values.keyPath }}"
             - name: CONFIGMGR_CACERT
               value: "{{ .Values.rootCACertPath }}"
+            - name: no_proxy
+              value: "{{ .Values.eis_no_proxy }}"
+            - name: Server
+              value: "zmq_tcp,127.0.0.1:66013"
 
       volumes:
         - name: etcd-certs

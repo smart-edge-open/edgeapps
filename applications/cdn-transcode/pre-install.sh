@@ -3,7 +3,9 @@
 # Copyright (c) 2020 Intel Corporation
 
 echo "Pre-Installation setup for CDN Transcode Sample"
-DIR=$(dirname $(readlink -f "$0"))
+
+LNK=$(readlink -f "$0")
+DIR=$(dirname "$LNK")
 function create_secret {
     kubectl create secret generic self-signed-certificate "--from-file=${DIR}/certs/self.crt" "--from-file=${DIR}/certs/self.key"
 }
@@ -12,9 +14,9 @@ function create_secret {
 "$DIR/certs/self-sign.sh"
 create_secret 2>/dev/null || (kubectl delete secret self-signed-certificate; create_secret)
 
-for yaml in $(find "$DIR/CDN-Transcode-Sample/deployment/kubernetes/" -maxdepth 1 -name "*-pv.yaml" -print); do
+for yaml in "$DIR"/CDN-Transcode-Sample/deployment/kubernetes/*-pv.yaml; do
     kubectl apply -f "$yaml"
 done
 
 # create volume
-$DIR/CDN-Transcode-Sample/deployment/kubernetes/mkvolume.sh
+"$DIR/CDN-Transcode-Sample/deployment/kubernetes/mkvolume.sh"

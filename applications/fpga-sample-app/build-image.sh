@@ -9,16 +9,17 @@ BBDEV_PATCH=./dpdk_19.11_new.patch
 if test -f "$BBDEV_PATCH"; then
     echo "BBDEV patch found"
 else
-    echo "$BBDEV_PATCH does not exist." \
+    printf "%s does not exist." \
 	   "Please place the BBDEV patch for DPDK 19.11 into root directory of this script.\n" \
 	   "The patch is provided as part of v19.12 Release of FlexRAN package.\n" \
-	   "The script will now exit, the image will not be created.\n"
+	   "The script will now exit, the image will not be created.\n" $BBDEV_PATCH
     exit
 fi
 
+declare http_proxy https_proxy no_proxy
 sudo docker build \
-    --build-arg http_proxy=$http_proxy \
-    --build-arg https_proxy=$https_proxy \
-    --build-arg no_proxy=$no_proxy \
+    --build-arg http_proxy="$http_proxy" \
+    --build-arg https_proxy="$https_proxy" \
+    --build-arg no_proxy="$no_proxy" \
     -t bbdev-sample-app:1.0 .
 

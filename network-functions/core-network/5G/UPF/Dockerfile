@@ -11,6 +11,7 @@ RUN apt-get update && \
     apt-get -y install iputils-ping ethtool && \
     apt-get -y install python-pip libcap-ng-dev gawk pciutils kmod && \
     apt-get -y install libc6 pciutils python3 lsb-base libnuma-dev iproute2 findutils apt-utils  libtool fakeroot libmbedtls-dev libhyperscan4 sudo
+RUN groupadd vpp
 
 WORKDIR /root
 

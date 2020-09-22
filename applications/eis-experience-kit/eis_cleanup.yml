@@ -49,12 +49,6 @@
 
 - hosts: controller_group
   tasks:
-  - name: Load ETCD vars
-    include_vars: ./roles/etcd/deploy/defaults/main.yml
-
-  - name: Cleanup ETCD
-    include_tasks: ./roles/etcd/deploy/tasks/cleanup.yaml
-
   - name: Load CameraStream vars
     include_vars: ./roles/camera_stream/deploy/defaults/main.yml
 
@@ -78,6 +72,12 @@
 
   - name: Cleanup Visualizer
     include_tasks: ./roles/visualizer/deploy/tasks/cleanup.yaml
+
+  - name: Load ETCD vars
+    include_vars: ./roles/etcd/deploy/defaults/main.yml
+
+  - name: Cleanup ETCD
+    include_tasks: ./roles/etcd/deploy/tasks/cleanup.yaml
 
   - name: Cleanup Common
     include_tasks: ./roles/common/deploy/tasks/cleanup.yaml

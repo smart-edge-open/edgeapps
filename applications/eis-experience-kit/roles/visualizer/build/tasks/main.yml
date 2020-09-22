@@ -3,11 +3,17 @@
 
 ---
 
+- name: Check if Visualizer image is already built
+  shell: "{{ docker_format_command }} | grep {{ docker_image_tag }}"
+  register: image_built
+  ignore_errors: true
+
 - name: Build {{ docker_image_name }} docker image
   shell: docker-compose build {{ docker_image_name }}
   args:
-    chdir: "{{ eis_sources_dir }}/docker_setup"
+    chdir: "{{ eis_sources_dir }}/build"
   changed_when: true
+  when: image_built is failed
 
 - name: Add tag to the {{ docker_image_name }} image
   command: "docker tag {{ docker_image_tag }} {{ docker_registry_address }}/{{ docker_image_tag }}"

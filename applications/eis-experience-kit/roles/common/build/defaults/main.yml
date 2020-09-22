@@ -5,5 +5,5 @@
 
 openvino_download_url: "http://registrationcenter-download.intel.com/akdlm/irc_nas/16612/l_openvino_toolkit_p_2020.2.120.tgz"
 
-eis_base_images_names: "ia_eisbase ia_common ia_openvino_base"
+eis_base_images_names: "ia_eisbase ia_common ia_video_common ia_openvino_base"
 
