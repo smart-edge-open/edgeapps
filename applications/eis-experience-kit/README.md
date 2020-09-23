@@ -11,9 +11,8 @@ Edge Insights Software (EIS) is the framework for enabling smart manufacturing w
 More details about EIS:  
 [https://www.intel.com/content/www/us/en/internet-of-things/industrial-iot/edge-insights-industrial.html](https://www.intel.com/content/www/us/en/internet-of-things/industrial-iot/edge-insights-industrial.html)
 
-Currently, `eis-experience-kit` supports EIS in version 2.2.
+Currently, `eis-experience-kit` supports EIS in version 2.3.1
 
-- [OpenVINO](#openvino)
 - [Pre-requisites](#pre-requisites)
 - [Installation Process](#installation-process)
     - [Getting The Sources](#getting-the-sources)
@@ -30,13 +29,10 @@ Currently, `eis-experience-kit` supports EIS in version 2.2.
         - [RTSP Stream Setting](#rtsp-stream-setting)
     - [View Visualizer Setting](#view-visualizer-setting)
 - [Installation](#installation)
+- [Web Visualizer Display](#web-visualizer-display)
 - [Removal](#removal)
 - [References](#references)
 
-## OpenVINO
-EIS requires OpenVINO Toolkit to be downloaded and installed. It is automated and no user input is required.
-
-More about OpenVINO Toolkit: [https://docs.openvinotoolkit.org/](https://docs.openvinotoolkit.org/)
 
 ## Pre-requisites
 EIS applications require Network Edge OpenNESS platform to be deployed and working.
@@ -150,23 +146,39 @@ set port="8554"
     `/opt/eis_repo/IEdgeInsights/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.avi`
 
 
-### View Visualizer Setting
-
-Update IP Adddress of host where we want to see the GUI ouput, Visualizer container will expose the GUI output on display host. 
-
+### View Visualizer HOST Server
+Currently default setting is enabled for **web_visualizer**.
+This setting is `optional` only if we want to view visualizer on any HOST server, Update IP Adddress of host server where we want to see the GUI output, Visualizer container will expose the GUI output on display host.
+```sh 
+display_visualizer_host: true
 display_host_ip: "192.168.0.1"     < Update Display Host IP>
-display_no: "1"              
+display_no: "1"                    <Update Display no>
+```
 
 **Note**: 
 - Display host shoud have GUI/VNC access and check the Display by echo $DISPLAY 
-update the display on above `display_no` .
-- configure  `xhost +` on Display host for receiving  video GUI  
+update the display on above `display_no`.
+- configure `xhost +` on Display host for receiving  video GUI  
 
 ## Installation
-After all the configuration is done, script `deploy_eis_pcb_demo.sh` needs to be executed to start the deployment process. No more actions are required, all the installation steps are fully automated. 
+After all the configuration is done, script `deploy_eis.sh` needs to be executed to start the deployment process. No more actions are required, all the installation steps are fully automated. 
+
+## Web Visualizer display
+
+After EIS deployed successfully output can be viewed using
+
+`https://<controller_IP>:5050`
+
+username:`admin`
+
+password:`admin@123`
+
+**Note**:
+Open Web Visualizer on google chrome browser, if Your connection is not private show, select Advanced option and proceed to.
+
 
 ## Removal
-To clean up the platform from EIS applications `cleanup_eis_pcb_demo.sh` script can be used. It runs Ansible playbook `eis_pcb_demo_cleanup.yml` and processes all the roles defined there. Inventory file is used for getting Controller Node IP.
+To clean up the platform from EIS applications `cleanup_eis_deployment.sh` script can be used. It runs Ansible playbook `eis_cleanup.yml` and processes all the roles defined there. Inventory file is used for getting Controller Node IP.
 
 ## References
 - [Industrial Edge Insights Application on OpenNESS - Solution Overview](https://github.com/otcshare/specs/blob/master/doc/applications/openness_eis.md)
