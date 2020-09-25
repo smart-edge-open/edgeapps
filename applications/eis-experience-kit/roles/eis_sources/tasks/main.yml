@@ -2,6 +2,11 @@
 # Copyright (c) 2020 Intel Corporation
 
 ---
+- name: delete if any old eis_repo folder exist
+  file:
+    path: "{{ eis_repo_dir }}"
+    state: absent
+  ignore_errors: yes
 
 - name: create directory if not exist
   file:
