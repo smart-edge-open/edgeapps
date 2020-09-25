@@ -174,11 +174,6 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
     else:
         comp = 0
 
-    if "srsEanble" in context:
-        srs_enb = 'srsEanble'
-    else:
-        srs_enb = 0
-
     print("compare results: {} [compression {}]\n".format(DIC_DIR.get(direction), comp))
 
     #if cat == 1:
@@ -346,128 +341,6 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
 
     #if (direction == 0) | (cat == 0) | (srs_enb == 0): #DL or Cat A
         #done
-    #return res
-
-    print("compare results: {} [compression {}]\n".format('SRS', comp))
-
-    #srs
-    symb_mask = context["srsSym"]
-    try:
-        flow_id = context["ccNum"]*context["antElmTRx"]
-        for i in range(0, flow_id):
-            #read ref and test files
-            tst = []
-            ref = []
-
-            if direction == 1:
-                # UL
-                nrb = n_uirb
-                file_tst = xran_path+"/results/"+"o-du-srs_log_ant"+str(i)+".txt"
-                file_ref = xran_path+"/results/logs/"+"o-ru-play_srs_ant"+str(i)+".txt"
-
-#                file_tst = xran_path+"/app/logs/"+"o-du-srs_log_ant"+str(i)+".txt"
-#                file_ref = xran_path+"/app/logs/"+"o-ru-play_srs_ant"+str(i)+".txt"
-            else:
-                raise Exception('Direction is not supported %d'.format(direction))
-
-            print("test result   :", file_tst)
-            print("test reference:", file_ref)
-            if os.path.exists(file_tst):
-                try:
-                    file_tst = open(file_tst, 'r')
-                except OSError:
-                    print("Could not open/read file:", file_tst)
-                    sys.exit()
-            else:
-                print(file_tst, "doesn't exist")
-                res = -1
-                return res
-            if os.path.exists(file_ref):
-                try:
-                    file_ref = open(file_ref, 'r')
-                except OSError:
-                    print("Could not open/read file:", file_ref)
-                    sys.exit()
-            else:
-                print(file_tst, "doesn't exist")
-                res = -1
-                return res
-
-            tst = file_tst.readlines()
-            ref = file_ref.readlines()
-
-            print(len(tst))
-            print(len(ref))
-
-            file_tst.close()
-            file_ref.close()
-
-            print(context["numSlots"])
-
-            for slot_idx in range(0, context["numSlots"]):
-                for sym_idx in range(0, 14):
-                    if symb_mask & (1 << sym_idx):
-                        print("SRS check sym ", sym_idx)
-                        if context["nFrameDuplexType"] == 1:
-                            #skip sym if TDD
-                            if direction == 0:
-                                #DL
-                                sym_dir = slot_config[slot_idx%context["nTddPeriod"]][sym_idx]
-                                if sym_dir != 0:
-                                    continue
-                            elif direction == 1:
-                                #UL
-                                sym_dir = slot_config[slot_idx%context["nTddPeriod"]][sym_idx]
-                                if sym_dir != 1:
-                                    continue
-
-                        #print("Check:","[",i,"]", slot_idx, sym_idx)
-                        for line_idx in range(0, nrb*12):
-                            offset = (slot_idx*nrb*12*14) + sym_idx*nrb*12 + line_idx
-                            try:
-                                line_tst = tst[offset].rstrip()
-                            except IndexError:
-                                res = -1
-                                print("FAIL:", "IndexError on tst: ant:[", i, "]:",
-                                      offset, slot_idx, sym_idx, line_idx, len(tst))
-                                raise GetOutOfLoops
-                            try:
-                                line_ref = ref[offset].rstrip()
-                            except IndexError:
-                                res = -1
-                                print("FAIL:", "IndexError on ref: ant:[", i, "]:",
-                                      offset, slot_idx, sym_idx, line_idx, len(ref))
-                                raise GetOutOfLoops
-                            if False: #SRS sent as not compressed
-                                #comp == 1:
-                                # discard LSB bits as BFP compression is not Bit Exact
-                                tst_i_value = int(line_tst.split(" ")[0]) & 0xFF80
-                                tst_q_value = int(line_tst.split(" ")[1]) & 0xFF80
-                                ref_i_value = int(line_ref.split(" ")[0]) & 0xFF80
-                                ref_q_value = int(line_ref.split(" ")[1]) & 0xFF80
-
-                                print("check:", "ant:[", i, "]:", offset, slot_idx, sym_idx,
-                                      line_idx, ":", "tst: ", tst_i_value, " ", tst_q_value, " ",
-                                      "ref: ", ref_i_value, " ", ref_q_value, " ")
-                                if (tst_i_value != ref_i_value) or  (tst_q_value != ref_q_value):
-                                    print("FAIL:", "ant:[", i, "]:", offset, slot_idx, sym_idx,
-                                          line_idx, ":", "tst: ", tst_i_value, " ", tst_q_value,
-                                          " ", "ref: ", ref_i_value, " ", ref_q_value, " ")
-                                    res = -1
-                                    raise GetOutOfLoops
-                            else:
-                                #if line_idx == 0:
-                                    #print("Check:", offset,"[",i,"]", slot_idx, sym_idx,":"
-                                    #, line_tst, line_ref)
-                                if line_ref != line_tst:
-                                    print("FAIL:", "ant:[", i, "]:", offset, slot_idx, sym_idx,
-                                          line_idx, ":", "tst:", line_tst, "ref:", line_ref)
-                                    res = -1
-                                    raise GetOutOfLoops
-    except GetOutOfLoops:
-        pass
-
-
     return res
 
 def parse_dat_file(test_cfg):
@@ -498,17 +371,17 @@ def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path):
     """ method for runing test cases"""
     if rantech == 1: #LTE
         if cat == 1:
-            test_config = xran_path+"/app/usecase/lte_b/m_u{0:d}_{1:d}mhz".format(m_u, b_w)
+            test_config = xran_path+"/app/usecase/lte_b/mu{0:d}_{1:d}mhz".format(m_u, b_w)
         elif cat == 0:
-            test_config = xran_path+"/app/usecase/lte_a/m_u{0:d}_{1:d}mhz".format(m_u, b_w)
+            test_config = xran_path+"/app/usecase/lte_a/mu{0:d}_{1:d}mhz".format(m_u, b_w)
         else:
             print("Incorrect cat arguments\n")
             return -1
     elif rantech == 0: #5G NR
         if cat == 1:
-            test_config = xran_path+"/app/usecase/cat_b/m_u{0:d}_{1:d}mhz".format(m_u, b_w)
+            test_config = xran_path+"/app/usecase/cat_b/mu{0:d}_{1:d}mhz".format(m_u, b_w)
         elif cat == 0:
-            test_config = xran_path+"/app/usecase/m_u{0:d}_{1:d}mhz".format(m_u, b_w)
+            test_config = xran_path+"/app/usecase/mu{0:d}_{1:d}mhz".format(m_u, b_w)
         else:
             print("Incorrect cat argument\n")
             return -1

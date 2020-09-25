@@ -300,7 +300,7 @@ verifyTests()
 
   echo "STEP 2: VERIFY TESTS RESULTS" 
 
-  python "$XRAN_DIR/app/test_verification.py" --ran "$tech" --cat "$cat" --testcase "$tc" --mu "$mu"  --b "$bw" --verbose "$TEST_VERBOSE"
+  python "$XRAN_DIR/app/test_verification.py" --ran "$tech" --cat "$cat" --testcase "$tc" --m_u "$mu"  --b "$bw" --verbose "$TEST_VERBOSE"
   echo -e "\t$(date) xRAN sample app test and test verififaction completed"
 
 }
