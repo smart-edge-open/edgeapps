@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+mkdir -p RootCA
+mkdir -p Server
+mkdir -p Client
+
+EtcdctlPath={{ etcdctl_bin_path }}
+
+echo "Generating RootCA Key and Cert for WebVisualizer access "
+openssl ecparam -genkey -name secp384r1 -out "./RootCA/ca.key"
+openssl req -key "./RootCA/ca.key" -new -x509 -days 1000 -subj "/CN=WebVisualizer" -out "./RootCA/ca.crt"
+
+echo "Generate Server Key and Cert for WebVisualizer access"
+openssl req -new -sha256 -nodes -out ./Server/server.csr -newkey rsa:2048 -keyout ./Server/server.key -subj "/CN=Server"
+openssl x509 -req -in ./Server/server.csr -CA ./RootCA/ca.crt -CAkey ./RootCA/ca.key -days 1000 -out ./Server/server.cert -CAcreateserial
+
+echo "Generate Client Key and Cert for WebVisualizer access"
+openssl req -new -sha256 -nodes -out ./Client/client.csr -newkey rsa:2048 -keyout ./Client/client.key -subj "/CN=Client"
+openssl x509 -req -in client.csr -CA ./RootCA/ca.crt -CAkey ./RootCA/ca.key -days 1000 -out ./Client/client.cert -CAcreateserial
+
+etcd_ip=$(kubectl -n eis get service  ia-etcd-service | grep ia-etcd-service |awk '{print $3}')
+
+echo "Access etcd for writing WebVisualizer web access certificate"
+export ETCDCTL_CACERT={{ rootca_cert }}
+export ETCDCTL_CERT={{ root_client_cert }}
+export ETCDCTL_KEY={{ root_client_key }}
+export ETCDCTL_ENDPOINTS=https://$etcd_ip:{{ etcd_port }}
+
+cd $EtcdctlPath
+./etcdctl get "/GlobalEnv/"
+cat {{ helm_chart_web_visualizer }}/secrets/Server/server.key | ./etcdctl put /WebVisualizer/server_key
+cat {{ helm_chart_web_visualizer }}/secrets/Server/server.cert | ./etcdctl put /WebVisualizer/server_cert
+cat {{ helm_chart_web_visualizer }}/secrets/RootCA/ca.crt | ./etcdctl put /WebVisualizer/ca_cert
+

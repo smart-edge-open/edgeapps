@@ -4,81 +4,139 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"github.com/levigross/grequests"
 	"log"
-	"strings"
+	"net/http"
 	"time"
 )
 
-type Source struct {
+type VASPostSource struct {
 	URI  string `json:"uri"`
 	Type string `json:"type"`
 }
 
-type Destination struct {
+type VASPostDestination struct {
 	Path   string `json:"path"`
 	Type   string `json:"type"`
 	Format string `json:"format"`
 }
 
-type VASPostBody struct {
-	SRCE Source      `json:"source"`
-	DEST Destination `json:"destination"`
+type VASPostRequest struct {
+	Source      *VASPostSource      `json:"source"`
+	Destination *VASPostDestination `json:"destination"`
 }
 
 type VASInstanceStatus struct {
-	AvgFps      float64 `json:"avg_fps"`
+	StartTime   float64 `json:"start_time"`
 	ElapsedTime float64 `json:"elapsed_time"`
 	ID          int     `json:"id"`
-	StartTime   float64 `json:"start_time"`
 	State       string  `json:"state"`
+	AvgFPS      float64 `json:"avg_fps"`
 }
 
 func postVAServingRequest(vaEndPoint string, vaPipeline string) error {
 
 	// Interface: POST /pipelines/{name}/{version} for Start new pipeline instance
-	var endPointStr string
-	endPointStr = vaEndPoint + "/pipelines/" + vaPipeline
-	log.Println("Starting POST Request:" + endPointStr)
-	var src Source
-	src.URI = "https://github.com/intel-iot-devkit/sample-videos/blob/master/bottle-detection.mp4?raw=true"
-	src.Type = "uri"
-	var dst Destination
-	dst.Path = "/tmp/results.txt"
-	dst.Type = "file"
-	dst.Format = "json-lines"
-	var vasPost = VASPostBody{SRCE: src, DEST: dst}
-	var vasPostJson, _ = json.Marshal(vasPost)
-	var vasRequestOption = &grequests.RequestOptions{}
-	vasRequestOption.JSON = string(vasPostJson)
-	//resp, err = grequests.Post("http://localhost:8080/pipelines/object_detection/1",vasRequestOption)
-	resp, err := grequests.Post(endPointStr, vasRequestOption)
-	if err != nil {
-		log.Fatalln("Post Failed with: ", err)
-		return err
+	VASRequest := VASPostRequest{
+		Source: &VASPostSource{
+			URI:  "https://github.com/intel-iot-devkit/sample-videos/blob/master/bottle-detection.mp4?raw=true",
+			Type: "uri",
+		},
+		Destination: &VASPostDestination{
+			Path:   "/tmp/results.txt",
+			Type:   "file",
+			Format: "json-lines",
+		},
 	}
-	log.Println("Pipeline Instance Created:", resp.String())
-	var instance = strings.TrimSpace(resp.String())
+
+	endPointStr := vaEndPoint + "/pipelines/" + vaPipeline
+	log.Println("Starting POST Request: ", endPointStr)
+
+	VASReqPayload, err := json.Marshal(VASRequest)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	VASPostResp, err := http.Post(endPointStr, "application/json; charset=UTF-8", bytes.NewBuffer(VASReqPayload))
+	if err != nil {
+		log.Fatal(err)
+	}
+	postReconnectTries := 0
+	for VASPostResp.StatusCode == http.StatusServiceUnavailable && postReconnectTries < 10 {
+		postReconnectTries++
+		log.Println("Pipeline service is not currently available, trying again")
+		time.Sleep(time.Duration(5) * time.Second)
+		VASPostResp, err = http.Post(endPointStr, "", bytes.NewBuffer(VASReqPayload))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if postReconnectTries == 10 {
+		log.Fatal("Number of connection retries to ", endPointStr, "exceeded, exiting")
+	}
+
+	var VASRespBody interface{}
+	err = json.NewDecoder(VASPostResp.Body).Decode(&VASRespBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+	parsedRespBody, err := json.MarshalIndent(VASRespBody, "<prefix>", "<indent>")
+	if err != nil {
+		log.Fatal(err)
+	}
+	instanceID := string(parsedRespBody)
+
+	err = VASPostResp.Body.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Interface: GET /pipelines/{name}/{version}/{instance_id}/status for Return pipeline instance status.
-	// Loop status query until instantance completed.
-	var statusResp VASInstanceStatus
 	for {
-		//resp, err := grequests.Get("http://localhost:8080/pipelines/object_detection/1/"+instance+"/status", nil)
-		resp, err := grequests.Get(endPointStr+"/"+instance+"/status", nil)
+		getEndPointStr := endPointStr + "/" + instanceID + "/status"
+		log.Println("Starting status check: ", getEndPointStr)
+		VASGetResp, err := http.Get(getEndPointStr)
 		if err != nil {
-			log.Fatalln("Get Failed with: ", err)
-			return err
+			log.Fatal(err)
 		}
-		log.Println(resp.String())
-		resp.JSON(&statusResp)
+		getReconnectTries := 0
+		for VASGetResp.StatusCode == http.StatusServiceUnavailable && getReconnectTries < 10 {
+			getReconnectTries++
+			log.Println("Pipeline status service is not currently available, trying again")
+			time.Sleep(time.Duration(5) * time.Second)
+			VASGetResp, err = http.Get(getEndPointStr)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if getReconnectTries == 10 {
+			log.Fatal("Number of connection retries to ", getEndPointStr, "exceeded, exiting")
+		}
+
+		var statusResp VASInstanceStatus
+		err = json.NewDecoder(VASGetResp.Body).Decode(&statusResp)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Printf("{\n avg_fps: %f,\n elapsed_time: %f\n id: %d\n start_time: %f\n state: %s\n}\n",
+			statusResp.AvgFPS, statusResp.ElapsedTime, statusResp.ID, statusResp.StartTime, statusResp.State)
+
 		if statusResp.State == "COMPLETED" {
 			break
+		} else if statusResp.State == "ERROR" {
+			log.Fatal("Error with VAS pipeline instance")
+		}
+
+		err = VASGetResp.Body.Close()
+		if err != nil {
+			log.Fatal(err)
 		}
 		time.Sleep(time.Duration(10) * time.Second)
-
 	}
-	return nil
 
+	return nil
 }

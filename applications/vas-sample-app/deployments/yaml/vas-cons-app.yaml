@@ -2,24 +2,32 @@
 # Copyright (c) 2020 Intel Corporation
 
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: vas-cons-app
-  namespace: default
-  labels:
-    name: vas-cons-app
 spec:
-  restartPolicy: Never
-  containers:
-  - name: vas-cons-app
-    image: vas-cons-app:1.0
-    imagePullPolicy: Never
-    volumeMounts:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vas-cons-app
+  template:
+    metadata:
+      labels:
+        app: vas-cons-app
+    spec:
+      containers:
+      - name: vas-cons-app
+        image: vas-cons-app:1.0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        volumeMounts:
         - name: tmp
           mountPath: /tmp
-
-  volumes:
+      volumes:
       - name: tmp
         hostPath:
-            path: /tmp
+          path: /tmp
+          type: Directory

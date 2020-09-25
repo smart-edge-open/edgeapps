@@ -4,5 +4,5 @@
 ---
 repo_tool: "https://storage.googleapis.com/git-repo-downloads/repo"
 eis_repo_url: "ssh://git@gitlab.devtools.intel.com:29418/Indu/IEdgeInsights/eis-manifests"
-eis_repo_branch: "refs/tags/v2.3-Alpha-RC1"
+eis_repo_branch: "refs/tags/v2.3.1"
 

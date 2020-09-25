@@ -19,8 +19,6 @@ def parse_arguments(_cli_args):
     return parser.parse_args()
 
 def main(args):
-    """ Calls the eis_integ.etcd_put_json function to add the contents of the json file
-        to the etcd database """
     eis_integ.init_logger()
 
     os.environ["ETCDCTL_ENDPOINTS"] = "https://" + \
@@ -41,7 +39,6 @@ def main(args):
     else:
         logging.info("ZMQ pair keys generation skipped for {} app".format(args.app))
 
-    eis_integ.put_zmqkeys(args.app)
     return eis_integ.CODES.NO_ERROR
 
 

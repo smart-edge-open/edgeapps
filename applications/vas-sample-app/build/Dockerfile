@@ -20,9 +20,6 @@ RUN cd /tmp && \
 	mv go /usr/local && \
 	rm -rf /tmp/go*
 
-# Get go dependencies
-RUN go get github.com/levigross/grequests
-
 WORKDIR /root
 
 COPY build/start.sh ./

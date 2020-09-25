@@ -3,56 +3,63 @@ SPDX-License-Identifier: Apache-2.0
 Copyright (c) 2020 Intel Corporation
 ```
 
-# VAS Sample Application in OpenNESS
+# Video Analytics Services Sample Application in OpenNESS
 
-This sample application demonstrates VAS consumer sample application deployment and execution on the OpenNESS edge platform with VAS enabled.
+- [Introduction](#introduction)
+  - [Directory Structure](#directory-structure)
+- [Quick Start](#quick-start)
+  - [Sample App Deployment](#sample-app-deployment)
+  - [Sample App Results](#sample-app-results)
+
+## Introduction
+
+This sample application demonstrates the Video Analytics Services (VAS) consumer sample application deployment and execution on the OpenNESS edge platform with VAS enabled.
+For more information on VAS itself, please see [OpenNESS Video Analytics Services](https://github.com/otcshare/specs/blob/master/doc/applications/openness_va_services.md).
 
 
-# Introduction
-## Directory Structure
-- `/cmd` : Main applications inside.
-- `/build` : Building scripts in the folder.
-- `/deployments` : Helm Charts and K8s yaml files inside.
+### Directory Structure
+- `/cmd` : Application source files.
+- `/build` : Build scripts.
+- `/deployments` : Helm Charts and K8s yaml files.
 
 
 ## Quick Start
-### To build sample application container image:
+To build  the sample application container image, run the following command from the sample application folder:
 
 ```sh
 ./build/build-image.sh
 ```
 
-After build image, you can directly push the image to docker registry on the controller:
+After building the image, you can push it directly to the docker registry on the controller with the following command:
 
 ```sh
 docker push <controller_ip>:5000/vas-cons-app:1.0
 ```
 
-Or you can directly build image on the edgenode.
+The image can also be built and stored directly on the edgenode.
+
+> **Note**: If the application image is pushed to the docker registry on the controller, you will need to edit the entry ```repository``` in ```deployments/helm/values.yaml``` or ```deployments/yaml/vas-cons-app.yaml``` to the IP address of the docker registry before deploying the application.
+
+### Sample App Deployment
+
+- Make sure the sample application images are built and reachable by running ```docker image list | grep vas-cons-app``` on the edgenode.
+- Two methods are available for deploying the sample application on the edgenode:
+  - Use the command ```kubectl apply -f vas-cons-app.yaml``` from the ```deployments/yaml``` folder.
+  - Use Helm to install the application using the files in the ```deployments/helm``` folder.
 
 
-### To deploy and test the sample application:
+### Sample App Results
 
-- Make sure the sample application images built and reachable 
-- Two method for the deployment on the openness edge node
-  - Use the command ```kubectl apply``` with the yaml file ```vas-cons-app.yaml``` in the folder - deployments/yaml
-  - Or use helm charts in the folder - deployments/helm
-- Check Results by ```kubectl logs```
-NOTE: If image pushed to docker registry on the controller, you need to edit: ```deployments/helm/values.yaml``` or ```deployments/yaml/vas-cons-app.yaml``` - change ```repository``` to IP address of Docker Registry .
-
-
-### To check test results:
-
-1. check whether the application pod is successfully deployed.
+1. Check whether the application pod is successfully deployed.
 ```sh
 # kubectl get pods -A | grep vas-cons-app
-default       vas-cons-app                                0/1     Completed   0          30h
+default       vas-cons-app-7f8bf7c978-csfwj -c vas-cons-app        0/1     Completed   0          30h
 ```
 
-2. check the pod's logs as below expected results:
+2. Check the pod's logs, results should look similar to the following:
 
 ```sh
-# kubectl logs vas-cons-app
+# kubectl logs vas-cons-app-7f8bf7c978-csfwj -c vas-cons-app
 2020/06/29 01:37:25 Video-analytics-service Consumer Started
 2020/06/29 01:37:25 CSR Started
 2020/06/29 01:37:25 CSR creating certificate
@@ -81,4 +88,3 @@ default       vas-cons-app                                0/1     Completed   0 
   "state": "COMPLETED"
 }
 ```
-
