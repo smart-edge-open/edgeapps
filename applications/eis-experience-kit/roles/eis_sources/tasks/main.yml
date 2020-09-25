@@ -15,7 +15,6 @@
     - curl {{ repo_tool }} > repo
     - mv repo -f /bin/
     - chmod 755 /bin/repo
-  changed_when: true
   args:
     chdir: "{{ eis_repo_dir }}"
   changed_when: true

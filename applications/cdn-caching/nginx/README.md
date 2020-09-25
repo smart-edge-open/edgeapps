@@ -2,7 +2,7 @@
 SPDX-License-Identifier: Apache-2.0
 Copyright (c) 2020 Intel Corporation
 ```
-
+<!-- omit in toc -->
 # CDN Application in OpenNESS
 This sample application demonstrates CDN (Content Delivery Network) deployment and execution on the OpenNESS edge platform.
 
@@ -13,7 +13,7 @@ This sample application demonstrates CDN (Content Delivery Network) deployment a
     - [Setting up kubeovn interface](#setting-up-kubeovn-interface)
     - [Setting up the SR-IOV interface](#setting-up-the-sr-iov-interface)
   - [Deploying the Application](#deploying-the-application)
-    - [Custom SSL certificate keys for the nginx](#Custom-ssl-certificate-keys-for-the-nginx)
+  - [Custom SSL certificate keys for the nginx](#custom-ssl-certificate-keys-for-the-nginx)
   - [Testing using wrk](#testing-using-wrk)
 
 
@@ -21,7 +21,7 @@ This sample application demonstrates CDN (Content Delivery Network) deployment a
 NGINX is configured to function as a Content Delivery Network. This section describes the deployment of nginx based CDN on an openNESS platform using helm charts and testing the CDN.
 
 ## Onboarding nginx based CDN application
-The purpose of this section is to guide the user on the complete process of onboarding the nginx based CDN application. This process will also guide the user on setting up network connection between test machine and the application. 
+The purpose of this section is to guide the user on the complete process of onboarding the nginx based CDN application. This process will also guide the user on setting up network connection between test machine and the application.
 
 ### Prerequisites
 
@@ -71,7 +71,7 @@ Extra setup is not required when using the control interface for data / content 
    ...
    0000:86:00.0  |  3c:fd:fe:b2:42:d0  |  detached
    ...
-    
+
    kubectl interfaceservice attach <edge_node_host_name> 0000:86:00.0
    ...
    Interface: 0000:86:00.0 successfully attached
@@ -83,7 +83,7 @@ Extra setup is not required when using the control interface for data / content 
    ...
    ```
   3. To enable the kube-ovn interface, set the helm key "sriov" to false and also set the "numNodes" to the number of available nodes in the cluster. The numNodes is used to generate the network policy resources to be used in the openNESS platform.
-  
+
 #### Setting up the SR-IOV interface
 
 1. Please refer to the link for setting up the SR-IOV interface: [Setting up SR-IOV for network edge](https://github.com/otcshare/specs/blob/master/doc/enhanced-platform-awareness/openness-sriov-multiple-interfaces.md#sriov-for-network-edge)
@@ -95,7 +95,7 @@ Extra setup is not required when using the control interface for data / content 
 Helm is used to deploy the CDN application. Please refer to [Helm website](https://helm.sh/) for further details.
 Clone the edgeapps repo and the nginx based CDN helm chart is available under "applications/cdn-caching/nginx/".
 
-> **Note:** The values.yaml file contain the key and default values used to customize the templates, during the helm deployment. Comments that explain the roles of the keys and their possible vaues are added in the values.yaml file. The example folder will contain further example values files. 
+> **Note:** The values.yaml file contain the key and default values used to customize the templates, during the helm deployment. Comments that explain the roles of the keys and their possible vaues are added in the values.yaml file. The example folder will contain further example values files.
 
 > **Note:** Provide the proper values for the origin server and the disk storage locations, where the contents need to be cached.
 
@@ -107,7 +107,7 @@ The ssl certificates for the nginx, can be passed in the command line as below, 
 helm install -f <path-to-optional-user-values-file> --set-file nginx.http.server.ssl_cert_file=<path-to-certificate-file> --set-file nginx.http.server.ssl_key_file=<path-to-key-file> <release-name> <path-to-helm-chart>
 
 # example
-helm install -f ./examples/sriov_nginx_values.yaml  --set-file nginx.http.server.ssl_cert_file=$PWD/nginx.crt --set-file nginx.http.server.ssl_key_file=$PWD/nginx.key openness_cdn ./helm/
+helm install -f ./examples/sriov_nginx_values.yaml  --set-file nginx.http.server.ssl_cert_file=$PWD/nginx.crt --set-file nginx.http.server.ssl_key_file=$PWD/nginx.key openness-cdn ./helm/
 ```
 ### Testing using wrk
 "wrk" tool can be used for generating multiple http requests. Hence it will be used to test the CDN.
@@ -128,7 +128,7 @@ Transfer/sec:      1.09GB
 > **Note** The wrk tool can be installed in a CentOS traffic host machine using the following steps,
 ```
 	yum groupinstall 'Development Tools'
-	yum install -y openssl-devel git 
+	yum install -y openssl-devel git
 	git clone https://github.com/wg/wrk.git wrk
 	cd wrk
 	make

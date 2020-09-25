@@ -32,15 +32,27 @@ make
 make install
 ```
 
-It is also required to have FlexCORE binaries already downloaded.
+Qemu by default can use files that have permissions set for user `qemu`. To make sure that qemu can use a file that has permissions set only for root please edit `/etc/libvirt/qemu.conf` and uncomment lines `user=root` and `group=root`. After that reload libvirtd service by:
+
+```sh
+systemctl restart libvirtd
+```
+
+If the issue with `virt-customize` tool is observed, try with exporting the environment variable:
+
+```sh
+export LIBGUESTFS_BACKEND=direct
+```
+
+It is also required to have FlexCORE binaries already downloaded. Openness does not provide the binaries of AMF/SMF applications.
 
 ### Running the script
 Script takes two parameters - one is the destination path for the image and second is the path to the FlexCORE binaries directory. Usage looks like:
 
 ```sh
-./build_amf_smf_image.sh <ubuntu_image_dest_dir> <astri_dir>
+./build_amf_smf_image.sh <ubuntu_image_dest_dir> <amf_smf_binaries_dir>
 ```
 
 As a result of successful run, the customized image (ready to be used by kubevirt virtual machine) should be created in destination path.
 
-Image is based on *Ubuntu 18.04 LTS Minimal* provided by Ubuntu site.
+Image is based on *Ubuntu 18.04 LTS (Bionic Beaver)* provided by Ubuntu site.
