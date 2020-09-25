@@ -12,14 +12,14 @@ img_file=${1}
 bin_dir=${2}
 
 if [[ ! -f ${img_file} ]]; then
-    curl https://cloud-images.ubuntu.com/minimal/releases/bionic/release/ubuntu-18.04-minimal-cloudimg-amd64.img -o "${img_file}"
+    curl https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img -o "${img_file}"
     if [[ ${?} -ne 0 ]]; then
         echo "ERROR: Failed to download Ubuntu image."
         exit 1
     fi
 
     # Check SHA256 if downloaded file is correct
-    curl https://cloud-images.ubuntu.com/minimal/releases/bionic/release/SHA256SUMS -o SHA256SUMS
+    curl https://cloud-images.ubuntu.com/bionic/current/SHA256SUMS -o SHA256SUMS
     if [[ ${?} -ne 0 ]]; then
         echo "ERROR: Failed to download SHA256SUMS file."
         exit 1

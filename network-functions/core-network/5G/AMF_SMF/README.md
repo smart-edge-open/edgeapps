@@ -55,4 +55,4 @@ Script takes two parameters - one is the destination path for the image and seco
 
 As a result of successful run, the customized image (ready to be used by kubevirt virtual machine) should be created in destination path.
 
-Image is based on *Ubuntu 18.04 LTS Minimal* provided by Ubuntu site.
+Image is based on *Ubuntu 18.04 LTS (Bionic Beaver)* provided by Ubuntu site.
