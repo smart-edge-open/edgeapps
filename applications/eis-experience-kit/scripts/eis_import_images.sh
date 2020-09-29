@@ -15,6 +15,7 @@ images_to_import=(
   "ia_video_ingestion:${eis_version}"
   "ia_video_analytics:${eis_version}"
   "ia_visualizer:${eis_version}"
+  "ia_web_visualizer:${eis_version}"
 )
 
 export_docker_image () {
