@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Actian Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "actianzen.fullname" . }}
+  labels:
+    {{- include "actianzen.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.serviceType }}
+  ports:
+    - port: 1583
+      protocol: TCP
+      targetPort: 1583
+      name: sql
+    - port: 3551
+      protocol: TCP
+      targetPort: 3351
+      name: btrv
+  selector:
+    {{- include "actianzen.selectorLabels" . | nindent 4 }}

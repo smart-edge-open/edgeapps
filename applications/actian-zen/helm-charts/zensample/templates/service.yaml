@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Actian Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zensample.fullname" . }}
+  labels:
+    {{- include "zensample.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    {{- include "zensample.selectorLabels" . | nindent 4 }}
