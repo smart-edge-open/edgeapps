@@ -7,7 +7,6 @@ import argparse
 import logging
 import os
 import sys
-import traceback
 import eis_integ
 
 
@@ -47,5 +46,5 @@ if __name__ == '__main__':
     try:
         sys.exit(main(parse_arguments(sys.argv[1:])).value)
     except eis_integ.EisIntegError as exception:
-        logging.error("Error while generating ZMQ keys: {}".format(exception))
+        logging.error("Error while generating ZMQ keys: %s", str(exception))
         sys.exit(exception.code.value)
