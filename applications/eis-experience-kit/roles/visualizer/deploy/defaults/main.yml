@@ -8,8 +8,12 @@ docker_image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}
 camera_stream_results_port: 65013
 app_name: "Visualizer"
 peer: "client"
+display_gui: "true"
+save_image: "false"
 cert_name: "etcd_{{ app_name }}_cert"
 key_name: "etcd_{{ app_name }}_key"
 publisher_pod_service: "ia-video-analytics-service"
 helm_release_name: "visualizer-release"
 helm_chart_visualizer: "{{ helm_charts_location }}/visualizer"
+zmq_keys_gen_force: false
+del_zmq_keys: false

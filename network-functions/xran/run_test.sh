@@ -19,13 +19,12 @@ APP_BIN="./build/sample-app"
 
 declare -a ethUpDev
 declare -a ethCpDev
-declare -a script
 
 printEnv()
 {
-  echo -e "\tXRAN_DIR="$XRAN_DIR
-  echo -e "\tRTE_SDK="$RTE_SDK
-  echo -e "\tRTE_TARGET"=$RTE_TARGET
+  echo -e "\tXRAN_DIR=$XRAN_DIR"
+  echo -e "\tRTE_SDK=$RTE_SDK"
+  echo -e "\tRTE_TARGET=$RTE_TARGET"
 
 }
 
@@ -47,17 +46,17 @@ printHelp()
 
 printArgs()
 {
-  echo -e "\tappMode="$mode
-  echo -e "\ttech="$tech" ( 0 for 5G, 1 for LTE )"
-  echo -e "\tcat="$cat
-  echo -e "\ttc="$tc
-  echo -e "\tmu="$mu
-  echo -e "\tbw="$bw
-  echo -e "\tportsNum="$portNum
-  echo -e "\tport_up_du="${ethUpDev[0]}
-  echo -e "\tport_cp_du="${ethCpDev[0]}
-  echo -e "\tport_up_ru="${ethUpDev[1]}
-  echo -e "\tport_cp_ru="${ethCpDev[1]}
+  echo -e "\tappMode=$mode"
+  echo -e "\ttech=$tech ( 0 for 5G, 1 for LTE )"
+  echo -e "\tcat=$cat"
+  echo -e "\ttc=$tc"
+  echo -e "\tmu=$mu"
+  echo -e "\tbw=$bw"
+  echo -e "\tportsNum=$portNum"
+  echo -e "\tport_up_du=${ethUpDev[0]}"
+  echo -e "\tport_cp_du=${ethCpDev[0]}"
+  echo -e "\tport_up_ru=${ethUpDev[1]}"
+  echo -e "\tport_cp_ru=${ethCpDev[1]}"
 
 }
 
@@ -72,10 +71,10 @@ checkMode()
     "du" )
        reqPortNum=2 ;;
     "none" )
-       echo -e "\tExiting application started with mode: "$mode
+       echo -e "\tExiting application started with mode: $mode"
        exit 0 ;;
     * )
-      echo -e "\tWrong application mode: "$mode
+      echo -e "\tWrong application mode: $mode"
       printHelp
       exit 1 ;;
   esac
@@ -83,7 +82,7 @@ checkMode()
   if [[ -z "$portNum" ]]; then
     portNum=$reqPortNum
   elif [[ $portNum -ne $reqPortNum ]]; then
-    echo "Number of ports is set to "$portNum ". Application requires "$reqPortNum" ports."
+    echo "Number of ports is set to "$portNum ". Application requires $reqPortNum ports."
     exit 1
   fi
 
@@ -93,7 +92,7 @@ setEnvPorts()
 {
   IFS=$'\n' read -r -d '' -a vfs < <( lspci | grep "Virtual Function" | awk '{ print $1}' && printf '\0' )
   if [[ ${#vfs[@]} -lt $portNum ]]; then
-    echo -e "\tFound "${#vfs[@]}" virtual ports available, required "$portNum
+    echo -e "\tFound ${#vfs[@]} virtual ports available, required $portNum"
     exit 1
   fi
 
@@ -123,7 +122,7 @@ procModeReq()
     "ru-du" )
       if [ -z "$p1" ]; then
         p1=$DEF_DU_P1
-        echo "SETTING P1: "$p1
+        echo "SETTING P1: $p1"
       fi
       if [ -z "$p2" ]; then
         p2=$DEF_DU_P2
@@ -170,15 +169,15 @@ runTestScripts()
   scripts="$1"
   len=${#scripts[@]}
 
-  for ((i=1; i<${len}+1; i++))
+  for ((i=1; i<len+1; i++))
   do
-    ./${scripts[$i-1]} > "test_output"$i".txt" 2>&1 &
+    "./${scripts[$i-1]}" > "test_output$i.txt" 2>&1 &
     pids+="$! "
   done
 
   p=0
   for pid in $pids; do
-    wait $pid
+    wait "$pid"
     if [ $? -eq 0 ]; then
       echo -e "\tProcess $pid running ${scripts[$p]} exited with a status $?"
     else
@@ -195,49 +194,49 @@ run()
   len=${#scripts[@]}
   cmd="./usecase/"
 
-  if [ $tech -eq 1 ]; then
-    if [ $cat -eq 1 ]; then
-      cmd=$cmd"lte_b/mu"$mu"_"$bw"mhz/"
-    elif [ $cat -eq 0 ]; then
-      cmd=$cmd"lte_a/mu"$mu"_"$bw"mhz/"
+  if [ "$tech" -eq 1 ]; then
+    if [ "$cat" -eq 1 ]; then
+      cmd="${cmd}lte_b/mu${mu}_${bw}mhz/"
+    elif [ "$cat" -eq 0 ]; then
+      cmd="${cmd}lte_a/mu${mu}_${bw}mhz/"
     else
       echo "Wrong cat argument"
       exit 1
     fi
-  elif [ $tech -eq 0 ]; then
-    if [ $cat -eq 1 ]; then
-      echo "cat ="$cat
-      cmd=$cmd"cat_b/mu"$mu"_"$bw"mhz/"
-    elif [ $cat -eq 0 ]; then
-      cmd=$cmd"mu"$mu"_"$bw"mhz/"
+  elif [ "$tech" -eq 0 ]; then
+    if [ "$cat" -eq 1 ]; then
+      echo "cat = $cat"
+      cmd="${cmd}cat_b/mu${mu}_${bw}mhz/"
+    elif [ "$cat" -eq 0 ]; then
+      cmd="${cmd}mu${mu}_${bw}mhz/"
     else
       echo "Wrong cat argument"
       exit 1
     fi
   fi
 
-  if [ $tc -gt 0 ]; then
-    cmd=$cmd$tcNum"/"
+  if [ "$tc" -gt 0 ]; then
+    cmd=$cmd$tc"/"
   fi
     
-  for ((i=1; i<${len}+1; i++))
+  for ((i=1; i<len+1; i++))
   do
     portIndex=$i
     if [[ -z ${ethUpDev[portIndex-1]} ]] && [[ -z ${ethUpDev[portIndex-1]} ]]; then
       (( portIndex++ ))
     fi
-    testCmd=$APP_BIN" -c "$cmd${scripts[$i-1]}" -p 2 "${ethUpDev[portIndex-1]}" "${ethCpDev[portIndex-1]}
-    echo -e "\t"$testCmd
+    testCmd="$APP_BIN -c $cmd${scripts[$i-1]} -p 2 ${ethUpDev[portIndex-1]} ${ethCpDev[portIndex-1]}"
+    echo -e "\t$testCmd"
     outFile=$XRAN_DIR"/app/logs/test_output_"
     outFile=$outFile${scripts[$i-1]:14:2}".txt"
-    echo -e "\tWriting application output to "$outFile
-    $testCmd > $outFile 2>&1 &
+    echo -e "\tWriting application output to $outFile"
+    $testCmd > "$outFile" 2>&1 &
     pids+="$! "
   done
 
   p=0
   for pid in $pids; do
-    wait $pid
+    wait "$pid"
     if [ $? -eq 0 ]; then
       echo -e "\tProcess $pid running ${scripts[$p]} exited with a status $?"
     else
@@ -250,20 +249,20 @@ run()
 testDuRu()
 {
   scripts=( $CONFIG_FILE_DU $CONFIG_FILE_RU )
-  cd $XRAN_DIR/app
-  run $scripts
+  cd "$XRAN_DIR/app"
+  run "${scripts[0]}"
 }
 
 testDu()
 {
   scripts=( $CONFIG_FILE_DU )
-  run $scripts
+  run "${scripts[0]}"
 }
 
 testRu()
 {
   scripts=( $CONFIG_FILE_RU )
-  run $scripts
+  run "${scripts[0]}"
 }
 
 verifyTests()
@@ -274,7 +273,7 @@ verifyTests()
       echo "Error while removing RU files"
       exit 1
     fi
-    cp $XRAN_DIR/app/logs/o-ru-* $RESULTS_DIR
+    cp "$XRAN_DIR"/app/logs/o-ru-* $RESULTS_DIR
     if [ $? -ne 0 ]; then
       echo "Error while coping RU files"
       exit 1
@@ -286,25 +285,23 @@ verifyTests()
       echo "Error while removing DU files"
       exit 1
     fi
-    cp $XRAN_DIR/app/logs/o-du-* $RESULTS_DIR
+    cp "$XRAN_DIR"/app/logs/o-du-* $RESULTS_DIR
     if [ $? -ne 0 ]; then
       echo "Error while coping DU files"
       exit 1
      fi
   fi
   if [[ "$mode" = "ru" ]]; then
-    echo -e "\t"$(date)" RU test completed" 
+    echo -e "\t$(date) RU test completed" 
     return
   fi
 
-  du_files=$(cd $RESULTS_DIR && ls -dq *o-du-*.txt | wc -l)
-  ANT_NUM=$du_files
-  cd $XRAN_DIR/app
+  cd "$XRAN_DIR/app"
 
   echo "STEP 2: VERIFY TESTS RESULTS" 
 
-  python $XRAN_DIR/app/test_verification.py --ran $tech --cat $cat --testcase $tc --mu $mu  --b $bw --verbose $TEST_VERBOSE
-  echo -e "\t"$(date)" xRAN sample app test and test verififaction completed"
+  python "$XRAN_DIR/app/test_verification.py" --ran "$tech" --cat "$cat" --testcase "$tc" --m_u "$mu"  --b "$bw" --verbose "$TEST_VERBOSE"
+  echo -e "\t$(date) xRAN sample app test and test verififaction completed"
 
 }
 
@@ -337,7 +334,7 @@ do
     i )
       read -a ports <<< "$OPTARG"
       if [[ ${#ports[*]} -ne $portNum ]]; then
-        echo -e "\t Received  "${#ports[*]} " port(s), while awaiting "$portNum
+        echo -e "\t Received  ${#ports[*]} port(s), while awaiting $portNum"
       fi
       p1=${ports[0]}
       p2=${ports[1]}
@@ -370,19 +367,18 @@ printArgs
 
 echo "STEP 1: RUN TESTS" 
 
-cd $XRAN_DIR/app
+cd "$XRAN_DIR/app"
 case $mode in
   "ru-du" )
-    echo -e "\t"$(date) "Starting RU and DU"
+    echo -e "\t$(date) Starting RU and DU"
     testDuRu ;;
   "ru" )
-    echo -e "\t"$(date) "Starting RU"
+    echo -e "\t$(date) Starting RU"
     testRu ;;
   "du" )
-    echo -e "\t"$(date) "Starting DU"
+    echo -e "\t$(date) Starting DU"
     testDu ;;
 esac
 
 #VERIFY TESTS RESULTS"
 verifyTests
-

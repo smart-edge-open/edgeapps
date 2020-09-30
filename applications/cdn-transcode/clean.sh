@@ -2,10 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-DIR=$(dirname $(readlink -f "$0"))
+LINK=$(readlink -f "$0")
+DIR=$(dirname "$LINK")
 
 # delete pvs and scs
-for yaml in $(find "${DIR}/CDN-Transcode-Sample/deployment/kubernetes" -maxdepth 1 -name "*-pv.yaml" -print); do
+for yaml in ${DIR}/CDN-Transcode-Sample/deployment/kubernetes/*-pv.yaml; do
     kubectl delete --wait=false -f "$yaml" --ignore-not-found=true 2>/dev/null
 done
 

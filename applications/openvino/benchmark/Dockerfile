@@ -45,6 +45,17 @@ RUN pip3 install networkx==2.3
 WORKDIR /opt/intel/openvino/deployment_tools/demo
 RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./demo_squeezenet_download_convert_run.sh"
 
+#Download OpenVINO pre-trained models
+
+RUN pip3 install pyyaml requests
+WORKDIR /opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader
+RUN ./downloader.py  --name face-detection-retail-0004
+RUN ./downloader.py  --name squeezenet1.1
+RUN ./downloader.py  --name semantic-segmentation-adas-0001
+RUN ./downloader.py  --name ssd300
+RUN ./downloader.py  --name ssd512
+RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./converter.py --name ssd300"
+RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./converter.py --name ssd512"
 
 WORKDIR /root/inference_engine_samples_build
 RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && make"

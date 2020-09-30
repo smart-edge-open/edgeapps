@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+docker_name: "ia_web_visualizer"
+docker_image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
+camera_stream_results_port: 65013
+app_name: "WebVisualizer"
+peer: "client"
+cert_name: "etcd_{{ app_name }}_cert"
+key_name: "etcd_{{ app_name }}_key"
+publisher_pod_service: "ia-video-analytics-service"
+helm_release_name: "web-visualizer-release"
+helm_chart_web_visualizer: "{{ helm_charts_location }}/web-visualizer"
+etcdctl_bin_path: "/opt/eis/etcd/eis_integ/bin"
+etcd_port: 2379

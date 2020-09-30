@@ -2,19 +2,37 @@
 # Copyright (c) 2020 Intel Corporation
 
 ---
+- name: delete if any old eis_repo folder exist
+  file:
+    path: "{{ eis_repo_dir }}"
+    state: absent
+  ignore_errors: yes
 
 - name: create directory if not exist
   file:
-    path: "{{ eis_sources_dir }}"
+    path: "{{ eis_repo_dir }}"
     state: directory
     mode: '0755'
 
-- name: EIS code repository using git clone
-  git:
-    repo: '{{ eis_repo_url }}'
-    dest: '{{ eis_sources_dir }}'
-    version: "{{ eis_repo_branch }}"
-    force: yes
+- name: download repo tool for multi-repo codebase checkout
+  shell: "{{ item }}"
+  with_items:
+    - curl {{ repo_tool }} > repo
+    - mv repo -f /bin/
+    - chmod 755 /bin/repo
+  args:
+    chdir: "{{ eis_repo_dir }}"
+  changed_when: true
+  when: eis_source == "gitclone"
+
+- name: EIS codebase checkout using repo tool
+  shell : "{{ item }}"
+  with_items:
+    - repo init -u "{{ eis_repo_url }}"  -b {{ eis_repo_branch }}
+    - cd .repo/manifests; repo init -m video.xml; repo sync
+  args:
+    chdir: "{{ eis_repo_dir }}"
+  changed_when: true
   when: eis_source == "gitclone"
 
 - name: EIS code repository from baseline release
@@ -32,8 +50,8 @@
     - name: Move source directory to the expected location
       shell: >-
         package_dir=({{ temp_dir.path }}/*) &&
-        sources_dir={{ temp_dir.path }}/$(basename $package_dir)/IEdgeInsights &&
-        mv $sources_dir/* {{ eis_sources_dir }}
+        sources_dir={{ temp_dir.path }}/$(basename $package_dir)/ &&
+        mv $sources_dir/* {{ eis_repo_dir }}
       changed_when: true
     - name: Remove temporary directory
       file:
@@ -41,3 +59,11 @@
         state: absent
       when: temp_dir.path is defined
   when: eis_source == "release"
+
+- name: generate eis  config build file
+  shell : "{{ item }}"
+  with_items:
+    - cd IEdgeInsights/build; pip3 install -r requirements.txt; python3 eis_builder.py
+  args:
+    chdir: "{{ eis_repo_dir }}"
+  changed_when: true

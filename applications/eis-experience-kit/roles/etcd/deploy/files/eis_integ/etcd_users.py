@@ -7,7 +7,6 @@ import argparse
 import logging
 import os
 import sys
-import traceback
 import eis_integ
 
 def parse_arguments(_cli_args):
@@ -51,5 +50,5 @@ if __name__ == '__main__':
     try:
         sys.exit(main(parse_arguments(sys.argv[1:])).value)
     except eis_integ.EisIntegError as exception:
-        logging.error("Error while doing operations on ETCD users: {}".format(exception))
+        logging.error("Error while doing operations on ETCD users: %s", exception)
         sys.exit(exception.code.value)
