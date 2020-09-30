@@ -1,4 +1,4 @@
-module github.com/otcshare/edgeapps/applications/sample-app
+module github.com/open-ness/edgeapps/applications/sample-app
 
 go 1.14
 
