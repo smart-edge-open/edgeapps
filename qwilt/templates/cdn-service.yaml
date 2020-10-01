@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "cdn.fullname" . }}-service
+spec:
+  type: {{ default "NodePort" .Values.cdnService.type }}
+  selector:
+    kubevirt.io/domain: {{ template "cdn.fullname" . }}
+  ports:
+   -  port: {{ default "80" .Values.cdnService.port }}
+{{- if .Values.cdnService.type }}
+{{- if eq .Values.cdnService.type "NodePort" }}
+      nodePort: {{ default "30007" .Values.cdnService.nodePort }}
+{{- end }}
+{{- else }}
+      nodePort: {{ default "30007" .Values.cdnService.nodePort }}
+{{- end }}
