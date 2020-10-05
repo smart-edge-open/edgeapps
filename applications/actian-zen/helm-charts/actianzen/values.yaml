@@ -6,30 +6,19 @@ replicaCount: 1
 image:
   name: actianzen
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
-
+serviceType: NodePort
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
 serviceAccount:
   create: true
   annotations: {}
   name: ""
-
 podAnnotations: {}
-
 podSecurityContext: {}
-
 securityContext: {}
-
-serviceType: NodePort
-
 resources: {}
-
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}

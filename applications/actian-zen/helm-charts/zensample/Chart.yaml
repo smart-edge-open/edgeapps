@@ -10,3 +10,4 @@ description: Sample Zen Client Application
 dependencies:
    - name: actianzen
      version: 0.1.0
+     repository: "file://../actianzen"

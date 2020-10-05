@@ -10,7 +10,7 @@ home: https://www.actian.com/data-management/zen-embedded-database/
 icon: https://www.actian.com/wp-content/uploads/2020/01/Actian-Logo-2020.png
 sources:
    - https://github.com/ActianCorp/TBD
-kewords:
+keywords:
    - Actian
    - ZenDB
    - Database
