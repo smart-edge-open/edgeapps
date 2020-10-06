@@ -9,7 +9,7 @@ description: Helm chart for deploying Actian Zen Enterprise Server
 home: https://www.actian.com/data-management/zen-embedded-database/
 icon: https://www.actian.com/wp-content/uploads/2020/01/Actian-Logo-2020.png
 sources:
-   - https://github.com/ActianCorp/TBD
+   - https://github.com/ActianCorp/ActianZen-OpenNESS
 keywords:
    - Actian
    - ZenDB
