@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Actian Corporation
+
+apiVersion: v2
+name: actianzen
+version: 0.1.0
+appVersion: 14.11.23
+description: Helm chart for deploying Actian Zen Enterprise Server
+home: https://www.actian.com/data-management/zen-embedded-database/
+icon: https://www.actian.com/wp-content/uploads/2020/01/Actian-Logo-2020.png
+sources:
+   - https://github.com/ActianCorp/ActianZen-OpenNESS
+keywords:
+   - Actian
+   - ZenDB
+   - Database
+   - SQL
+   - Btrieve
