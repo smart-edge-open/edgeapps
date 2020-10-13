@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
 {{- if and .Values.PersistentVolume.rootfs.scratch .Values.PersistentVolume.rootfs.imgSrc }}
 {{ fail "Both rootfs scratch and imgSrc are specified... Cannot proceed..." }}
 {{- end }}
