@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
 apiVersion: v2
 appVersion: 1.0.0
 description: kubevirt VM Qwilt based CDN
