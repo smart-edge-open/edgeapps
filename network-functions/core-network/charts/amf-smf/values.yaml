@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+image:
+    # Change Me! - please provide IP address and port of docker registry in
+    # the format  <ip_address>:<port>/<image-name>
+    # <ip_address>:<port>/
+    # of Docker registry where UPF docker image is uploaded
+  repository: amf-smf
+  tag: "1.0"               # The tag identifying the upf docker image,
+  pullPolicy: IfNotPresent # Pull policy for docker image
+
+isPrivileged: false          # Pod privilege level, possible values: true false
+amf_smf_autostart: false
+#node information
+node:
+  path: /opt/flexcore-5g-rel/        # Path on the node where the upf binary is stored
