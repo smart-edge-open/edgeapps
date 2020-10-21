@@ -77,14 +77,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// We can ask for list of available producer to be sure
-	// if we are indeed registered
-	allProducers, err := getServiceList(cli)
+	// check if we have a producer available
+	isAvailable, allProducers := isProducerAvailable(cli, producer)
 
-	if err != nil {
-		log.Panicln("Failed to get producers list " + err.Error())
+	if !isAvailable {
+		log.Panicln("No producers available")
 	}
 
+	log.Println("\nCurrent producers: ")
 	log.Println(allProducers)
 
 	// after program finishes unregister producer
