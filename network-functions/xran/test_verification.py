@@ -205,7 +205,7 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
             elif i == 9:
                 slot_config.insert(i, context["sslot_config9"])
             else:
-                raise Exception('i should not exceed nTddPeriod %d. The value of i was: {}'
+                raise Exception('i should not exceed nTddPeriod {}. The value of i was: {}'
                                 .format(context["nTddPeriod"], i))
         #print(SlotConfig, type(sSlotConfig0))
     try:
@@ -220,7 +220,7 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
         elif direction == 1:
             re_map = get_re_map(n_uirb, direction)
         else:
-            raise Exception('Direction is not supported %d'.format(direction))
+            raise Exception('Direction is not supported {}'.format(direction))
 
         for i in range(0, flow_id):
             #read ref and test files
@@ -242,7 +242,7 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
 #                file_tst = xran_path+"/app/logs/"+"o-du-rx_log_ant"+str(i)+".txt"
 #                file_ref = xran_path+"/app/logs/"+"o-ru-play_ant"+str(i)+".txt"
             else:
-                raise Exception('Direction is not supported %d'.format(direction))
+                raise Exception('Direction is not supported {}'.format(direction))
 
             print("test result   :", file_tst)
             print("test reference:", file_ref)

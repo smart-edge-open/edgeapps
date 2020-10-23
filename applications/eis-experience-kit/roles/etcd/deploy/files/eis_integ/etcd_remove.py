@@ -7,7 +7,6 @@ import argparse
 import logging
 import os
 import sys
-import traceback
 import eis_integ
 
 def parse_arguments(_cli_args):
@@ -16,10 +15,12 @@ def parse_arguments(_cli_args):
                                      "Removing app config from etcd.")
     parser.add_argument("app", help=
                         "Name of the application which config should be removed from etcd.")
-    parser.add_argument("--delete_keys", action='store_true', help="Remove all app entries in etcd including ZMQ keys")
+    parser.add_argument("--delete_keys", action='store_true',
+                        help="Remove all app entries in etcd including ZMQ keys")
     return  parser.parse_args()
 
 def main(args):
+    """ Main """
     eis_integ.init_logger()
 
     os.environ["ETCDCTL_ENDPOINTS"] = "https://" + eis_integ.extract_etcd_endpoint()
@@ -36,5 +37,5 @@ if __name__ == '__main__':
     try:
         sys.exit(main(parse_arguments(sys.argv[1:])).value)
     except eis_integ.EisIntegError as exception:
-        logging.error("Error while deleting entries from ETCD database: {}".format(exception))
+        logging.error("Error while deleting entries from ETCD database: %s", exception)
         sys.exit(exception.code.value)
