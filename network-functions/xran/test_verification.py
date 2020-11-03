@@ -142,7 +142,7 @@ def get_re_map(nrb, direction):
 
     return prb_map
 
-def compare_results(rantech, cat, m_u, xran_path, direction, context):
+def compare_results(rantech, cat, m_u, xran_path, direction, context): #pylint: disable=too-many-arguments, too-many-locals, too-many-branches, too-many-statements
     """method to compare results"""
     res = 0
     re_map = []
@@ -151,7 +151,7 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
             n_dirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(context["nDLBandwidth"]))]
             n_uirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(context["nULBandwidth"]))]
         else:
-            print("Incorrect arguments\n")
+            print("Incorrect arguments\n") #pylint: disable=superfluous-parens
             res = -1
             return res
     elif rantech == 0:
@@ -160,12 +160,12 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
             n_uirb = N_NUM_RBS_PER_SYM_F1[m_u][N_RCH_BW_OPTIONS.get(str(context["nULBandwidth"]))]
         elif (m_u >= 2) & (m_u <= 3):
             n_dirb = N_NUM_RBS_PER_SYM_F2[m_u - 2][N_RCH_BW_OPTIONS_MU2AND3.get(
-                                str(context["nDLBandwidth"]))]
+                str(context["nDLBandwidth"]))]
             n_uirb = N_NUM_RBS_PER_SYM_F2[m_u - 2][N_RCH_BW_OPTIONS_MU2AND3.get(
-                                str(context["nULBandwidth"]))]
+                str(context["nULBandwidth"]))]
             print(n_dirb, n_uirb)
         else:
-            print("Incorrect arguments\n")
+            print("Incorrect arguments\n") #pylint: disable=superfluous-parens
             res = -1
             return res
 
@@ -174,7 +174,7 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
     else:
         comp = 0
 
-    print("compare results: {} [compression {}]\n".format(DIC_DIR.get(direction), comp))
+    print("compare results: {} [compression {}]\n".format(DIC_DIR.get(direction), comp)) #pylint: disable=superfluous-parens
 
     #if cat == 1:
     #    print("WARNING: Skip checking IQs and BF Weights for CAT B for now\n");
@@ -208,7 +208,7 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
                 raise Exception('i should not exceed nTddPeriod {}. The value of i was: {}'
                                 .format(context["nTddPeriod"], i))
         #print(SlotConfig, type(sSlotConfig0))
-    try:
+    try: #pylint: disable=too-many-nested-blocks
 
         if (direction == 1) & (cat == 1): #UL
             flow_id = context["ccNum"]*context["antNumUL"]
@@ -270,13 +270,13 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context):
             tst = file_tst.readlines()
             ref = file_ref.readlines()
 
-            print(len(tst))
-            print(len(ref))
+            print(len(tst)) #pylint: disable=superfluous-parens
+            print(len(ref)) #pylint: disable=superfluous-parens
 
             file_tst.close()
             file_ref.close()
 
-            print(context["numSlots"])
+            print(context["numSlots"]) #pylint: disable=superfluous-parens
 
             for slot_idx in range(0, context["numSlots"]):
                 for sym_idx in range(0, 14):
@@ -363,11 +363,11 @@ def parse_dat_file(test_cfg):
             exe_line = exe_line+"'"
 
         code = compile(str(exe_line), '<string>', 'exec')
-        exec(code, global_env, local_env)
+        exec(code, global_env, local_env) #pylint: disable=exec-used
 
     return local_env
 
-def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path):
+def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path): #pylint: disable=too-many-arguments
     """ method for runing test cases"""
     if rantech == 1: #LTE
         if cat == 1:
@@ -375,7 +375,7 @@ def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path):
         elif cat == 0:
             test_config = xran_path+"/app/usecase/lte_a/mu{0:d}_{1:d}mhz".format(m_u, b_w)
         else:
-            print("Incorrect cat arguments\n")
+            print("Incorrect cat arguments\n") #pylint: disable=superfluous-parens
             return -1
     elif rantech == 0: #5G NR
         if cat == 1:
@@ -383,10 +383,10 @@ def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path):
         elif cat == 0:
             test_config = xran_path+"/app/usecase/mu{0:d}_{1:d}mhz".format(m_u, b_w)
         else:
-            print("Incorrect cat argument\n")
+            print("Incorrect cat argument\n") #pylint: disable=superfluous-parens
             return -1
     else:
-        print("Incorrect rantech argument\n")
+        print("Incorrect rantech argument\n") #pylint: disable=superfluous-parens
         return -1
 
     if tcase > 0:
@@ -407,17 +407,17 @@ def run_tcase(rantech, cat, m_u, b_w, tcase, xran_path):
     res = compare_results(rantech, cat, m_u, xran_path, 0, usecase_cfg)
     if res != 0:
         os.chdir(w_d)
-        print("FAIL")
+        print("FAIL") #pylint: disable=superfluous-parens
         return res
 
     res = compare_results(rantech, cat, m_u, xran_path, 1, usecase_cfg)
     if res != 0:
         os.chdir(w_d)
-        print("FAIL")
+        print("FAIL") #pylint: disable=superfluous-parens
         return res
 
     os.chdir(w_d)
-    print("PASS")
+    print("PASS") #pylint: disable=superfluous-parens
 
     return res
 
@@ -434,7 +434,7 @@ def main():
     if os.getenv("XRAN_DIR") is not None:
         xran_path = os.getenv("XRAN_DIR")
     else:
-        print("please set 'export XRAN_DIR' in the OS")
+        print("please set 'export XRAN_DIR' in the OS") #pylint: disable=superfluous-parens
         return -1
 
     # Set up logging with given level (DEBUG, INFO, ERROR) for console end logfile
