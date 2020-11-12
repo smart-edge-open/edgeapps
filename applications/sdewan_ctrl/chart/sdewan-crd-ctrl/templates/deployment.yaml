@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane:  {{ .Values.spec.label }}
+  name: {{ .Values.spec.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: {{ .Values.spec.label }}
+  template:
+    metadata:
+      labels:
+        control-plane: {{ .Values.spec.label }}
+    spec:
+      containers:
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=10
+        image: "{{ .Values.spec.proxy.image.registry }}{{ .Values.spec.proxy.image.name }}:{{ .Values.spec.proxy.image.tag }}"
+        name: {{ .Values.spec.proxy.name }}
+        imagePullPolicy: {{ .Values.spec.proxy.imagePullPolicy }}
+        ports:
+        - containerPort: 8443
+          name: https
+      - args:
+        - --metrics-addr=127.0.0.1:8080
+        - --enable-leader-election
+        command:
+        - /manager
+        image: "{{ .Values.spec.sdewan.image.registry}}{{ .Values.spec.sdewan.image.name }}:{{ .Values.spec.sdewan.image.tag }}"
+        imagePullPolicy: {{ .Values.spec.sdewan.imagePullPolicy }}
+        name: {{ .Values.spec.sdewan.name }}
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 30Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert
