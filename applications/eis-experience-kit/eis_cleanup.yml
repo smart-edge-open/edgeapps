@@ -44,7 +44,10 @@
   - name: uninstall docker
     include_tasks: ./roles/docker/tasks/uninstall.yml
 
-  - name: remove docker registry client certificate
+  # - name: remove docker registry client certificate
+  #   include_tasks: ./roles/docker_registry/localhost/tasks/cleanup.yml
+
+  - name: remove harbor registry client certificate
     include_tasks: ./roles/docker_registry/localhost/tasks/cleanup.yml
 
 - hosts: controller_group

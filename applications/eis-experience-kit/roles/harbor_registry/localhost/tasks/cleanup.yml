@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: delete certificate from node
+  file:
+    path: "/etc/docker/certs.d/{{ harbor_registry_ip }}:{{ harbor_registry_port }}"
+    state: absent
+  ignore_errors: yes

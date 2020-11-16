@@ -54,7 +54,7 @@ Overview on `eis-experience-kit` architecture:
 
 ![eis-experience-kit architecture](docs/images/eis_deployment_diagram.png)
 
-All the `build` tasks are perfomed on `localhost`. It is the same machine that Ansible Playbook is run on. These tasks contain installation of all required prerequisites for building the applications images and all steps related to building docker images. All images, after successful build, are tagged and pushed to the Docker Registry that is a part of OpenNESS platform. They will be used by Kubernetes later, in `deploy` stage. 
+All the `build` tasks are perfomed on `localhost`. It is the same machine that Ansible Playbook is run on. These tasks contain installation of all required prerequisites for building the applications images and all steps related to building docker images. All images, after successful build, are tagged and pushed to the Harbor Registry that is a part of OpenNESS platform. They will be used by Kubernetes later, in `deploy` stage. 
 
 ### Deploy Stage
 `Deploy` tasks are executed on OpenNESS Master Node. These tasks include ETCD certificates and ZMQ keys generation process and adding apps configs to ETCD. All these things are done just before the particular application has been deployed. For the deployment `kubectl` command and Kubernetes manifest files have been used. 

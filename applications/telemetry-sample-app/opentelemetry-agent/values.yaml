@@ -35,7 +35,7 @@ agent:
 #App
 app:
   image:
-    repository: 10.0.0.1:30003/library/metricapp #Change Me
+    repository: 10.0.0.1:30003/intel/metricapp #Change Me
     tag: 0.1.0
   name: metrics-app
   resources:

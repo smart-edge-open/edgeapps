@@ -30,15 +30,15 @@ To build  the sample application container image, run the following command from
 ./build/build-image.sh
 ```
 
-After building the image, you can push it directly to the docker registry on the controller with the following command:
+After building the image, you can push it directly to the Harbor Registry on the controller with the following command:
 
 ```sh
-docker push <controller_ip>:5000/vas-cons-app:1.0
+docker push <controller_ip>:30003/intel/vas-cons-app:1.0
 ```
 
 The image can also be built and stored directly on the edgenode.
 
-> **Note**: If the application image is pushed to the docker registry on the controller, you will need to edit the entry ```repository``` in ```deployments/helm/values.yaml``` or ```deployments/yaml/vas-cons-app.yaml``` to the IP address of the docker registry before deploying the application.
+> **Note**: If the application image is pushed to the Harbor Registry on the controller, you will need to edit the entry ```repository``` in ```deployments/helm/values.yaml``` or ```deployments/yaml/vas-cons-app.yaml``` to the IP address of the Harbor Registry before deploying the application.
 
 ### Sample App Deployment
 
