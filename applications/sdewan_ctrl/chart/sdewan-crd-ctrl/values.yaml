@@ -4,7 +4,7 @@
 namespace: "sdewan-system"
 
 spec:
-  name: "sdewan-controller-manager"
+  name: "sdewan-crd-controller"
   label: "controller-manager"
   replicas: 1
   proxy:

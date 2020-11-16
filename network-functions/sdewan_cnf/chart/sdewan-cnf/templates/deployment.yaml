@@ -66,6 +66,8 @@ spec:
         - mountPath: /tmp/podinfo
           name: podinfo
           readOnly: true
+      nodeSelector:
+        {{ .Values.labelName }}: "{{ .Values.labelValue }}"
       restartPolicy: {{ .Values.restartPolicy }}
       volumes:
       - configMap:
