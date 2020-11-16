@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: sdewan-serving-cert
+  namespace: {{ .Values.namespace }}
+spec:
+  dnsNames:
+  - sdewan-webhook-service.sdewan-system.svc
+  - sdewan-webhook-service.sdewan-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: sdewan-selfsigned-issuer
+  secretName: webhook-server-cert
+

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v2
+name: sdewan-crd-ctrl
+description: A Helm chart for Kubernetes - SDEWAN controller deployment
+type: application
+version: 0.1.0
+appVersion: 1.16.0

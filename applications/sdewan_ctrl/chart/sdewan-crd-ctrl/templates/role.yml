@@ -1,0 +1,342 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sdewan-leader-election-role
+  namespace: {{ .Values.namespace }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - configmaps/status
+  verbs:
+  - get
+  - update
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    sdewan-bucket-type-permission: '{ "*": ["*"]}'
+  creationTimestamp: null
+  name: sdewan-manager-role
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewalldnats
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewalldnats/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewallforwardings
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewallforwardings/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewallrules
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewallrules/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewallsnats
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewallsnats/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewallzones
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - firewallzones/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - ipsechosts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - ipsechosts/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - ipsecproposals
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - ipsecproposals/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - ipsecsites
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - ipsecsites/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - mwan3policies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - mwan3policies/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - mwan3rules
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch.sdewan.akraino.org
+  resources:
+  - mwan3rules/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterrolebindings
+  - clusterroles
+  - rolebindings
+  - roles
+  verbs:
+  - get
+  - list
+  - watch
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sdewan-proxy-role
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sdewan-leader-election-rolebinding
+  namespace: {{ .Values.namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sdewan-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: {{ .Values.namespace }}
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sdewan-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sdewan-manager-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: {{ .Values.namespace }}
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sdewan-proxy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sdewan-proxy-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: {{ .Values.namespace }}
+
