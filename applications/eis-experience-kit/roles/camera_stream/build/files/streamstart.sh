@@ -1,18 +1,18 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-if [[ $# -ne 2 ]] ; then
+if [ "$#" -ne 2 ] ; then
     echo "No of argument are not correct"
     exit 1
 fi
 
-if [ "$1" == "pcb" ] 
+if [ "$1" = "pcb" ] 
 then 
     echo "Set pcb demo rtsp stream file"
     name="/tmp/pcb_d2000.avi"
 	
-elif [ "$1" == "safety" ]
+elif [ "$1" = "safety" ]
 then
     echo "Set Safety Hat demo rtsp stream file"
     name="/tmp/Safety_Full_Hat_and_Vest.avi"
