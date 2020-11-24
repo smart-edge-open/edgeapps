@@ -11,7 +11,7 @@ git checkout tags/v20.4 || { echo "Failed to checkput Tag $TAG"; exit 3; }
 mkdir -p build
 cd build
 
-if kubectl get pods -A | grep docker-registry ; then
+if kubectl get pods -A | grep harbor-registry ; then
 	mName=$(kubectl get nodes | grep master | cut -f 1 -d ' ')
 	if [ ! -z "$mName" ]; then
 		mIP=$(kubectl get node -o 'custom-columns=NAME:.status.addresses[?(@.type=="Hostname")].address,IP:.status.addresses[?(@.type=="InternalIP")].address' | awk '!/NAME/{print $1":"$2}' | grep "$mName" | cut -f 2 -d':')
@@ -20,7 +20,7 @@ if kubectl get pods -A | grep docker-registry ; then
 fi
 
 if [ ! -z "$mIP" ]; then
-	cmake -DREGISTRY="${mIP}:5000/" ..
+	cmake -DREGISTRY="${mIP}:30003/intel/" ..
 else
 	cmake ..
 fi
