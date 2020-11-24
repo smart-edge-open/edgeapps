@@ -10,3 +10,4 @@ COPY streamstart.sh /tmp/
 RUN chmod +x /tmp/streamstart.sh
 COPY pcb_d2000.avi /tmp/
 COPY Safety_Full_Hat_and_Vest.avi /tmp/
+
