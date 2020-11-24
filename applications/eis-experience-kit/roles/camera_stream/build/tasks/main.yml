@@ -24,8 +24,8 @@
   when: image_built is failed
 
 - name: Tag camera_stream image
-  command: docker tag {{ docker_image_tag }} {{ harbor_registry_address }}/{{ docker_image_tag }}
+  command: docker tag {{ docker_image_tag }} {{ docker_registry_address }}/{{ docker_image_tag }}
 
-- name: Push the image to the Harbor Registry
-  command: docker push {{ harbor_registry_address }}/{{ docker_image_tag }}
+- name: Push the image to the Docker Registry
+  command: docker push {{ docker_registry_address }}/{{ docker_image_tag }}
   changed_when: true

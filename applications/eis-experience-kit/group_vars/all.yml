@@ -10,12 +10,6 @@ docker_registry_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] 
 docker_registry_address: "{{ docker_registry_ip }}:{{ docker_registry_port }}"
 docker_registry_dir: "/opt/docker-registry/"
 
-harbor_registry_port: 30003
-harbor_registry_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] }}"
-harbor_registry_address: "{{ harbor_registry_ip }}:{{ harbor_registry_port }}/intel"
-harbor_registry_dir: "/opt/harbor/"
-harborAdminPassword: Harbor12345
-
 web_visualizer_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] }}"
 web_visualizer_port: 5050
 
