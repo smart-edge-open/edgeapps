@@ -7,7 +7,7 @@ if [[ $# -ne 2 ]] ; then
     exit 1
 fi
 
-if [ "$1" == "pcb" ]
+if [ "$1" == "pcb" ] 
 then 
     echo "Set pcb demo rtsp stream file"
     name="/tmp/pcb_d2000.avi"
