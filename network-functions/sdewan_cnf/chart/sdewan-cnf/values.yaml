@@ -40,5 +40,8 @@ containers:
     tag: "dev"
   imagePullPolicy: IfNotPresent
 
+labelName: "sdewan"
+labelValue: "true"
+
 restartPolicy: Always
 
