@@ -17,7 +17,7 @@ spec:
           - IPC_LOCK
           - SYS_NICE
     name: {{ .Release.Name }}-ru-app
-    image: "{{ .Values.image.registryIpAddress }}:{{ .Values.image.registryPort }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+    image: "{{ .Values.image.registryIpAddress }}:{{ .Values.image.registryPort }}/intel/{{ .Values.image.name }}:{{ .Values.image.tag }}"
     imagePullPolicy:  {{ .Values.image.pullPolicy }}
     command: [ "/bin/bash", "-c", "--" ]
     args: [ "./start_ru.sh && while true; do sleep 300000; done;" ]
