@@ -23,6 +23,12 @@
   - name: Cleanup Visualizer image
     include_tasks: ./roles/visualizer/build/tasks/cleanup.yml
 
+  - name: Load WebVisualizer vars
+    include_vars: ./roles/web_visualizer/build/defaults/main.yml
+
+  - name: Cleanup WebVisualizer image
+    include_tasks: ./roles/web_visualizer/build/tasks/cleanup.yml
+
   - name: Load CameraStream vars
     include_vars: ./roles/camera_stream/build/defaults/main.yml
 
@@ -72,6 +78,12 @@
 
   - name: Cleanup Visualizer
     include_tasks: ./roles/visualizer/deploy/tasks/cleanup.yaml
+
+  - name: Load WebVisualizer vars
+    include_vars: ./roles/web_visualizer/deploy/defaults/main.yml
+
+  - name: Cleanup WebVisualizer
+    include_tasks: ./roles/web_visualizer/deploy/tasks/cleanup.yaml
 
   - name: Load ETCD vars
     include_vars: ./roles/etcd/deploy/defaults/main.yml
