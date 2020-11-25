@@ -4,7 +4,7 @@
 FROM alpine:3.12.0
 
 ENV http_proxy=$http_proxy
-ENV https_proxy=http://cuiz2x:czy*1992intel@child-prc.intel.com:914
+ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy
 
 ENV PATH /usr/local/go/bin:$PATH
