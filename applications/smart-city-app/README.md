@@ -45,11 +45,11 @@ This mode provide an easy and quick start with executing the application in the 
     ```shell
     mkdir build
     cd build
-    cmake -DREGISTRY=<controller-node-ip>:5000 .. 
+    cmake -DREGISTRY=<controller-node-ip>:30003/intel/ .. 
     make
     ```
 
-    > **NOTE:** OpenNESS Docker registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
+    > **NOTE:** OpenNESS Harobor registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
 
 3. Execute the `pre-install.sh` script to generate, self-sign and create certificates secret
 
@@ -95,11 +95,11 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
     ```shell
     mkdir build
     cd build
-    cmake -DPLATFORM=VCAC-A -DREGISTRY=<controller-node-ip>:5000 ..
+    cmake -DPLATFORM=VCAC-A -DREGISTRY=<controller-node-ip>:30003/intel ..
     make
     ```
 
-    > **NOTE:** OpenNESS Docker registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
+    > **NOTE:** OpenNESS Harbor registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
 
 6. Execute the `pre-install.sh` script to generate, self-sign and create certificates secret
 

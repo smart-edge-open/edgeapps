@@ -29,7 +29,7 @@ def main(args):
     eis_integ.check_path_variable("ETCDCTL_CERT", os.environ.get("ETCDCTL_CERT"))
     eis_integ.check_path_variable("ETCDCTL_KEY", os.environ.get("ETCDCTL_KEY"))
 
-    print("Remove all {} app related content from etcd database".format(args.arg))
+    print("Remove all {} app related content from etcd database".format(args.app))
     eis_integ.remove_eis_app(args.app, args.delete_keys)
     return eis_integ.CODES.NO_ERROR
 
