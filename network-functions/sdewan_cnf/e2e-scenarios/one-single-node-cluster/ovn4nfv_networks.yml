@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: k8s.plugin.opnfv.org/v1alpha1
+kind: ProviderNetwork
+metadata:
+  name: pnetwork
+spec:
+  cniType: ovn4nfv
+  ipv4Subnets:
+  - subnet: 192.168.2.1/24
+    name: subnet
+    gateway: 192.168.2.1/24
+    excludeIps: 192.168.2.2..192.168.2.9
+  providerNetType: DIRECT
+  direct:
+    providerInterfaceName: eno7
+    directNodeSelector: all
+
+---
+
+apiVersion: k8s.plugin.opnfv.org/v1alpha1
+kind: Network
+metadata:
+  name: ovn-network
+spec:
+  cniType: ovn4nfv
+  ipv4Subnets:
+  - subnet: 172.16.30.1/24
+    name: subnet1
+    gateway: 172.16.30.1/24
+    excludeIps: 172.16.30.2..172.16.30.9
