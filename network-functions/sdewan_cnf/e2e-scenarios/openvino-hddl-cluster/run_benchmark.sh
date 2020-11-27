@@ -1,6 +1,7 @@
+#!/bin/bash
+
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
-#!/bin/bash
 
 # Configure and run benchmarki job
 
