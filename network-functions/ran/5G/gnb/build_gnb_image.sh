@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
+# Check if all variables are set
 if [ -z "${FLEXRAN_DIR}" ] || [ -z "${DIR_WIRELESS_SDK}" ] || [ -z "${RTE_SDK}" ] \
-   || [ -z "${ICC_DIR}" ] || [ -z "${DIR_WIRELESS_TEST_5G}" ] || [ -z "${RSYS_DIR}" ]; then
+   || [ -z "${ICC_DIR}" ] || [ -z "${DIR_WIRELESS_TEST_5G}" ] || [ -z "${RSYS_DIR}" ] \
+   || [ -z "${CONFD_DIR}" ]; then
    echo "Not all required variables are set. Please set all of the variables"
    exit 1
 fi
@@ -17,7 +19,7 @@ mkdir -p sdk
 cp -rf "${DIR_WIRELESS_SDK}" sdk/
 
 # Copy DPDK
-cp -rf "${RTE_SDK}" dpdk-19.11
+cp -rf "${RTE_SDK}" dpdk-19.11/
 
 # Copy ICC libs
 mkdir -p icc_libs
@@ -40,6 +42,8 @@ cp -rf "${FLEXRAN_DIR}"/wls_mod .
 # Copy rsys binaries
 cp -rf "${RSYS_DIR}"/CU .
 cp -rf "${RSYS_DIR}"/DU .
+
+cp -rf "${CONFD_DIR}" confd-basic-6.7/
 
 declare http_proxy https_proxy no_proxy ftp_proxy
 sudo DOCKER_BUILDKIT=1 docker build \
