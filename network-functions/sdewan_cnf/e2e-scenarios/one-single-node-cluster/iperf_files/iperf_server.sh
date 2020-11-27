@@ -1,6 +1,7 @@
+#!/bin/bash
+
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
-#!/bin/bash
 
 # Provide the interface for the server to start on
 interface="eno1"

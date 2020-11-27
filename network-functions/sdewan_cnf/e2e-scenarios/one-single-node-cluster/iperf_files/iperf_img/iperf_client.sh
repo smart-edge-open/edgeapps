@@ -1,6 +1,7 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2019-2020 Intel Corporation
 #!/bin/bash
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
 
 # Modify the iperf-server IP as per the setup
 server_ip=192.168.2.2

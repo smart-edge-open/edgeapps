@@ -1,4 +1,5 @@
-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
 
 FROM centos:7.8.2003
 
