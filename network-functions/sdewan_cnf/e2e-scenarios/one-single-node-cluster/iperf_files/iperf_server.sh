@@ -16,6 +16,6 @@ server_ip=$(ifconfig $interface | grep inet | awk '{print $2}')
 
 echo "iperf3 server is starting at IP: $server_ip"
 
-#iperf3 -s "$server_ip" -i 60
+iperf3 -s "$server_ip" -i 60
 
-echo "iperf3 server is stopped"
+echo "Iperf3 server is stopped"
