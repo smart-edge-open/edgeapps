@@ -15,7 +15,7 @@ pkt_size=128
 
 # Start Iperf client to send TCP stream towards Iperf server
 echo "Iperf client started sending TCP packet stream"
-echo "server_ip="$server_ip", client_ip="$client_ip", duration="$duration", streams="$streams", packet_size="$pkt_size""
+echo "server_ip=$server_ip, client_ip=$client_ip, duration=$duration, streams=$streams, packet_size=$pkt_size"
 
 iperf3 -c "$server_ip" -B "$client_ip" -J -b 0 -t "$duration" -P "$streams" -M "$pkt_size" -l 1M
 
