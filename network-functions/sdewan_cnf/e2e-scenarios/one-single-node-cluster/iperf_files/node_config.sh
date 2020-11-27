@@ -23,7 +23,7 @@ export LOCAL_0_SUB_0=172.16.30.1/24
 # Subnet name
 export LOCAL_0_SUB_0_NAME=subnet1
 # Subnet gateway
-export LOCAL_0_SUB_0_GW= 172.16.30.1/24
+export LOCAL_0_SUB_0_GW=172.16.30.1/24
 # Subnet exclude IP addresses
 export LOCAL_0_SUB_0_EXCL=172.16.30.2..172.16.30.9
 
