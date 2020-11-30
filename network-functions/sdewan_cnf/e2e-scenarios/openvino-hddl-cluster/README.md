@@ -64,6 +64,6 @@ This sample application demonstrates OpenVINO object detection (pedestrian and v
    sh ${APP_PATH}/run_benchmark.sh
    ```
 
-###/ REF
+### REF
 
 - [Troubleshooting](https://github.com/otcshare/edgeapps/tree/master/applications/openvino/benchmark#troubleshooting)
