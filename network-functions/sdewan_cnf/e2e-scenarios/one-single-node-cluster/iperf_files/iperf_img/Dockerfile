@@ -1,12 +1,18 @@
-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
 
 FROM centos:7.8.2003
 
+ENV ftp_proxy=$ftp_proxy
+ENV http_proxy=$http_proxy
+ENV https_proxy=$https_proxy
+ENV no_proxy=$no_proxy
+
 RUN yum update -y
-RUN yum install -y iperf3 net-tools tcpdump ethtool wget python3 iproute traceroute vim nmap
+RUN yum install -y iperf3 net-tools tcpdump ethtool iproute traceroute
 
 WORKDIR /root/
 
-COPY ./client_iperf.sh ./
+COPY ./iperf_client.sh ./
 
-CMD ["./client_iperf.sh"]
+CMD ["./iperf_client.sh"]

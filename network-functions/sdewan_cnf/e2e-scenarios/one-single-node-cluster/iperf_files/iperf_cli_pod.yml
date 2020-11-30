@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
---
+---
 
 apiVersion: apps/v1
 kind: Deployment
@@ -20,7 +20,7 @@ spec:
         app: iperf-client
       annotations:
         k8s.v1.cni.cncf.io/networks: '[{ "name": "ovn-networkobj"}]'
-        k8s.plugin.opnfv.org/nfn-network: '{ "type": "ovn4nfv", "interface": [{"name": "ovn-network", "interface": "net0", "ipAddress": "172.16.30.15"}]}'
+        k8s.plugin.opnfv.org/nfn-network: '{ "type": "ovn4nfv", "interface": [{"name": "ovn-network", "interface": "$IPERF_POD_OVN_INTF", "ipAddress": "$IPERF_POD_OVN_IP"}]}'
     spec:
       containers:
       - name: iperf-client

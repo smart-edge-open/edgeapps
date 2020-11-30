@@ -6,17 +6,17 @@
 apiVersion: k8s.plugin.opnfv.org/v1alpha1
 kind: ProviderNetwork
 metadata:
-  name: pnetwork
+  name: "$PROV_0_NAME"
 spec:
   cniType: ovn4nfv
   ipv4Subnets:
-  - subnet: 192.168.2.1/24
-    name: subnet
-    gateway: 192.168.2.1/24
-    excludeIps: 192.168.2.2..192.168.2.9
+  - subnet: "$PROV_0_SUB_0"
+    name: "$PROV_0_SUB_0_NAME"
+    gateway: "$PROV_0_SUB_0_GW"
+    excludeIps: "$PROV_0_SUB_0_EXCL"
   providerNetType: DIRECT
   direct:
-    providerInterfaceName: eno7
+    providerInterfaceName: "$PROV_0_INTF"
     directNodeSelector: all
 
 ---
@@ -24,11 +24,11 @@ spec:
 apiVersion: k8s.plugin.opnfv.org/v1alpha1
 kind: Network
 metadata:
-  name: ovn-network
+  name: "$LOCAL_0_NAME"
 spec:
   cniType: ovn4nfv
   ipv4Subnets:
-  - subnet: 172.16.30.1/24
-    name: subnet1
-    gateway: 172.16.30.1/24
-    excludeIps: 172.16.30.2..172.16.30.9
+  - subnet: "$LOCAL_0_SUB_0"
+    name: "$LOCAL_0_SUB_0_NAME"
+    gateway: "$LOCAL_0_SUB_0_GW"
+    excludeIps: "$LOCA_0_SUB_0_EXCL"
