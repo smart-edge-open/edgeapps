@@ -35,5 +35,6 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 443
-
+        securityContext:
+          privileged: true
 EOF
