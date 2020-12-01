@@ -4,7 +4,7 @@ Copyright (c) 2020 Intel Corporation
 ```
 <!-- omit in toc -->
 # E2E Scenario
-Reference architecture E2E network topoloy based SDEWAN.
+Reference architecture E2E network topology based SDEWAN.
 
 - [Introduction](#introduction)
   - [SDEWAN](#SDEWAN)
@@ -16,22 +16,22 @@ Reference architecture E2E network topoloy based SDEWAN.
   - [UE2](#ue2)
   - [HUB](#hub)
     - [Deploy OpenNESS](#deploy-openness)
-    - [Deploy EDEWAN Controller](#Deploy-EDEWAN-Controller)
+    - [Deploy EDEWAN Controller](#deploy-edewan-controller)
     - [Configure Network](#configure-network)
     - [Start CNF](#start-cnf)
     - [Setup Tunnel and Rules](#setup-tunnel-and-rules)
   - [EDGE1](#edge1)
-    - [Deploy OpenNESS](#deploy-openness)
-    - [Deploy EDEWAN Controller](#Deploy-EDEWAN-Controller)
-    - [Configure Network](#configure-network)
-    - [Start CNF](#start-cnf)
-    - [Setup Tunnel and Rules](#setup-tunnel-and-rules)
+    - [Deploy OpenNESS](#deploy-openness-1)
+    - [Deploy EDEWAN Controller](#deploy-edewan-controller-1)
+    - [Configure Network](#configure-network-1)
+    - [Start CNF](#start-cnf-1)
+    - [Setup Tunnel and Rules](#setup-tunnel-and-rules-1)
   - [EDGE2](#edge2)
-    - [Deploy OpenNESS](#deploy-openness)
-    - [Deploy EDEWAN Controller](#Deploy-EDEWAN-Controller)
-    - [Configure Network](#configure-network)
-    - [Start CNF](#start-cnf)
-    - [Setup Tunnel and Rules](#setup-tunnel-and-rules)
+    - [Deploy OpenNESS](#deploy-openness-2)
+    - [Deploy EDEWAN Controller](#deploy-edewan-controller-2)
+    - [Configure Network](#configure-network-2)
+    - [Start CNF](#start-cnf-2)
+    - [Setup Tunnel and Rules](#setup-tunnel-and-rules-2)
 
 ## Introduction
 
@@ -41,7 +41,7 @@ OpenNESS integrates SDEWAN and ovn4nfv-k8s-plugin to enable secure, tunneled con
 Software Defined Edge WAN(SDEWAN), is designed to support Corp networks to connect to external internet with security connection. The SDEWAN module acts as a software defined router which can be used to define the rules for connecting Edge clusters to the external internet (WAN). It provides the capabilities of multiple WAN management: WAN interfaces management, outbound traffic rules, traffic load balancing etc.
 
 ### ovn4nfv-k8s-plugin
-ovn4nfv-k8s-plugin is a CNI plugin based on ovn. It can work together with Multus CNI to add multiple interfaces for the pod. One of the interfaces is the Multus default interface, it could be flannel, calico, etc. The other interfaces are added by ovn4nfv-k8s-plugin according the the pod annotation. With ovn4nfv-k8s-plugin, we can create virtual network in run-time. Also we can connect the pod with the provider network, this is important for SDEWAN CNF.
+ovn4nfv-k8s-plugin is a CNI plugin based on ovn. It can work together with Multus CNI to add multiple interfaces for the pod. One of the interfaces is the Multus default interface, it could be flannel, calico, etc. The other interfaces are added by ovn4nfv-k8s-plugin according the pod annotation. With ovn4nfv-k8s-plugin, we can create virtual network in run-time. Also, we can connect the pod with the provider network, this is important for SDEWAN CNF.
 
 
 ![Network Topology](images/e2e_network_topology.png)
@@ -50,20 +50,20 @@ ovn4nfv-k8s-plugin is a CNI plugin based on ovn. It can work together with Multu
 
 ## Full Path Trafic Flow
 
-The above picture shows one of sdewan scenarios in OpenNESS. In the scenario, there are 2 UEs connected to two seperate edges which are connected to one common hub.  It shows the traffic flow from one UE to the other UE via hub. Currently it is just a basic connectiity function withou SFC.
+The above picture shows one of sdewan scenarios in OpenNESS. In the scenario, there are 2 UEs connected to two separate edges which are connected to one common hub. It shows the traffic flow from one UE to the other UE via hub. Currently it is just a basic connectivity function without SFC.
 
-We deploy OpenNESS on both edges and the hub. On each edge and hub, we setup an sdewan controller and CNF. Then we setup an ipsec tunnel between the edge and the hub. Each CNF is connected to two provider networks.
+We deploy OpenNESS on both edges and the hub. On each edge and hub, we setup a sdewan controller and CNF. Then we setup an IPsec tunnel between the edge and the hub. Each CNF is connected to two provider networks.
 
-Currently the UE connects to the CNF directly without switch/Router. In the picture, UE1 is in the same network(NET1) as edge1 port.  It is consider a private network. In ordert to access the other UE, its UE IP is mapmed to the interface IP of Edge node's CNF, (such as, P1 of UE1 map to n3 of CNF on edge1.  This can be considered as a floating IP address, and we can re-map this IP to any UE.
+Currently the UE connects to the CNF directly without switch/Router. In the picture, UE1 is in the same network(NET1) as edge1 port.  It is considered as a private network. In order to access the other UE, its UE IP is mapped to the interface IP of Edge node's CNF, (such as, P1 of UE1 map to n3 of CNF on edge1.  This can be considered as a floating IP address, and we can re-map this IP to any UE.
 
-On edge1 we also setup an OpenVINO app, currently, it only do local benchmark. In later release, we can support remote benchmark, maybe it can connect to a RTST camera UE.
+On edge1 we also setup an OpenVINO app, currently, it only does local benchmark. In later release, we can support remote benchmark, maybe it can connect to a RTST camera UE.
 
 ## Deployment
 
 Currently, there's automation script(for example ansible to setup all these 5 servers. But there are some scripts to facilitate the deployment process.
 
 We can deploy in this order, first 2 UEs, then hub at last 2 edges.
-On all the theree servers we should download the edgeapp repository and setup the global network topoloy variables.
+On all the three servers we should download the edgeapp repository and setup the global network topology variables.
 
    ```
    GIT_HTTP_PROXY=http://proxy-mu.intel.com:911
@@ -91,7 +91,7 @@ We can use this command to check the interface status:
    ens802f1  ethernet  disconnected  --
    ```
 
-Suppose the right inteface name is eth10, then configure the interface IP as follow:
+Suppose the right interface name is eth10, then configure the interface IP as follow:
 
    ```
    INTERFACE=eth10
@@ -103,7 +103,7 @@ Suppose the right inteface name is eth10, then configure the interface IP as fol
 
 ### UE2
 
-Suppose the right inteface name is eth10, then configure the interface IP as follow:
+Suppose the right interface name is eth10, then configure the interface IP as follow:
 
    ```
    INTERFACE=eth10
@@ -125,7 +125,7 @@ Please use "sdewan-hub" flavor to deploy OpenNESS.
 
 #### Deploy EDEWAN Controller
 
-Make sure "edgeapps" is in your current directory.
+Make sure "edgeapps" is your current directory.
 
    ```
    http_proxy=$GIT_HTTP_PROXY ./edgeapps/applications/sdewan_ctrl/pre-install.sh
@@ -136,7 +136,7 @@ Make sure "edgeapps" is in your current directory.
 
 #### Configure Network
 
-Create 2 provider networks for the cnf.
+Create 2 provider networks for the CNF.
 
    ```
    $APP_PATH/hub/provider_network.sh
@@ -144,7 +144,7 @@ Create 2 provider networks for the cnf.
 
 #### Start CNF
 
-Start the cnf with the above provider networks.
+Start the CNF with the above provider networks.
 
    ```
    SDEWAN_CNF_PRE=./edgeapps/network-functions/sdewan_cnf/pre-install.sh
@@ -158,7 +158,7 @@ Start the cnf with the above provider networks.
 
 #### Setup Tunnel and Rules
 
-NOTE: Currently the CRD does not support this kind of rules in our scenario. So we set the rules in the CNF directly.
+NOTE: Currently the CRD does not support this kind of rules in our scenario. So, we set the rules in the CNF directly.
 
    ```
    sh $APP_PATH/hub/setup_tunnel.sh
@@ -176,7 +176,7 @@ Please use "sdewan-edge" flavor to deploy OpenNESS.
 
 #### Deploy EDEWAN Controller
 
-Make sure "edgeapps" is in your current directory.
+Make sure "edgeapps" is your current directory.
 
    ```
    http_proxy=$GIT_HTTP_PROXY ./edgeapps/applications/sdewan_ctrl/pre-install.sh
@@ -187,7 +187,7 @@ Make sure "edgeapps" is in your current directory.
 
 #### Configure Network
 
-Create 2 provider networks for the cnf.
+Create 2 provider networks for the CNF.
 
    ```
    $APP_PATH/edge1/provider_network.sh
@@ -195,7 +195,7 @@ Create 2 provider networks for the cnf.
 
 #### Start CNF
 
-Start the cnf with the above provider networks.
+Start the CNF with the above provider networks.
 
    ```
    SDEWAN_CNF_PRE=./edgeapps/network-functions/sdewan_cnf/pre-install.sh
@@ -209,7 +209,7 @@ Start the cnf with the above provider networks.
 
 #### Setup Tunnel and Rules
 
-NOTE: Currently the CRD does not support this kind of rules in our scenario. So we set the rules in the CNF directly.
+NOTE: Currently the CRD does not support this kind of rules in our scenario. So, we set the rules in the CNF directly.
 
    ```
    sh $APP_PATH/edge1/setup_tunnel.sh
@@ -227,7 +227,7 @@ Please use "sdewan-edge" flavor to deploy OpenNESS.
 
 #### Deploy EDEWAN Controller
 
-Make sure "edgeapps" is in your current directory.
+Make sure "edgeapps" is your current directory.
 
    ```
    http_proxy=$GIT_HTTP_PROXY ./edgeapps/applications/sdewan_ctrl/pre-install.sh
@@ -238,7 +238,7 @@ Make sure "edgeapps" is in your current directory.
 
 #### Configure Network
 
-Create 2 provider networks for the cnf.
+Create 2 provider networks for the CNF.
 
    ```
    $APP_PATH/edge2/provider_network.sh
@@ -246,7 +246,7 @@ Create 2 provider networks for the cnf.
 
 #### Start CNF
 
-Start the cnf with the above provider networks.
+Start the CNF with the above provider networks.
 
    ```
    SDEWAN_CNF_PRE=./edgeapps/network-functions/sdewan_cnf/pre-install.sh
@@ -260,7 +260,7 @@ Start the cnf with the above provider networks.
 
 #### Setup Tunnel and Rules
 
-NOTE: Currently the CRD does not support this kind of rules in our scenario. So we set the rules in the CNF directly.
+NOTE: Currently the CRD does not support this kind of rules in our scenario. So, we set the rules in the CNF directly.
 
    ```
    sh $APP_PATH/edge2/setup_tunnel.sh
