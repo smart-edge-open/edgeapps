@@ -61,12 +61,9 @@ func main() {
 		},
 	}
 
-	// common name is namespace and producer id separated by semicolon
-	commonName := common.Cfg.Namespace + ":" + common.Cfg.ProducerAppID
-
 	// Create secure client
 	// for more information go to /common/csr.go
-	cli, err := common.CreateTLSClient(commonName)
+	cli, err := common.CreateEncryptedClient()
 
 	if err != nil {
 		log.Fatal(err)
