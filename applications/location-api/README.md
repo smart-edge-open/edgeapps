@@ -120,13 +120,13 @@ metadata:
     labels:
   		locationService: active
 spec:
-	containers:
-	-
-		image: "location-api-consumer:latest"
-		imagePullPolicy: Never
-		name: consumer
-			ports:
-				- containerPort: 8082
+    containers:
+    -
+        image: "location-api-consumer:latest"
+        imagePullPolicy: Never
+        name: consumer
+            ports:
+                - containerPort: 8082
 ```
 
 Therefore, the label `locationService: active` **must be included** for using the Location API Simulator. All the other labels can be changed according to the proper needs.
