@@ -1,0 +1,17 @@
+--- 
+apiVersion: v1
+kind: Pod
+metadata: 
+    name: consumer
+    labels:
+      locationService: active
+spec: 
+    containers: 
+    - 
+        image: "location-consumer-test:latest"
+        imagePullPolicy: Never
+        name: consumer
+        ports:
+            - containerPort: 8082
+            
+        

@@ -1,0 +1,2 @@
+To start a simulation go to: http://{{ (index .Values.env 0).value }}:{{ (index .Values.simulatorService.ports 0).nodePort }}
+

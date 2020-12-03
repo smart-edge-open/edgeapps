@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:  
+  name: location-service-policy
+  namespace: default
+spec:
+  podSelector:
+   matchLabels:
+     locationService: active
+  policyTypes:  
+  - Ingress
+  ingress:
+  - from:  
+    - ipBlock:
+        cidr: 10.16.0.0/16  

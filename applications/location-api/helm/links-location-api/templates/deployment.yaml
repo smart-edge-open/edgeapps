@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "links-location-api.fullname" . }}
+  labels:
+    locationService: active
+    run: location-api
+    {{- include "links-location-api.labels" . | nindent 4 }}
+spec:
+  containers:
+    - image: {{ .Values.imageTag }}
+      imagePullPolicy: {{.Values.pullPolicy }}
+      name: {{ .Chart.Name }}
+      ports:
+        - containerPort: {{ .Values.service.targetPort }}
+        - containerPort: 8081
+      env:
+      {{- range .Values.env }}
+        - name: {{ .name}}
+          value: {{ .value | quote }}
+      {{- end }}

@@ -1,0 +1,101 @@
+# Default values for links-location-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+imageTag: location-api:v2.1.1
+pullPolicy: Never
+labels:
+    locationService: active
+    run: location-api
+
+imagePullSecrets: []
+nameOverride: "location-api"
+fullnameOverride: "location-api"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: location-api-service
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080 
+
+simulatorService: 
+  enabled: true
+  name: simulator-service
+  type: NodePort
+  ports: 
+    - name: simulator-gui
+      targetPort: 8888
+      port: 8888
+      nodePort: 30555
+    - name: simulation-server
+      targetPort: 8081
+      port: 8081
+      nodePort: 30556
+  selector: 
+    run: location-api
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: location-api.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# USED IN NETWORK POLICY
+podSelector:
+   matchLabels:
+     locationService: active
+
+selectorLabels: 
+  run: location-api
+
+env:
+  - name: NODE_IP
+    value: "10.10.20.28"
+  - name: NODE_PORT_SIMULATOR
+    value: "30556"
