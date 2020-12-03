@@ -25,10 +25,12 @@ Repository content
 ---
 The repository contains a *freeware* version of MEC Location API developed by LINKS Foundation, including:
 
--	Docker container of the Location API 
 -	Helm package for the installation
-- 	Docker container of a sample consumer application, for testing the Location API service
 -	YAML file for the consumer deploy
+
+Docker Images
+---
+>To get the docker images you need to send an email to mec-services@linksfoundation.com with object **Location API - Docker image request**
 
 Pre Requisites
 ---
