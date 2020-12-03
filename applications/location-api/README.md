@@ -113,13 +113,11 @@ The simulator will start feeding location information to the Location API servic
 The consumer sample application can be easily deployed through the provided YAML file. The YAML file is the simplest one, but it has a *mandatory*  field that enables the communication from *Location API Simulator Pod* and *Location API consumer Pod*. Below, the YAML file is shown: 
 
 ```yaml
-#consumer.yaml
-
 apiVersion: v1
 kind: Pod
 metadata:
-	name: consumer
-	labels:
+    name: consumer
+    labels:
   		locationService: active
 spec:
 	containers:
