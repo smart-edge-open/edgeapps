@@ -3,9 +3,6 @@
 
 FROM alpine:3.12.0
 
-LABEL Description="This is the runtime image for Intel(R) Distribution of OpenVINO(TM) toolkit on Ubuntu 16.04 LTS"
-LABEL Vendor="Intel Corporation"
-
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy,openvino.openness
@@ -13,7 +10,7 @@ ENV no_proxy=$no_proxy,openvino.openness
 
 WORKDIR /root
 
-#SHELL ["/bin/sh", "-xo", "pipefail", "-c"]
+SHELL ["/bin/sh", "-xo", "pipefail", "-c"]
 
 
 # hadolint ignore=DL3008
@@ -23,7 +20,6 @@ RUN apk update && apk upgrade  && \
        apk add sudo && \
        apk add unzip && \
        apk add wget && \
-#       apk add lsb-core && \
        apk add autoconf libtool && \
        apk add ffmpeg x264 && \
        rm -rf /var/lib/apk/lists/*
