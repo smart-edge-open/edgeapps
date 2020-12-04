@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2019 Intel Corporation
 
-FROM ubuntu:16.04
+FROM alpine:3.12.0
 
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
@@ -17,8 +17,8 @@ ENV OPENVINO_ACCL=CPU
 
 RUN mkdir $GOPATH
 # hadolint ignore=DL3008,DL3009,DL3015
-RUN apt-get update && \
-    apt-get -y install wget git && \
+RUN apk update && apk upgrade && \
+    apk add wget git && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Go

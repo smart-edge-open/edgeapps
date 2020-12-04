@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2019 Intel Corporation
 
-FROM ubuntu:16.04
+FROM alpine:3.12.0
 
 LABEL Description="This is the runtime image for Intel(R) Distribution of OpenVINO(TM) toolkit on Ubuntu 16.04 LTS"
 LABEL Vendor="Intel Corporation"
@@ -13,20 +13,20 @@ ENV no_proxy=$no_proxy,openvino.openness
 
 WORKDIR /root
 
-SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
+#SHELL ["/bin/sh", "-xo", "pipefail", "-c"]
 
 
 # hadolint ignore=DL3008
-RUN apt-get update && \
-       apt-get -y install build-essential gcc g++ cmake && \
-       apt-get -y install cpio && \
-       apt-get -y install sudo && \
-       apt-get -y install unzip && \
-       apt-get -y install wget && \
-       apt-get -y install lsb-core && \
-       apt-get -y install autoconf libtool && \
-       apt-get -y install ffmpeg x264 && \
-       rm -rf /var/lib/apt/lists/*
+RUN apk update && apk upgrade  && \
+       apk add build-base gcc g++ cmake && \
+       apk add cpio && \
+       apk add sudo && \
+       apk add unzip && \
+       apk add wget && \
+#       apk add lsb-core && \
+       apk add autoconf libtool && \
+       apk add ffmpeg x264 && \
+       rm -rf /var/lib/apk/lists/*
 
 
 RUN ln -snf /usr/share/zoneinfo/$(curl https://ipapi.co/timezone -k) /etc/localtime
