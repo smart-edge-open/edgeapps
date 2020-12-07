@@ -35,7 +35,7 @@ COPY sdk ./sdk
 COPY tests ./tests
 COPY wls_mod ./wls_mod
 
-WORKDIR /root/rsys/docker
+WORKDIR /root/cu_du
 
 COPY DU ./DU
 COPY CU ./CU
@@ -46,10 +46,10 @@ COPY confd-basic-6.7 ./confd-basic-6.7
 
 RUN cd confd-basic-6.7/; ./confd-basic-6.7.linux.x86_64.installer.bin confd-basic-6.7
 RUN /bin/bash -c "source /root/confd-basic-6.7/confd-basic-6.7/confdrc \\
-    && cd /root/rsys/docker/CU/liboam/oam_cu/confd/run/ \\
+    && cd /root/cu_du/CU/liboam/oam_cu/confd/run/ \\
     && make clean; make all"
 RUN /bin/bash -c "source /root/confd-basic-6.7/confd-basic-6.7/confdrc \\
-    && cd /root/rsys/docker/DU/du_bin/liboam/oam_du/confd/run/ \\
+    && cd /root/cu_du/DU/du_bin/liboam/oam_du/confd/run/ \\
     && make clean; make all"
 
 ENV localPath=/root/flexran/docker
@@ -69,8 +69,8 @@ ENV FLEXRAN_SDK=${DIR_WIRELESS_SDK}/install
 ENV DIR_WIRELESS_TABLE_5G=${flexranPath}/bin/nr5g/gnb/l1/table
 ENV LD_LIBRARY_PATH=$localPath/icc_libs:$LD_LIBRARY_PATH
 
-ENV rsysLocalPath=/root/rsys/docker/
-ENV LD_LIBRARY_PATH=$rsysLocalPath/CU/liboam/oam_cu/confd/thirdparty:$rsysLocalPath/CU/liboam/oam_cu/lib/:$LD_LIBRARY_PATH
-ENV LD_LIBRARY_PATH=$localPath/wls_mod/lib:$rsysLocalPath/DU/liboam/oam_du/lib/:$LD_LIBRARY_PATH
+ENV cuduLocalPath=/root/cu_du/
+ENV LD_LIBRARY_PATH=$cuduLocalPath/CU/liboam/oam_cu/confd/thirdparty:$cuduLocalPath/CU/liboam/oam_cu/lib/:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=$localPath/wls_mod/lib:$cuduLocalPath/DU/liboam/oam_du/lib/:$LD_LIBRARY_PATH
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 ENV PATH=$PATH:/root/confd-basic-6.7/confd-basic-6.7/bin/

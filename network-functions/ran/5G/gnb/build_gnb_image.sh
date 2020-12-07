@@ -5,7 +5,7 @@
 
 # Check if all variables are set
 if [ -z "${FLEXRAN_DIR}" ] || [ -z "${DIR_WIRELESS_SDK}" ] || [ -z "${RTE_SDK}" ] \
-   || [ -z "${ICC_DIR}" ] || [ -z "${DIR_WIRELESS_TEST_5G}" ] || [ -z "${RSYS_DIR}" ] \
+   || [ -z "${ICC_DIR}" ] || [ -z "${DIR_WIRELESS_TEST_5G}" ] || [ -z "${CU_DU_DIR}" ] \
    || [ -z "${CONFD_DIR}" ]; then
    echo "Not all required variables are set. Please set all of the variables"
    exit 1
@@ -39,9 +39,9 @@ cp -rf "${DIR_WIRELESS_TEST_5G}"/fd tests/
 # Copy WLS Module
 cp -rf "${FLEXRAN_DIR}"/wls_mod .
 
-# Copy rsys binaries
-cp -rf "${RSYS_DIR}"/CU .
-cp -rf "${RSYS_DIR}"/DU .
+# Copy CU DU binaries
+cp -rf "${CU_DU_DIR}"/CU .
+cp -rf "${CU_DU_DIR}"/DU .
 
 cp -rf "${CONFD_DIR}" confd-basic-6.7/
 
