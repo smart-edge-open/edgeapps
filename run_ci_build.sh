@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
+ERROR="${PWD}/error"
+
 # Checks whether the application includes a Makefile and if so, runs it. It also
 # checks for a 'make test' command and if it finds it, runs this as well
 # $1 Path to the application folder
@@ -36,7 +38,7 @@ function check_coding_style()
 
 	echo "Checking Coding Style"
 
-	find "${FOLDER_PATH}" -type f | while read line; do
+	find "${FOLDER_PATH}" -type f | while read -r line; do
 		local CHECK_FILE_TYPE
 		CHECK_FILE_TYPE=$(echo "$line" | cut -d '.' -f 2-)
 		if [ "${CHECK_FILE_TYPE}" == "c" ] || [ "${CHECK_FILE_TYPE}" == "c++" ] || [ "${CHECK_FILE_TYPE}" == "h" ]; then
@@ -51,6 +53,7 @@ function check_coding_style()
 			if [ "${GO_STYLE_CHECK}" != "" ]; then
 				echo "${GO_STYLE_CHECK}"
 				echo "Error: gofmt -d $line detected issues"
+				touch "${ERROR}"
 				echo
 			fi
 		elif [ "${CHECK_FILE_TYPE}" == "sh" ]; then
@@ -59,6 +62,7 @@ function check_coding_style()
 			if [ "${SHELL_CHECK_RESULT}" != "" ]; then
 				echo "${SHELL_CHECK_RESULT}"
 				echo "Error: shellcheck $line detected issues"
+				touch "${ERROR}"
 				echo
 			fi
 		elif [ "${CHECK_FILE_TYPE}" == "py" ]; then
@@ -71,15 +75,17 @@ function check_coding_style()
 			if [ "${PYLINT_CHECK_RESULT}" != "" ]; then
 				echo "${PYLINT_CHECK_RESULT}"
 				echo "Error: pylint --rcfile=${PYLINT_RC_FILE} $line detected issues"
+				touch "${ERROR}"
 				echo
 			fi
 		fi
 	done
 
 	if find "${FOLDER_PATH}" -type f | cut -d '.' -f 2- | grep -qe 'go' ; then
-		cd "${FOLDER_PATH}"
+		cd "${FOLDER_PATH}" || exit
 		if ! golangci-lint run; then
 			echo "Error: golangci-lint run detected issues"
+			touch "${ERROR}"
 		fi
 	fi
 	echo
@@ -117,9 +123,9 @@ function check_licence_header()
 	CHECK_FILE_DOCKER_MAKE=$(echo "${FILE_PATH}" | grep -e 'Dockerfile' -e 'Makefile')
 	CHECK_FILE_PATCH=$(echo "${FILE_PATH}" | cut -d '.' -f 3 | grep -e 'patch')
 	CHECK_FILE_RESULT="False"
-	if [ ! -z "${CHECK_FILE_TYPE}" ] && [ -z "${CHECK_FILE_PATCH}" ]; then
+	if [ -n "${CHECK_FILE_TYPE}" ] && [ -z "${CHECK_FILE_PATCH}" ]; then
 		CHECK_FILE_RESULT="True"
-	elif [ ! -z "${CHECK_FILE_DOCKER_MAKE}" ]; then
+	elif [ -n "${CHECK_FILE_DOCKER_MAKE}" ]; then
 		CHECK_FILE_RESULT="True"
 	fi
 
@@ -127,6 +133,7 @@ function check_licence_header()
 		local FILE_NAME
 		FILE_NAME=$(echo "${FILE_PATH}" | cut -d '.' -f 2-)
 		echo "Error: File ${EDGEAPPS_REPO}${APPLICATION_FOLDER}${FILE_NAME} has incorrect licence header"
+		touch "${ERROR}"
 	fi
 }
 
@@ -135,6 +142,9 @@ function run_ci_build()
 {
 	local EDGEAPPS_REPO="$PWD"
 	local LAST_DIRECTORY_CHECKED=""
+
+	git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+	git fetch
 
 	for file in $(git diff origin/master --name-only); do
 		local PATH_TO_FILE
@@ -155,7 +165,7 @@ function run_ci_build()
 
 			echo "====Checking $PATH_TO_FILE===="
 
-			cd "${PATH_TO_FILE}"
+			cd "${PATH_TO_FILE}" || exit
 
 			# Check 1: search for Makefile
 			if find . -type f | grep -e 'Makefile'; then
@@ -167,12 +177,12 @@ function run_ci_build()
 
 			# Check 3: licence header check
 			echo "Checking Licence Headers"
-			find . -type f | while read line; do
+			find . -type f | while read -r line; do
 				check_licence_header "$line" "/${PATH_TO_FILE}" "${EDGEAPPS_REPO}"
 			done
 
 			LAST_DIRECTORY_CHECKED="${PATH_TO_FILE}"
-			cd "${EDGEAPPS_REPO}"
+			cd "${EDGEAPPS_REPO}" || exit
 			echo
 		fi
 	done
@@ -180,3 +190,8 @@ function run_ci_build()
 
 # Call build function
 run_ci_build
+
+if test -f "${ERROR}"; then
+	rm -rf "${ERROR}"
+	exit 1
+fi
