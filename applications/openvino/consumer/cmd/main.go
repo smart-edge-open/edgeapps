@@ -5,18 +5,12 @@ package main
 
 import (
 	"bytes"
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/json"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 	"github.com/gorilla/websocket"
 )
 
@@ -46,17 +40,19 @@ func createEncryptedClient() (*http.Client, *x509.CertPool, tls.Certificate, err
 	log.Println("Loading certificate and key")
 	cert, err := tls.LoadX509KeyPair(CertPath, KeyPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to load client certificate")
+		log.Println("loadX509keyPair failed:", err)
 	}
 
 	certPool := x509.NewCertPool()
 	caCert, err := ioutil.ReadFile(RootCAPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to load CA Cert")
+		log.Println("Read RootCA failed:", err)
+		return nil, certPool, cert, err
 	}
 	ok := certPool.AppendCertsFromPEM(caCert)
 	if !ok {
-		return nil, errors.New("Failed to append cert")
+		log.Println("Append CACert failed")
+		return nil, certPool, cert, err
 	}
 
 	// HTTPS client
@@ -96,6 +92,7 @@ func establishWebsocket(certPool *x509.CertPool,
 	conn, resp, err := socket.Dial("wss://"+EAAServerName+":"+EAAServerPort+
 		"/notifications", header)
 	if err != nil {
+		log.Println("Establish websocket failed:", err)
 		return nil, err
 	}
 
@@ -103,6 +100,7 @@ func establishWebsocket(certPool *x509.CertPool,
 
 	err = resp.Body.Close()
 	if err != nil {
+		log.Println("Resp websocket failed:", err)
 		return nil, err
 	}
 
