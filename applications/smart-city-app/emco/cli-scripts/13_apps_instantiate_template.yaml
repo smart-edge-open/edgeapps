@@ -1,0 +1,5 @@
+# Instantiate
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/instantiate

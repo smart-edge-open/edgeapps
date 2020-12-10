@@ -1,0 +1,44 @@
+# Create the generic placement intent
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents
+metadata:
+  name: {{ .GenericPlacementIntent }}
+  description: "smtc generic placement intent"
+  userData1: test1
+  userData2: test2
+
+# Add edge app placement intent
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents/{{ .GenericPlacementIntent }}/app-intents
+metadata:
+  name: {{ .AppEdgePlacementIntent }}
+  description: "smtc edge app placement intent"
+  userData1: test1
+  userData2: test2
+spec:
+  app-name: {{ .AppEdge }} 
+  intent:
+    allOf:
+      - provider-name: {{ .ClusterProvider }}
+        cluster-label-name: {{ .EdgeClusterLabel }}
+
+# Add cloud app placement intent
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents/{{ .GenericPlacementIntent }}/app-intents
+metadata:
+  name: {{ .AppCloudPlacementIntent }}
+  description: "smtc cloud app placement intent"
+  userData1: test1
+  userData2: test2
+spec:
+  app-name: {{ .AppCloud }}
+  intent:
+    allOf:
+      - provider-name: {{ .ClusterProvider }}
+        cluster-label-name: {{ .CloudClusterLabel }}

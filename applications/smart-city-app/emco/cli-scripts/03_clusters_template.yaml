@@ -1,0 +1,31 @@
+# Create edge cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers/{{ .ClusterProvider }}/clusters
+metadata:
+  name: {{ .ClusterEdge }}
+file: {{ .KubeConfigEdge }}
+
+# Add label to the edge cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers/{{ .ClusterProvider }}/clusters/{{ .ClusterEdge }}/labels
+label-name: {{ .EdgeClusterLabel }}
+ 
+# Create cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers/{{ .ClusterProvider }}/clusters
+metadata:
+  name: {{ .ClusterCloud }}
+file: {{ .KubeConfigCloud }}
+
+# Add label to the cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers/{{ .ClusterProvider }}/clusters/{{ .ClusterCloud }}/labels
+label-name: {{ .CloudClusterLabel }}

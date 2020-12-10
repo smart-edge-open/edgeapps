@@ -1,0 +1,23 @@
+# Creating controller entries
+---
+version: emco/v2
+resourceContext:
+   anchor: controllers
+metadata:
+   name: rsync
+spec:
+   host: {{ .RsyncHost }}
+   port: {{ .RsyncPort }}
+
+# Creating controller entries
+---
+version: emco/v2
+resourceContext:
+  anchor: controllers
+metadata :
+   name: gac
+spec:
+  host:  {{.GacIP}}
+  port: {{.GacPort}}
+  type: "action"
+  priority: 1

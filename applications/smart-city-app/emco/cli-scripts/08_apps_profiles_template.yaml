@@ -1,0 +1,29 @@
+# creating smtc composite profile entry
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles
+metadata:
+  name: {{ .CompositeProfile }}
+
+# Adding smtc edge app profiles to the composite profile
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles/{{ .CompositeProfile }}/profiles
+metadata:
+  name: {{ .ProfileEdgeAppName }}
+spec:
+  app-name: {{ .AppEdge }}
+file: {{ .ProfileEdgeApp }}
+
+# Adding smtc cloud app profiles to the composite profile
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles/{{ .CompositeProfile }}/profiles
+metadata:
+  name: {{ .ProfileCloudAppName }}
+spec:
+  app-name: {{ .AppCloud }}
+file: {{ .ProfileCloudApp }}
