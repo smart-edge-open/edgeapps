@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2019 Intel Corporation
+// Copyright (c) 2019-2020 Intel Corporation
 
 package main
 
@@ -12,8 +12,8 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/json"
-	"encoding/pem"
-	"errors"
+	"github.com/pkg/errors"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -24,8 +24,10 @@ import (
 const (
 	EAAServerName = "eaa.openness"
 	EAAServerPort = "443"
-	EAAServPort   = "80"
 	EAACommonName = "eaa.openness"
+	CertPath      = "./certs/cert.pem"
+	RootCAPath    = "./certs/root.pem"
+	KeyPath       = "./certs/key.pem"
 )
 
 // OpenVINO acceleration types
@@ -42,84 +44,40 @@ type InferenceSettings struct {
 	Accelerator string `json:"accelerator"`
 }
 
-func getCredentials(prvKey *ecdsa.PrivateKey) AuthCredentials {
-	certTemplate := x509.CertificateRequest{
-		Subject: pkix.Name{
-			CommonName:   "openvino:producer",
-			Organization: []string{"Intel Corporation"},
-		},
-		SignatureAlgorithm: x509.ECDSAWithSHA256,
-		EmailAddresses:     []string{"hello@openness.org"},
-	}
+// createEncryptedClient creates tls client with certs prorvided in
+// CertPath, KeyPath
+func createEncryptedClient() (*http.Client, error) {
 
-	prodCsrBytes, err := x509.CreateCertificateRequest(rand.Reader,
-		&certTemplate, prvKey)
+	log.Println("Loading certificate and key")
+	cert, err := tls.LoadX509KeyPair(CertPath, KeyPath)
 	if err != nil {
-		log.Fatal(err)
-	}
-	csrMem := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST",
-		Bytes: prodCsrBytes})
-
-	prodID := AuthIdentity{
-		Csr: string(csrMem),
+		return nil, errors.Wrap(err, "Failed to load client certificate")
 	}
 
-	reqBody, err := json.Marshal(prodID)
+	certPool := x509.NewCertPool()
+	caCert, err := ioutil.ReadFile(RootCAPath)
 	if err != nil {
-		log.Fatal(err)
+		return nil, errors.Wrap(err, "Failed to load CA Cert")
 	}
-	resp, err := http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
-		"", bytes.NewBuffer(reqBody))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var prodCreds AuthCredentials
-	err = json.NewDecoder(resp.Body).Decode(&prodCreds)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return prodCreds
-}
-
-func authenticate(prvKey *ecdsa.PrivateKey) (*http.Client, error) {
-	prodCreds := getCredentials(prvKey)
-
-	x509Encoded, err := x509.MarshalECPrivateKey(prvKey)
-	if err != nil {
-		return nil, err
-	}
-
-	pemEncoded := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY",
-		Bytes: x509Encoded})
-	prodCert, err := tls.X509KeyPair([]byte(prodCreds.Certificate),
-		pemEncoded)
-	if err != nil {
-		return nil, err
-	}
-
-	prodCertPool := x509.NewCertPool()
-	for _, cert := range prodCreds.CaPool {
-		ok := prodCertPool.AppendCertsFromPEM([]byte(cert))
-		if !ok {
-			return nil, errors.New("Error: failed to append cert")
-		}
+	ok := certPool.AppendCertsFromPEM(caCert)
+	if !ok {
+		return nil, errors.New("Failed to append cert")
 	}
 
 	// HTTPS client
-	prodClient := &http.Client{
+	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
-				RootCAs:      prodCertPool,
-				Certificates: []tls.Certificate{prodCert},
+				RootCAs:      certPool,
+				Certificates: []tls.Certificate{cert},
 				ServerName:   EAACommonName,
 			},
 		},
 		Timeout: 0,
 	}
+	log.Printf("%#v", client)
 
-	return prodClient, nil
+	return client, nil
 }
 
 func activateService(client *http.Client, payload []byte) {
@@ -214,16 +172,14 @@ func main() {
 		EndpointURI: "openvino/producer",
 	}
 
-	// perform CSR to authenticate and retrieve certificate
-	prodPriv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// Authentication
+	log.Println("Create Encrypted client")
+	client, err := createEncryptedClient()
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 
-	client, err := authenticate(prodPriv)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// get acceleration type from env variables
 	openvinoAccl := os.Getenv("OPENVINO_ACCL")

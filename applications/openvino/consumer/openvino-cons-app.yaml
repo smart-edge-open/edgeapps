@@ -3,15 +3,117 @@
 
 ---
 apiVersion: v1
-kind: Pod
+kind: ServiceAccount
 metadata:
   name: openvino-cons-app
-  namespace: default
-  labels:
-    name: openvino-cons-app
-spec:
-  containers:
-  - name: openvino-cons-app
-    image: openvino-cons-app:1.0
-    imagePullPolicy: Never
 
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openvino-cons-app-csr-requester
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: csr-requester
+subjects:
+  - kind: ServiceAccount
+    name: openvino-cons-app
+    namespace: default
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openvino-cons-app-csr-config
+data:
+  certrequest.json: |
+    {
+        "CSR": {
+            "Name": "openvino-cons-app",
+            "Subject": {
+                "CommonName": "openvino:consumer",
+                "Organization": ["Intel Corporation"]
+            },
+            "DNSSANs": [],
+            "IPSANs": [],
+            "KeyUsages": [
+                "digital signature", "key encipherment", "client auth"
+            ]
+        },
+        "Signer": "openness.org/certsigner",
+        "WaitTimeout": "5m"
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openvino-cons-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openvino-cons-app
+  template:
+    metadata:
+      labels:
+        app: openvino-cons-app
+    spec:
+      serviceAccountName: openvino-cons-app
+      initContainers:
+        - name: alpine
+          image: alpine:3.12.0
+          command: ["/bin/sh"]
+          args: ["-c", "cp /root/ca-certrequester/cert.pem /root/certs/root.pem"]
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "0.1"
+            limits:
+              cpu: "0.1"
+              memory: "128Mi"
+          volumeMounts:
+            - name: ca-certrequester
+              mountPath: /root/ca-certrequester
+            - name: certs
+              mountPath: /root/certs
+        - name: certrequester
+          image: certrequester:1.0
+          imagePullPolicy: Never
+          args: ["--cfg", "/home/certrequester/config/certrequest.json"]
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "0.1"
+            limits:
+              cpu: "0.1"
+              memory: "128Mi"
+          volumeMounts:
+            - name: config
+              mountPath: /home/certrequester/config/
+            - name: certs
+              mountPath: /home/certrequester/certs/
+      containers:
+        - name: openvino-cons-app
+          image: openvino-cons-app:1.0
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 443
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: certs
+              mountPath: /root/certs/
+      volumes:
+        - name: tmp
+          hostPath:
+            path: /tmp
+            type: Directory
+        - name: config
+          configMap:
+            name: openvino-cons-app-csr-config
+        - name: ca-certrequester
+          secret:
+            secretName: ca-certrequester
+        - name: certs
+          emptyDir: {}
