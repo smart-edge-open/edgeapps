@@ -31,7 +31,7 @@ RUN python3.6 get-pip.py
 
 # needed by openedge when build
 RUN apk add --no-cache zip unzip tcpdump 
-RUN pip3 install protobuf 
+RUN pip3 install --no-cache-dir protobuf 
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN echo 'Asia/Shanghai' >/etc/timezone
@@ -45,7 +45,7 @@ RUN apk add --no-cache musl-dev
 #WORKDIR /root/
 
 # install python pip and grpcio
-#RUN pip install protobuf grpcio
+#RUN pip install --no-cache-dir protobuf grpcio
 
 # install golang 
 RUN apk add --no-cache go bash
