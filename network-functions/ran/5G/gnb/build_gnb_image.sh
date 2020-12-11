@@ -40,10 +40,10 @@ cp -rf "${DIR_WIRELESS_TEST_5G}"/fd tests/
 cp -rf "${FLEXRAN_DIR}"/wls_mod .
 
 # Copy CU DU binaries
-cp -rf "${CU_DU_DIR}"/CU .
-cp -rf "${CU_DU_DIR}"/DU .
+cp -rf "${CU_DU_DIR}"/cu_bin .
+cp -rf "${CU_DU_DIR}"/du_bin .
 
-cp -rf "${CONFD_DIR}" confd-basic-6.7/
+cp -rf "${CONFD_DIR}" confd-basic-7.3/
 
 declare http_proxy https_proxy no_proxy ftp_proxy
 sudo DOCKER_BUILDKIT=1 docker build \
