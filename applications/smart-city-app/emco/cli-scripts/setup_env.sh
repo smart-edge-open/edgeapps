@@ -45,14 +45,12 @@ log()
 }
 
 # EMCO and Harbor on the same Host
-# 172.16.182.96:30003/library
 REGISTRY_IP=${1}
 REGISTRY_HOST=${REGISTRY_IP}:30003/library
 EDGE_HOST=${2}
 CLOUD_HOST=${3}
 
 # Set EMCO Host IP in valuse.yaml for emcoctl template
-# REGISTRY_IP=172.16.182.96
 YAMLVALUE=values.yaml
 sed -i -e "s/RsyncIP:.*/RsyncIP: ${REGISTRY_IP}/g" -e "s/GacIP:.*/GacIP: ${REGISTRY_IP}/g" ${YAMLVALUE}
 
@@ -90,7 +88,6 @@ cd ..
 
 echo "[starting] setting override ..."
 # Set cloud host IP in two places !!!!
-# CLOUDHOST=10.240.224.149
 CLOUDHOST=${CLOUD_HOST}
 SMTC=Smart-City-Sample/deployment/kubernetes/helm/smtc
 EDGESMTC=../helm-chart/smtc_edge
@@ -175,19 +172,12 @@ cd ../certificate
 ./self-sign.sh "${REGISTRY}"
 
 scp self.crt self.key root@${CLOUD_HOST}:/root/tunnel_secret
-# @Shigang why copy the certificate to edge host?
-# scp self.crt self.key root@${EDGE_HOST}:/root/tunnel_secret
 
 echo "[starting] uploading clusters kubeconfig ..."
 mkdir -p /opt/clusters_config/
-#scp root@10.67.115.165:/root/.kube/config /opt/clusters_config/edgecluster_config
-#scp root@10.240.224.149:/root/.kube/config /opt/clusters_config/cloudcluster_config
 scp root@${EDGE_HOST}:/root/.kube/config /opt/clusters_config/edgecluster_config
 scp root@${CLOUD_HOST}:/root/.kube/config /opt/clusters_config/cloudcluster_config
 
-# edge 165 with  know_host and id_rsa
-# cloud 149 with id_rsa.pub
-# edge -> cloud
 
 # on edge and cloud, create k8s secret for ssh
 # PRIKEY=/root/tunnel_secret/id_rsa
