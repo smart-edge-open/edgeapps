@@ -247,11 +247,26 @@ Start the CNF with the above provider networks.
 
 #### Setup Tunnel and Rules
 
-NOTE: Currently the CRD does not support this kind of rules in our scenario. So, we set the rules in the CNF directly.
+Set Tennel
 
    ```
    sh $APP_PATH/edge1/setup_tunnel.sh
+   ```
+
+Set Rules
+
+We can set the rules in the CNF directly or by CR, they are alternative. Recommend to set rule by CR in production environment. Setting in CNF directly can be used for debug.
+
+In CNF setting:
+
+   ```
    sh $APP_PATH/edge1/set_tunnel_rules.sh
+   ```
+
+By CR
+
+   ```
+   esh $APP_PATH/dge1/crd_tunnel_rules.sh
    ```
 
 ### EDGE2
@@ -310,11 +325,26 @@ Start the CNF with the above provider networks.
 
 #### Setup Tunnel and Rules
 
-NOTE: Currently the CRD does not support this kind of rules in our scenario. So, we set the rules in the CNF directly.
+Set Tennel
 
    ```
    sh $APP_PATH/edge2/setup_tunnel.sh
+   ```
+
+Set Rules
+
+We can set the rules in the CNF directly or by CR, they are alternative. Recommend to set rule by CR in production environment. Setting in CNF directly can be used for debug.
+
+In CNF setting:
+
+   ```
    sh $APP_PATH/edge2/set_tunnel_rules.sh
+   ```
+
+By CR
+
+   ```
+   esh $APP_PATH/dge2/crd_tunnel_rules.sh
    ```
 
 ## Testing
