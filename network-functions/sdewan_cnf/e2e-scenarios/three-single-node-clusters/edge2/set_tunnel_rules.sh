@@ -8,10 +8,6 @@
 CNFPOD=$(kubectl get pod -l sdewanPurpose=sdewan-cnf -o name)
 kubectl exec -it  "$CNFPOD" -- ip route
 
-kubectl exec -it  "$CNFPOD" -- bash -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
-kubectl exec -it  "$CNFPOD" -- bash -c "cat /proc/sys/net/ipv4/ip_forward"
-
-
 # These command just to set provider route SNAT rule.
 NET2_IFC=net2
 TO_SOURCE=${EDGE2_CNF_NET4_IFIP?"Error: not set"}

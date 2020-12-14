@@ -8,10 +8,6 @@
 CNFPOD=$(kubectl get pod -l sdewanPurpose=sdewan-cnf -o name)
 kubectl exec -it  "$CNFPOD" -- ip route
 
-kubectl exec -it  "$CNFPOD" -- bash -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
-kubectl exec -it  "$CNFPOD" -- bash -c "cat /proc/sys/net/ipv4/ip_forward"
-
-
 # These command just to set provider route DNAT rule.
 FROM_ADDR=${EDGE1_CNF_NET3_IFIP?"Error: not set"}
 NET=${NET3?"Error: not set"}
