@@ -4,15 +4,11 @@
 package main
 
 import (
-	"bytes"
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/json"
-	"encoding/pem"
+	"github.com/pkg/errors"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -22,8 +18,10 @@ import (
 const (
 	EAAServerName = "eaa.openness"
 	EAAServerPort = "443"
-	EAAServPort   = "80"
 	EAACommonName = "eaa.openness"
+	CertPath      = "./certs/cert.pem"
+	RootCAPath    = "./certs/root.pem"
+	KeyPath       = "./certs/key.pem"
 )
 
 var myURN URN
@@ -35,88 +33,40 @@ type VasConfig struct {
 	Pipelines    []string `json:"Pipelines"`
 }
 
-func authenticate(prvKey *ecdsa.PrivateKey) (*x509.CertPool, tls.Certificate) {
-	certTemplate := x509.CertificateRequest{
-		Subject: pkix.Name{
-			CommonName:   "media:consumer",
-			Organization: []string{"Intel Corporation"},
+// createEncryptedClient creates tls client with certs prorvided in
+// CertPath, KeyPath
+func createEncryptedClient() (*http.Client, error) {
+
+	log.Println("Loading certificate and key")
+	cert, err := tls.LoadX509KeyPair(CertPath, KeyPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to load client certificate")
+	}
+
+	certPool := x509.NewCertPool()
+	caCert, err := ioutil.ReadFile(RootCAPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to load CA Cert")
+	}
+	ok := certPool.AppendCertsFromPEM(caCert)
+	if !ok {
+		return nil, errors.New("Failed to append cert")
+	}
+
+	// HTTPS client
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs:      certPool,
+				Certificates: []tls.Certificate{cert},
+				ServerName:   EAACommonName,
+			},
 		},
-		SignatureAlgorithm: x509.ECDSAWithSHA256,
-		EmailAddresses:     []string{"hello@openness.org"},
+		Timeout: 0,
 	}
+	log.Printf("%#v", client)
 
-	log.Println("CSR creating certificate")
-	conCsrBytes, err := x509.CreateCertificateRequest(rand.Reader,
-		&certTemplate, prvKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	csrMem := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST",
-		Bytes: conCsrBytes})
-
-	conID := AuthIdentity{
-		Csr: string(csrMem),
-	}
-
-	reqBody, err := json.Marshal(conID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("CSR POST /auth")
-	resp, err := http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
-		"", bytes.NewBuffer(reqBody))
-	if err != nil {
-		log.Fatal(err)
-	}
-	reconnectTries := 0
-	for resp.StatusCode == http.StatusServiceUnavailable && reconnectTries < 10 {
-		reconnectTries++
-		log.Println("EAA service is not currently available, trying again")
-		time.Sleep(time.Duration(5) * time.Second)
-		resp, err = http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
-			"", bytes.NewBuffer(reqBody))
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	if reconnectTries == 10 {
-		log.Fatal("Number of connection retries to EAA Auth exceeded, exiting")
-	}
-
-	var conCreds AuthCredentials
-	err = json.NewDecoder(resp.Body).Decode(&conCreds)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = resp.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	x509Encoded, err := x509.MarshalECPrivateKey(prvKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pemEncoded := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY",
-		Bytes: x509Encoded})
-	conCert, err := tls.X509KeyPair([]byte(conCreds.Certificate),
-		pemEncoded)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	conCertPool := x509.NewCertPool()
-	for _, cert := range conCreds.CaPool {
-		ok := conCertPool.AppendCertsFromPEM([]byte(cert))
-		if !ok {
-			log.Fatal("Error: failed to append cert")
-		}
-	}
-
-	return conCertPool, conCert
+	return client, nil
 }
 
 func discoverServices(client *http.Client) (ServiceList, error) {
@@ -174,24 +124,12 @@ func main() {
 		Namespace: "default",
 	}
 
-	// Authentication (CSR)
-	log.Println("CSR Started")
-	conPriv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// Authentication
+	log.Println("Create Encrypted client")
+	client, err := createEncryptedClient()
 	if err != nil {
 		log.Fatal(err)
-	}
-	certPool, cert := authenticate(conPriv)
-
-	// HTTPS client
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				RootCAs:      certPool,
-				Certificates: []tls.Certificate{cert},
-				ServerName:   EAACommonName,
-			},
-		},
-		Timeout: 0,
+		return
 	}
 
 	// Service Discovery
