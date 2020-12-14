@@ -2,6 +2,50 @@
 # Copyright (c) 2020 Intel Corporation
 
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vas-cons-app
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: vas-cons-app-csr-requester
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: csr-requester
+subjects:
+  - kind: ServiceAccount
+    name: vas-cons-app
+    namespace: default
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vas-cons-app-csr-config
+data:
+  certrequest.json: |
+    {
+        "CSR": {
+            "Name": "vas-cons-app",
+            "Subject": {
+                "CommonName": "default:consumer",
+                "Organization": ["Intel Corporation"]
+            },
+            "DNSSANs": [],
+            "IPSANs": [],
+            "KeyUsages": [
+                "digital signature", "key encipherment", "client auth"
+            ]
+        },
+        "Signer": "openness.org/certsigner",
+        "WaitTimeout": "5m"
+    }
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,18 +60,61 @@ spec:
       labels:
         app: vas-cons-app
     spec:
+      serviceAccountName: vas-cons-app
+      initContainers:
+        - name: alpine
+          image: alpine:3.12.0
+          command: ["/bin/sh"]
+          args: ["-c", "cp /root/ca-certrequester/cert.pem /root/certs/root.pem"]
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "0.1"
+            limits:
+              cpu: "0.1"
+              memory: "128Mi"
+          volumeMounts:
+            - name: ca-certrequester
+              mountPath: /root/ca-certrequester
+            - name: certs
+              mountPath: /root/certs
+        - name: certrequester
+          image: certrequester:1.0
+          imagePullPolicy: Never
+          args: ["--cfg", "/home/certrequester/config/certrequest.json"]
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "0.1"
+            limits:
+              cpu: "0.1"
+              memory: "128Mi"
+          volumeMounts:
+            - name: config
+              mountPath: /home/certrequester/config/
+            - name: certs
+              mountPath: /home/certrequester/certs/
       containers:
-      - name: vas-cons-app
-        image: vas-cons-app:1.0
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 80
-        - containerPort: 443
-        volumeMounts:
-        - name: tmp
-          mountPath: /tmp
+        - name: vas-cons-app
+          image: vas-cons-app:1.0
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 443
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: certs
+              mountPath: /root/certs/
       volumes:
-      - name: tmp
-        hostPath:
-          path: /tmp
-          type: Directory
+        - name: tmp
+          hostPath:
+            path: /tmp
+            type: Directory
+        - name: config
+          configMap:
+            name: vas-cons-app-csr-config
+        - name: ca-certrequester
+          secret:
+            secretName: ca-certrequester
+        - name: certs
+          emptyDir: {}

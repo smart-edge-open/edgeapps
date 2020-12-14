@@ -47,6 +47,21 @@ The image can also be built and stored directly on the edgenode.
   - Use the command ```kubectl apply -f vas-cons-app.yaml``` from the ```deployments/yaml``` folder.
   - Use Helm to install the application using the files in the ```deployments/helm``` folder.
 
+### Sample App Certificate Approval
+
+InitContainer of the Sample App issues CertificateSigningRequest (csr), which needs to be approved by the cluster admin:
+
+```shell
+kubectl certificate approve <app-name>
+```
+
+List of csr requests can be checked with ```kubectl get csr```:
+
+```shell
+#kubectl get csr
+NAME                  AGE     SIGNERNAME                REQUESTOR                                           CONDITION
+vas-cons-app          25s     openness.org/certsigner   system:serviceaccount:default:vas-cons-app          Approved,Issued
+```
 
 ### Sample App Results
 
