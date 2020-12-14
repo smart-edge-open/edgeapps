@@ -3,9 +3,6 @@
 
 FROM ubuntu:16.04
 
-LABEL Description="This is the runtime image for Intel(R) Distribution of OpenVINO(TM) toolkit on Ubuntu 16.04 LTS"
-LABEL Vendor="Intel Corporation"
-
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy,openvino.openness
