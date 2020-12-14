@@ -37,7 +37,7 @@ containers:
   image:
     registry: "<ip_address>:<port>/"
     name: "integratedcloudnative/openwrt"
-    tag: "0.3.0"
+    tag: "0.3.1"
   imagePullPolicy: IfNotPresent
 
 labelName: "sdewan"
