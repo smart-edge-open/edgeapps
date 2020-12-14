@@ -47,7 +47,7 @@ data:
     done
     /sbin/procd &
     /sbin/ubusd &
-    iptables -t nat -L
+    iptables -S
     sleep 1
     /etc/init.d/rpcd start
     /etc/init.d/dnsmasq start
@@ -57,7 +57,8 @@ data:
     /etc/init.d/log start
     /etc/init.d/dropbear start
     /etc/init.d/mwan3 restart
-    /etc/init.d/firewall restart
+    sysctl -w net.ipv4.conf.all.rp_filter=1
+    sysctl -w net.ipv4.ip_forward=1
     echo "Entering sleep... (success)"
     # Sleep forever.
     while true; do sleep 100; done
