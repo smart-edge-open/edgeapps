@@ -8,10 +8,10 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"github.com/gorilla/websocket"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"github.com/gorilla/websocket"
 )
 
 // Connectivity constants
@@ -68,9 +68,8 @@ func createEncryptedClient() (*http.Client, *x509.CertPool, tls.Certificate, err
 	}
 	log.Printf("%#v", client)
 
-	return client, certPool, cert,nil
+	return client, certPool, cert, nil
 }
-
 
 func establishWebsocket(certPool *x509.CertPool,
 	cert tls.Certificate) (*websocket.Conn, error) {
@@ -295,8 +294,6 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-		
-
 
 	// Connection Establishment
 	log.Println("Establish websocket Started")
