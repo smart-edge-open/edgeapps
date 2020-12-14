@@ -76,7 +76,7 @@ fi
 # build the SmartCity images
 echo "[starting] building the SmartCity images ..."
 mkdir build
-cmake -DNOFFICES=1 -DREGISTRY=${{REGISTRY_HOST}} 
+cmake -DNOFFICES=1 -DREGISTRY="${REGISTRY_HOST}"
 ./deployment/kubernetes/helm/build.sh
 make
 make tunnels  
@@ -153,31 +153,31 @@ cp sensor-info.json /opt/
 
 echo "[starting] creating secret ..."
 cd ../cli-scripts/Smart-City-Sample/deployment/tunnel
-./create-key.sh root@${{CLOUD_HOST}} ${{REGISTRY_HOST}}
+./create-key.sh "root@${CLOUD_HOST}" "${REGISTRY_HOST}"
 
 # CLOUD_HOST
-scp .key/id_rsa.pub root@${{CLOUD_HOST}}:/root/tunnel_secret
-scp .key/id_rsa root@${{CLOUD_HOST}}:/root/tunnel_secret
+scp .key/id_rsa.pub "root@${CLOUD_HOST}:/root/tunnel_secret"
+scp .key/id_rsa "root@${CLOUD_HOST}:/root/tunnel_secret"
 
 # EDGE_HOST
-scp .key/id_rsa.pub root@${{EDGE_HOST}}:/root/tunnel_secret
-scp .key/id_rsa root@${{EDGE_HOST}}:/root/tunnel_secret
+scp .key/id_rsa.pub "root@${EDGE_HOST}:/root/tunnel_secret"
+scp .key/id_rsa "root@${EDGE_HOST}:/root/tunnel_secret"
 
 # known_hosts
-scp .ssh/known_hosts root@${{CLOUD_HOST}}:/root/tunnel_secret
-scp .ssh/known_hosts root@${{EDGE_HOST}}:/root/tunnel_secret
+scp .ssh/known_hosts "root@${CLOUD_HOST}:/root/tunnel_secret"
+scp .ssh/known_hosts "root@${EDGE_HOST}:/root/tunnel_secret"
 
 
 echo "[starting] creating certificate ..."
 cd ../certificate
 ./self-sign.sh "${REGISTRY}"
 
-scp self.crt self.key root@${{CLOUD_HOST}}:/root/tunnel_secret
+scp self.crt self.key "root@${CLOUD_HOST}:/root/tunnel_secret"
 
 echo "[starting] uploading clusters kubeconfig ..."
 mkdir -p /opt/clusters_config/
-scp root@${EDGE_HOST}}:/root/.kube/config /opt/clusters_config/edgecluster_config
-scp root@${{CLOUD_HOST}}:/root/.kube/config /opt/clusters_config/cloudcluster_config
+scp "root@${EDGE_HOST}:/root/.kube/config" /opt/clusters_config/edgecluster_config
+scp "root@${CLOUD_HOST}:/root/.kube/config" /opt/clusters_config/cloudcluster_config
 
 
 # on edge and cloud, create k8s secret for ssh

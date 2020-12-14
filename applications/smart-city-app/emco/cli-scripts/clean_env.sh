@@ -1,8 +1,8 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2019-2020 Intel Corporation.
+# Copyright (c) 2020 Intel Corporation
 
-setup_dir=${PWD}
+
 
 set -e
 
