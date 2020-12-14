@@ -16,8 +16,8 @@ DEV=$(kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- ip route get "$NET" | aw
 kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- iptables -t nat -I PREROUTING -i "$DEV" -d "$FROM_ADDR" -j DNAT --to-destination "$TO_ADDR"
 
 # These command just to set ovelay route DNAT rule.
-NET3_IFC=net3
-IPNET=$(kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- ip a | grep ${O_UE2_IP%.*} | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}')
+# NET3_IFC=net3
+IPNET=$(kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- ip a | grep "${O_UE2_IP%.*}" | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}')
 # DNAT
 FROM_ADDR=${IPNET%%/*}    # FROM_ADDR=$O_UE1_IP
 kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- iptables -t nat -I PREROUTING -i "$DEV" -d "$FROM_ADDR" -j DNAT --to-destination "$TO_ADDR"
