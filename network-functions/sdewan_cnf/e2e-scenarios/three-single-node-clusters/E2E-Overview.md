@@ -333,7 +333,7 @@ Get memory and CPU consumption
 
 ### Network Performance
 
-Login EDGE1 to get the tunnel overlay IP, it is iperf3 server ip.
+Login EDGE1 to get the tunnel overlay IP, it is a floating ip that maps iperf3 server ip.
 
    ```
    IPNET=`kubectl exec -it  $CNFPOD -- ip a | grep ${O_UE2_IP%.*} | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}'`
@@ -353,5 +353,4 @@ Login UE2 and start iperf3 client.
    ```
    IPERF_SERVER=xx.xx.xx.x  # IPERF_SERVER get from EDGE1
    sh $APP_PATH/ue2/iperf_client.sh
-
    ```
