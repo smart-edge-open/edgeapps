@@ -1,30 +1,27 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2019 Intel Corporation
+// Copyright (c) 2019-2020 Intel Corporation
 
 package main
 
 import (
 	"bytes"
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/json"
-	"encoding/pem"
+	"github.com/gorilla/websocket"
+	"io/ioutil"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/websocket"
 )
 
 // Connectivity constants
 const (
 	EAAServerName = "eaa.openness"
 	EAAServerPort = "443"
-	EAAServPort   = "80"
 	EAACommonName = "eaa.openness"
+	CertPath      = "./certs/cert.pem"
+	RootCAPath    = "./certs/root.pem"
+	KeyPath       = "./certs/key.pem"
 )
 
 var myURN URN
@@ -36,67 +33,42 @@ type InferenceSettings struct {
 	Accelerator string `json:"accelerator"`
 }
 
-func authenticate(prvKey *ecdsa.PrivateKey) (*x509.CertPool, tls.Certificate) {
-	certTemplate := x509.CertificateRequest{
-		Subject: pkix.Name{
-			CommonName:   "openvino:consumer",
-			Organization: []string{"Intel Corporation"},
+// createEncryptedClient creates tls client with certs prorvided in
+// CertPath, KeyPath
+func createEncryptedClient() (*http.Client, *x509.CertPool, tls.Certificate, error) {
+
+	log.Println("Loading certificate and key")
+	cert, err := tls.LoadX509KeyPair(CertPath, KeyPath)
+	if err != nil {
+		log.Println("loadX509keyPair failed:", err)
+	}
+
+	certPool := x509.NewCertPool()
+	caCert, err := ioutil.ReadFile(RootCAPath)
+	if err != nil {
+		log.Println("Read RootCA failed:", err)
+		return nil, certPool, cert, err
+	}
+	ok := certPool.AppendCertsFromPEM(caCert)
+	if !ok {
+		log.Println("Append CACert failed")
+		return nil, certPool, cert, err
+	}
+
+	// HTTPS client
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs:      certPool,
+				Certificates: []tls.Certificate{cert},
+				ServerName:   EAACommonName,
+			},
 		},
-		SignatureAlgorithm: x509.ECDSAWithSHA256,
-		EmailAddresses:     []string{"hello@openness.org"},
+		Timeout: 0,
 	}
+	log.Printf("%#v", client)
 
-	conCsrBytes, err := x509.CreateCertificateRequest(rand.Reader,
-		&certTemplate, prvKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	csrMem := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST",
-		Bytes: conCsrBytes})
-
-	conID := AuthIdentity{
-		Csr: string(csrMem),
-	}
-
-	reqBody, err := json.Marshal(conID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	resp, err := http.Post("http://"+EAAServerName+":"+EAAServPort+"/auth",
-		"", bytes.NewBuffer(reqBody))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var conCreds AuthCredentials
-	err = json.NewDecoder(resp.Body).Decode(&conCreds)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	x509Encoded, err := x509.MarshalECPrivateKey(prvKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pemEncoded := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY",
-		Bytes: x509Encoded})
-	conCert, err := tls.X509KeyPair([]byte(conCreds.Certificate),
-		pemEncoded)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	conCertPool := x509.NewCertPool()
-	for _, cert := range conCreds.CaPool {
-		ok := conCertPool.AppendCertsFromPEM([]byte(cert))
-		if !ok {
-			log.Fatal("Error: failed to append cert")
-		}
-	}
-
-	return conCertPool, conCert
+	return client, certPool, cert, nil
 }
 
 func establishWebsocket(certPool *x509.CertPool,
@@ -119,6 +91,7 @@ func establishWebsocket(certPool *x509.CertPool,
 	conn, resp, err := socket.Dial("wss://"+EAAServerName+":"+EAAServerPort+
 		"/notifications", header)
 	if err != nil {
+		log.Println("Establish websocket failed:", err)
 		return nil, err
 	}
 
@@ -126,6 +99,7 @@ func establishWebsocket(certPool *x509.CertPool,
 
 	err = resp.Body.Close()
 	if err != nil {
+		log.Println("Resp websocket failed:", err)
 		return nil, err
 	}
 
@@ -314,33 +288,25 @@ func main() {
 	}
 
 	// Authentication (CSR)
-	conPriv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	log.Println("Create Encrypted client")
+	client, certPool, cert, err := createEncryptedClient()
 	if err != nil {
 		log.Fatal(err)
-	}
-	certPool, cert := authenticate(conPriv)
-
-	// HTTPS client
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				RootCAs:      certPool,
-				Certificates: []tls.Certificate{cert},
-				ServerName:   EAACommonName,
-			},
-		},
-		Timeout: 0,
+		return
 	}
 
 	// Connection Establishment
+	log.Println("Establish websocket Started")
 	conn, err := establishWebsocket(certPool, cert)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Service Discovery
+	log.Println("Service Discovery Started")
 	servList, err := discoverServices(client)
 	if err != nil {
+		log.Fatal(err)
 		return
 	}
 

@@ -9,6 +9,7 @@ ENV no_proxy=$no_proxy,eaa.openness,analytics.openness
 
 ENV GOPATH=/root/go
 ENV GOROOT=/usr/local/go
+ENV GO111MODULE=on
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 ##  OnPrem NTS uses CPU 0,2 and 3. 
