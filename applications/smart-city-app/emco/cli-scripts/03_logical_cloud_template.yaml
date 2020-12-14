@@ -5,9 +5,9 @@
 ---
 version: emco/v2
 resourceContext:
-  anchor: projects/{{ .ProjectName }}/logical-clouds
+  anchor: "projects/{{ .ProjectName }}/logical-clouds"
 metadata:
-  name: {{ .AdminCloud }}
+  name: "{{ .AdminCloud }}"
 spec:
   level: "0"
 
@@ -15,16 +15,16 @@ spec:
 ---
 version: emco/v2
 resourceContext:
-  anchor: projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/cluster-references
+  anchor: "projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/cluster-references"
 metadata:
-  name: {{ .ClusterLogicEdge }}
+  name: "{{ .ClusterLogicEdge }}"
 spec:
-  cluster-provider: {{ .ClusterProvider }}
-  cluster-name: {{ .ClusterEdge }}
+  cluster-provider: "{{ .ClusterProvider }}"
+  cluster-name: "{{ .ClusterEdge }}"
   loadbalancer-ip: "0.0.0.0"
 
 # Instantiate logical cloud
 ---
 version: emco/v2
 resourceContext:
-  anchor: projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/instantiate
+  anchor: "projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/instantiate"

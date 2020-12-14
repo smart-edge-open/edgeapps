@@ -64,7 +64,7 @@ if [ $? -ne 0 ]; then
         exit 1
 fi
 
-#On the OpenNESS EMCO cluster, clone the Smart City Reference Pipeline source code from GitHub and checkout the 577d483635856c1fa3ff0fbc051c6408af725712 commits
+# On the OpenNESS EMCO cluster, clone the Smart City Reference Pipeline source code from GitHub and checkout the 577d483635856c1fa3ff0fbc051c6408af725712 commits
 git clone https://github.com/OpenVisualCloud/Smart-City-Sample.git
 cd Smart-City-Sample
 git checkout 577d483635856c1fa3ff0fbc051c6408af725712
@@ -74,13 +74,9 @@ if [ $? -ne 0 ]; then
 fi
 
 
-#build the SmartCity images
+# build the SmartCity images
+echo "[starting] building the SmartCity images ..."
 mkdir build
-# @Shigang 
-# Commit: 84fe119765a3acb330ddf2a4cca31531776685c4
-# why cd build here ?
-# cd build
-#cmake -DNOFFICES=1 -DREGISTRY=172.16.182.96:30003/library 
 cmake -DNOFFICES=1 -DREGISTRY=${REGISTRY_HOST} 
 ./deployment/kubernetes/helm/build.sh
 make
@@ -91,37 +87,36 @@ if [ $? -ne 0 ]; then
 fi
 cd ..
 
-# splite smtc helm chart into edge and cloud at ts29_files/smtc_resource
-# TODO
-# SMTC=Smart-City-Sample/deployment/kubernetes/helm/smtc
-# EDGESMTC=../helm-chart/smtc_edge_helmchart
-# CLOUDSMTC=../helm-chart/smtc_cloud_helmchart
-
-# mkdir -p ${EDGESMTC}
-# mkdir -p ${CLOUDSMTC}
-
-# cp -r ${SMTC} ${EDGESMTC}
-# rm-rf ${EDGESMTC}/templates/cloud* 
-
-# cp -r ${SMTC} ${CLOUDSMTC}
-# rm -rf ${CLOUDSMTC}/templates/* 
-# cp ${SMTC}/templates/*.tpl ${CLOUDSMTC}/templates/
-# cp ${SMTC}/templates/cloud* ${CLOUDSMTC}/templates/
-
 
 echo "[starting] setting override ..."
 # Set cloud host IP in two places !!!!
-#CLOUDHOST=10.240.224.149
+# CLOUDHOST=10.240.224.149
 CLOUDHOST=${CLOUD_HOST}
-YAMLCLOUD=../helm-chart/smtc_cloud_helmchart/values.yaml
-sed -i -e "s/    cloudHost:.*/    cloudHost: \"root@${CLOUDHOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUDHOST}\"/g" ${YAMLCLOUD}
-sed -i -e "s/    cloudHost:.*/    cloudHost: \"root@${CLOUDHOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUDHOST}\"/g" ${YAMLEDGE}
+SMTC=Smart-City-Sample/deployment/kubernetes/helm/smtc
+EDGESMTC=../helm-chart/smtc_edge
+CLOUDSMTC=../helm-chart/smtc_cloud
+VALUESYAML=${SMTC}/values.yaml
+sed -i -e "s/    cloudHost:.*/    cloudHost: \"root@${CLOUDHOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUDHOST}\"/g" ${VALUESYAML}
 
 # Set helm-chart api version
-CHARTCLOUD=../helm-chart/smtc_cloud_helmchart/Chart.yaml
-CHARTEDGE=../helm-chart/smtc_edge_helmchart/Chart.yaml
-sed -i "s/apiVersion: v2/apiVersion: v1/g" ${CHARTCLOUD}
-sed -i "s/apiVersion: v2/apiVersion: v1/g" ${CHARTEDGE}
+CHARTYAML=${SMTC}/Chart.yaml
+sed -i "s/apiVersion: v2/apiVersion: v1/g" ${CHARTYAML}
+
+# splite smtc helm chart into edge and cloud at ts29_files/smtc_resource
+echo "[starting] spliting smtc helm chart into edge and cloud ..."
+mkdir -p ${EDGESMTC}
+mkdir -p ${CLOUDSMTC}
+
+# make edge chart
+cp -r ${SMTC}/* ${EDGESMTC}
+rm -rf ${EDGESMTC}/templates/cloud* 
+
+# make cloud chart
+cp -r ${SMTC}/* ${CLOUDSMTC}
+rm -rf ${CLOUDSMTC}/templates/* 
+cp ${SMTC}/templates/*.tpl ${CLOUDSMTC}/templates/
+cp ${SMTC}/templates/cloud* ${CLOUDSMTC}/templates/
+
 
 echo "[starting] packing helm chart ..."
 cd ../helm-chart/
