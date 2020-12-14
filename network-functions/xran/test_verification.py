@@ -443,7 +443,12 @@ def main():
     logging.info("host: %s Started testverification script: master.py from XRAN path %s"
                  , host_name, xran_path)
 
-    options = parse_args(sys.argv[1:])
+    if len(sys.argv[1:]) > 1024*1024:
+        print("Program parameters string is too long!") #pylint: disable=superfluous-parens
+        return -1
+
+    program_params = sys.argv[1:]
+    options = parse_args(program_params)
     rantech = options.rantech
     cat = options.category
     m_u = options.numerology
