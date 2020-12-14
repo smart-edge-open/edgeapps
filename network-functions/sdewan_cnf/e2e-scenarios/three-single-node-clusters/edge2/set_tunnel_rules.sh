@@ -14,7 +14,7 @@ TO_SOURCE=${EDGE2_CNF_NET4_IFIP?"Error: not set"}
 kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- iptables -t nat -A POSTROUTING -o "$NET2_IFC" -s "$UE2_P1" -j SNAT --to-source "$TO_SOURCE"
 
 # These command just to set ovelay route SNAT rule.
-NET3_IFC=net3
+# NET3_IFC=net3
 # find the overlay IP allocated by tunnel.
 IPNET=$(kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- ip a | grep "${O_UE2_IP%.*}" | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}')
 # SNAT, UE2 IP of p1 interface map to overlay IP of EDGE2 net3 interface
