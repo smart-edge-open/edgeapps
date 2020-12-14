@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
 # Create default logical cloud with admin permissions
 ---
 version: emco/v2

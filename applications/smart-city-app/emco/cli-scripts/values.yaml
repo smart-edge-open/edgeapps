@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
 ProjectName: project_smtc
 ClusterProvider: smartcity-cluster-provider
 ClusterEdge: edge01
@@ -30,7 +33,7 @@ ResourceName: sensor-info
 SmtcEdgeCustomizations: smtcSensorConfig-edge-customizations
 SmtcCloudCustomizations: smtcSensorConfig-cloud-customizations
 ConfigMapFile: /opt/sensor-info.json
-RsyncHost: 172.16.182.96
-RsyncPort: 31048
-GacIP: 172.16.182.96
-GacPort: 31261
+RsyncIP: <EMCO_IP>
+RsyncPort: 31595
+GacIP: <EMCO_IP>
+GacPort: 31554

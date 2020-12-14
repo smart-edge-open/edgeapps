@@ -1,7 +1,0 @@
-# Creating cluster provider
----
-version: emco/v2
-resourceContext:
-  anchor: cluster-providers
-metadata:
-  name: {{ .ClusterProvider }}

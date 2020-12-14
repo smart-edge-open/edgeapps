@@ -1,9 +1,0 @@
-# Creating smart city composite app entry
----
-version: emco/v2
-resourceContext:
-  anchor: projects/{{ .ProjectName }}/composite-apps
-metadata:
-  name: {{ .CompositeApp }}
-spec:
-  version: v1
