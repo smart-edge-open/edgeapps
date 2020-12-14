@@ -41,6 +41,7 @@ spec:
     spec:
       containers:
       - command:
+        - /usr/bin/sudo
         - /bin/sh
         - /tmp/sdewan/entrypoint.sh
         image: "{{ .Values.containers.image.registry }}{{ .Values.containers.image.name }}:{{ .Values.containers.image.tag }}"
