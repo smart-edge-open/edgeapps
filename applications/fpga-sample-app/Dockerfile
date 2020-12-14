@@ -31,7 +31,7 @@ FROM centos:7.8.2003
 ENV RTE_SDK=/root/dpdk-20.11/
 
 WORKDIR /root/
-RUN yum install -y numactl-devel
+RUN yum install -y numactl-devel python3
  
 COPY --from=builder /${RTE_SDK}/app/test-bbdev/test-bbdev.py .
 COPY --from=builder /${RTE_SDK}/app/test-bbdev/test_vectors/ .
