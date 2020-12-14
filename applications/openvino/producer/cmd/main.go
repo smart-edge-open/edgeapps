@@ -176,7 +176,6 @@ func main() {
 		return
 	}
 
-
 	// get acceleration type from env variables
 	openvinoAccl := os.Getenv("OPENVINO_ACCL")
 
