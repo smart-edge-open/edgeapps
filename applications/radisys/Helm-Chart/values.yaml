@@ -1,0 +1,18 @@
+PersistentVolume:
+  rootfs:
+    size: "32Gi"
+    path: "/var/vd/vol0"
+    imgSrc: "http://10.190.167.100:8081/KVMIMAGE-QBG1G30OC-QBG100-6.3.3.0-142059-600G.img"
+
+  hostname: "zd06"
+
+mrfVM:
+  # numCores default 4
+  numCores: 6
+
+  # memory default 4096M
+  memory: 9830M
+
+  #Root fs claim
+  #rootfsClaim: "vmrf-dv"
+
