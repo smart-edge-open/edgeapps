@@ -266,7 +266,7 @@ In CNF setting:
 By CR
 
    ```
-   esh $APP_PATH/dge1/crd_tunnel_rules.sh
+   sh $APP_PATH/dge1/crd_tunnel_rules.sh
    ```
 
 ### EDGE2
@@ -344,7 +344,7 @@ In CNF setting:
 By CR
 
    ```
-   esh $APP_PATH/dge2/crd_tunnel_rules.sh
+   sh $APP_PATH/dge2/crd_tunnel_rules.sh
    ```
 
 ## Testing
@@ -374,7 +374,7 @@ Login EDGE1 to get the tunnel overlay IP, it is a floating ip that maps iperf3 s
 Login UE1 and start iperf3 server.
 
    ```
-   IPERF_SERVER=xx.xx.xx.x  # IPERF_SERVER get from EDGE1
+   IPERF_SERVER=$UE1_P1     # IPERF_SERVER get from EDGE1
    sh $APP_PATH/ue1/iperf_server.sh
    ```
 
