@@ -64,6 +64,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # On the OpenNESS EMCO cluster, clone the Smart City Reference Pipeline source code from GitHub and checkout the 577d483635856c1fa3ff0fbc051c6408af725712 commits
+if [ -d Smart-City-Sample ]; then
+        mv Smart-City-Sample.bak
+fi
 git clone https://github.com/OpenVisualCloud/Smart-City-Sample.git
 cd Smart-City-Sample
 git checkout 577d483635856c1fa3ff0fbc051c6408af725712
@@ -75,11 +78,14 @@ fi
 
 # build the SmartCity images
 echo "[starting] building the SmartCity images ..."
-mkdir build
-cmake -DNOFFICES=1 -DREGISTRY="${REGISTRY_HOST}"
+if [ ! -d build ]; then
+        mkdir build
+fi
+
+cmake -DNOFFICES=2 -DREGISTRY="${REGISTRY_HOST}"
 ./deployment/kubernetes/helm/build.sh
 make
-make tunnels  
+make tunnels
 if [ $? -ne 0 ]; then
         log "build smtc ... failed."
         exit 1
