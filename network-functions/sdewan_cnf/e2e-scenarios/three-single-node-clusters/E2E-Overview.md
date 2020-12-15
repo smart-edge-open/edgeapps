@@ -374,7 +374,7 @@ Login EDGE1 to get the tunnel overlay IP, it is a floating ip that maps iperf3 s
 Login UE1 and start iperf3 server.
 
    ```
-   IPERF_SERVER=$UE1_P1     # IPERF_SERVER get from EDGE1
+   IPERF_SERVER=$UE1_P1     # IPERF_SERVER, it is UE1 interface IP
    sh $APP_PATH/ue1/iperf_server.sh
    ```
 
