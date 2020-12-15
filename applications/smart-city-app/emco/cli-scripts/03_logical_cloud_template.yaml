@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+# Create default logical cloud with admin permissions
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/logical-clouds"
+metadata:
+  name: "{{ .AdminCloud }}"
+spec:
+  level: "0"
+
+# Add cluster reference to logical cloud
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/cluster-references"
+metadata:
+  name: "{{ .ClusterLogicEdge }}"
+spec:
+  cluster-provider: "{{ .ClusterProvider }}"
+  cluster-name: "{{ .ClusterEdge }}"
+  loadbalancer-ip: "0.0.0.0"
+
+# Instantiate logical cloud
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/instantiate"

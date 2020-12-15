@@ -1,0 +1,226 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+# Creating smart city composite app entry
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps"
+metadata:
+  name: "{{ .CompositeApp }}"
+spec:
+  version: v1
+
+# Adding edge app to the composite app
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/apps"
+metadata:
+  name: "{{ .AppEdge }}"
+file: "{{ .HelmEdgeApp }}"
+
+# Adding cloud app to the composite app
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/apps"
+metadata:
+  name: "{{ .AppCloud }}"
+file: "{{ .HelmCloudApp }}"
+
+# creating smtc composite profile entry
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles"
+metadata:
+  name: "{{ .CompositeProfile }}"
+
+# Adding smtc edge app profiles to the composite profile
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles/{{ .CompositeProfile }}/profiles"
+metadata:
+  name: "{{ .ProfileEdgeAppName }}"
+spec:
+  app-name: "{{ .AppEdge }}"
+file: "{{ .ProfileEdgeApp }}"
+
+# Adding smtc cloud app profiles to the composite profile
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles/{{ .CompositeProfile }}/profiles"
+metadata:
+  name: "{{ .ProfileCloudAppName }}"
+spec:
+  app-name: "{{ .AppCloud }}"
+file: "{{ .ProfileCloudApp }}"
+
+# Create the deployment intent group
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups"
+metadata:
+  name: "{{ .DeploymentIntent }}"
+  description: "smtc deployment intent group"
+  userData1: test1
+  userData2: test2
+spec:
+  profile: "{{ .CompositeProfile }}"
+  version: r1
+  logical-cloud: "{{ .AdminCloud }}"
+  override-values: []
+
+# Create the intent in  deployment intent group
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/intents"
+metadata:
+  name: "{{ .DeploymentIntent }}"
+  description: "smtc deployment intent"
+  userData1: test1
+  userData2: test2
+spec:
+  intent:
+    genericPlacementIntent: "{{ .GenericPlacementIntent }}"
+    gac: "{{ .GenericK8sIntent }}"
+# Create the generic placement intent
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents"
+metadata:
+  name: "{{ .GenericPlacementIntent }}"
+  description: "smtc generic placement intent"
+  userData1: test1
+  userData2: test2
+
+# Add edge app placement intent
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents/{{ .GenericPlacementIntent }}/app-intents"
+metadata:
+  name: "{{ .AppEdgePlacementIntent }}"
+  description: "smtc edge app placement intent"
+  userData1: test1
+  userData2: test2
+spec:
+  app-name: "{{ .AppEdge }}"
+  intent:
+    allOf:
+      - provider-name: "{{ .ClusterProvider }}"
+        cluster-label-name: "{{ .EdgeClusterLabel }}"
+
+# Add cloud app placement intent
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents/{{ .GenericPlacementIntent }}/app-intents"
+metadata:
+  name: "{{ .AppCloudPlacementIntent }}"
+  description: "smtc cloud app placement intent"
+  userData1: test1
+  userData2: test2
+spec:
+  app-name: "{{ .AppCloud }}"
+  intent:
+    allOf:
+      - provider-name: "{{ .ClusterProvider }}"
+        cluster-label-name: "{{ .CloudClusterLabel }}"
+
+# Add the smtc-k8s-intent to generic-k8s-intents
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents"
+metadata:
+  name: "{{ .GenericK8sIntent }}"
+
+# Add sensor.json to edge cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources"
+metadata:
+  name: "{{ .SmtcEdgeResources }}"
+spec:
+  appName: "{{ .AppEdge }}"
+  newObject: "true"
+  resourceGVK:
+    apiVersion: v1
+    kind: configMap
+    name: "{{ .ResourceName }}"
+file:
+  "{{ .HelmEdgeApp }}" # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcEdgeResources }}/customizations"
+metadata:
+  name: "{{ .SmtcEdgeCustomizations }}"
+spec:
+  # bug here, must be false right now.
+  clusterSpecific: "false"
+  clusterInfo:
+    scope: labelResourceFileName
+    clusterProvider: "{{ .ClusterProvider }}"
+    clusterName: "{{ .ClusterEdge }}"
+    clusterLabel: "{{ .EdgeClusterLabel }}"
+    mode: allow
+files:
+  - "{{ .ConfigMapFile }}"
+
+# Add sensor.json to cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
+metadata:
+  name: "{{ .SmtcCloudResources }}"
+spec:
+  appName: "{{ .AppCloud }}"
+  newObject: "true"
+  resourceGVK:
+    apiVersion: v1
+    kind: configMap
+    name: "{{ .ResourceName }}"
+file:
+  {{ .HelmCloudApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcCloudResources }}/customizations"
+metadata:
+  name: "{{ .SmtcCloudCustomizations }}"
+spec:
+  # bug here, must be false right now.
+  clusterSpecific: "false"
+  clusterInfo:
+    scope: label
+    clusterProvider: "{{ .ClusterProvider }}"
+    clusterName: "{{ .ClusterCloud }}"
+    clusterLabel: "{{ .CloudClusterLabel }}"
+    mode: allow
+files:
+  - "{{ .ConfigMapFile }}"
+
+# Approve
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/approve"
+
+# Instantiate
+---
+version: emco/v2
+resourceContext:
+  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/instantiate"
+  
+  
