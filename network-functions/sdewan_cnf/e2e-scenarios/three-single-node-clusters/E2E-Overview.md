@@ -32,6 +32,9 @@ Reference architecture E2E network topology based SDEWAN.
     - [Configure Network](#configure-network-2)
     - [Start CNF](#start-cnf-2)
     - [Setup Tunnel and Rules](#setup-tunnel-and-rules-2)
+- [Testing](#testing)
+  - [Resource Consumption](#resource-consumption)
+  - [Network Performance](#network-performance)
 
 ## Introduction
 
@@ -56,7 +59,7 @@ We deploy OpenNESS on both edges and the hub. On each edge and hub, we setup a s
 
 Currently the UE connects to the CNF directly without switch/Router. In the picture, UE1 is in the same network(NET1) as edge1 port.  It is considered as a private network. In order to access the other UE, its UE IP is mapped to the interface IP of Edge node's CNF, (such as, P1 of UE1 map to n3 of CNF on edge1.  This can be considered as a floating IP address, and we can re-map this IP to any UE.
 
-On edge1 we also setup an OpenVINO app, currently, it only does local benchmark. In later release, we can support remote benchmark, maybe it can connect to a RTST camera UE.
+On edge1 we also setup an OpenVINO app, currently, it only does local benchmark. In later release, we can support remote benchmark, maybe it can connect to a RTSP camera UE.
 
 ## Deployment
 
@@ -101,6 +104,12 @@ Suppose the right interface name is eth10, then configure the interface IP as fo
    genifcfg
    ```
 
+Configure router rule for UE1 as follow:
+
+   ```
+   sh $APP_PATH/ue1/set_rules.sh
+   ```
+
 ### UE2
 
 Suppose the right interface name is eth10, then configure the interface IP as follow:
@@ -113,10 +122,27 @@ Suppose the right interface name is eth10, then configure the interface IP as fo
    genifcfg
    ```
 
+Configure router rule for UE2 as follow:
+
+   ```
+   sh $APP_PATH/ue2/set_rules.sh
+   ```
 
 ### HUB
 
 #### Deploy OpenNESS
+
+Firstly, set the reserved CPUs for system before deployment:
+
+   ```
+   EXPECTID=0
+   HT_SIBLINGS=`cat /sys/devices/system/cpu/cpu$EXPECTID/topology/thread_siblings_list`  # 0,8
+   CORE_SIBLINGS=`cat /sys/devices/system/cpu/cpu$EXPECTID/topology/core_siblings_list`  # 0-15
+   RESERVED=$HT_SIBLINGS
+   [[ ! $HT_SIBLINGS =~ "," ]] && RESERVED=${CORE_SIBLINGS//-/,}
+   sed -i -e 's/reserved_cpus:.*/reserved_cpus: "'"$RESERVED"'"/' flavors/sdewan-hub/all.yml
+   ```
+
 Please use "sdewan-hub" flavor to deploy OpenNESS.
 
    ```
@@ -139,7 +165,7 @@ Make sure "edgeapps" is your current directory.
 Create 2 provider networks for the CNF.
 
    ```
-   $APP_PATH/hub/provider_network.sh
+   sh $APP_PATH/hub/provider_network.sh
    ```
 
 #### Start CNF
@@ -168,6 +194,18 @@ NOTE: Currently the CRD does not support this kind of rules in our scenario. So,
 ### EDGE1
 
 #### Deploy OpenNESS
+
+Firstly, set the reserved CPUs for system before deployment:
+
+   ```
+   EXPECTID=0
+   HT_SIBLINGS=`cat /sys/devices/system/cpu/cpu$EXPECTID/topology/thread_siblings_list`  # 0,8
+   CORE_SIBLINGS=`cat /sys/devices/system/cpu/cpu$EXPECTID/topology/core_siblings_list`  # 0-15
+   RESERVED=$HT_SIBLINGS
+   [[ ! $HT_SIBLINGS =~ "," ]] && RESERVED=${CORE_SIBLINGS//-/,}
+   sed -i -e 's/reserved_cpus:.*/reserved_cpus: "'"$RESERVED"'"/' flavors/sdewan-edge/all.yml
+   ```
+
 Please use "sdewan-edge" flavor to deploy OpenNESS.
 
    ```
@@ -190,7 +228,7 @@ Make sure "edgeapps" is your current directory.
 Create 2 provider networks for the CNF.
 
    ```
-   $APP_PATH/edge1/provider_network.sh
+   sh $APP_PATH/edge1/provider_network.sh
    ```
 
 #### Start CNF
@@ -209,16 +247,43 @@ Start the CNF with the above provider networks.
 
 #### Setup Tunnel and Rules
 
-NOTE: Currently the CRD does not support this kind of rules in our scenario. So, we set the rules in the CNF directly.
+Set Tennel
 
    ```
    sh $APP_PATH/edge1/setup_tunnel.sh
+   ```
+
+Set Rules
+
+We can set the rules in the CNF directly or by CR, they are alternative. Recommend to set rule by CR in production environment. Setting in CNF directly can be used for debug.
+
+In CNF setting:
+
+   ```
    sh $APP_PATH/edge1/set_tunnel_rules.sh
+   ```
+
+By CR
+
+   ```
+   esh $APP_PATH/dge1/crd_tunnel_rules.sh
    ```
 
 ### EDGE2
 
 #### Deploy OpenNESS
+
+Firstly, set the reserved CPUs for system before deployment:
+
+   ```
+   EXPECTID=0
+   HT_SIBLINGS=`cat /sys/devices/system/cpu/cpu$EXPECTID/topology/thread_siblings_list`  # 0,8
+   CORE_SIBLINGS=`cat /sys/devices/system/cpu/cpu$EXPECTID/topology/core_siblings_list`  # 0-15
+   RESERVED=$HT_SIBLINGS
+   [[ ! $HT_SIBLINGS =~ "," ]] && RESERVED=${CORE_SIBLINGS//-/,}
+   sed -i -e 's/reserved_cpus:.*/reserved_cpus: "'"$RESERVED"'"/' flavors/sdewan-edge/all.yml
+   ```
+
 Please use "sdewan-edge" flavor to deploy OpenNESS.
 
    ```
@@ -241,7 +306,7 @@ Make sure "edgeapps" is your current directory.
 Create 2 provider networks for the CNF.
 
    ```
-   $APP_PATH/edge2/provider_network.sh
+   sh $APP_PATH/edge2/provider_network.sh
    ```
 
 #### Start CNF
@@ -260,9 +325,62 @@ Start the CNF with the above provider networks.
 
 #### Setup Tunnel and Rules
 
-NOTE: Currently the CRD does not support this kind of rules in our scenario. So, we set the rules in the CNF directly.
+Set Tennel
 
    ```
    sh $APP_PATH/edge2/setup_tunnel.sh
+   ```
+
+Set Rules
+
+We can set the rules in the CNF directly or by CR, they are alternative. Recommend to set rule by CR in production environment. Setting in CNF directly can be used for debug.
+
+In CNF setting:
+
+   ```
    sh $APP_PATH/edge2/set_tunnel_rules.sh
+   ```
+
+By CR
+
+   ```
+   esh $APP_PATH/dge2/crd_tunnel_rules.sh
+   ```
+
+## Testing
+
+### Resource Consumption
+
+Intall metrics server components.
+
+   ```
+   sh $APP_PATH/resource_consumption.sh
+   ```
+Get memory and CPU consumption
+   ```
+   kubectl top pod -A --sort-by memory
+   ```
+
+### Network Performance
+
+Login EDGE1 to get the tunnel overlay IP, it is a floating ip that maps iperf3 server ip.
+
+   ```
+   IPNET=`kubectl exec -it  $CNFPOD -- ip a | grep ${O_UE2_IP%.*} | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}'`
+   IPERF_SERVER=${IPNET%%/*}
+   echo $IPERF_SERVER
+   ```
+
+Login UE1 and start iperf3 server.
+
+   ```
+   IPERF_SERVER=xx.xx.xx.x  # IPERF_SERVER get from EDGE1
+   sh $APP_PATH/ue1/iperf_server.sh
+   ```
+
+Login UE2 and start iperf3 client.
+
+   ```
+   IPERF_SERVER=xx.xx.xx.x  # IPERF_SERVER get from EDGE1
+   sh $APP_PATH/ue2/iperf_client.sh
    ```

@@ -7,8 +7,8 @@
 
 sdewan_cnf_name=sdewan-cnf
 hubIp=$HUB_CNF_NET3_IFIP
-HUB_OIP=$O_TUNNEL1_HUB_IP
-LOCAL_IDENTIFIER=$EDGE1_P2
+HUB_OIP=$O_TUNNEL1_NET
+LOCAL_IDENTIFIER=$EDGE1_CNF_NET3_IFIP
 TUNNEL_NAME=sdewan-edge1-2-hub
 
 echo "--------------------- Applying CRDs ---------------------"
@@ -35,7 +35,7 @@ apiVersion: batch.sdewan.akraino.org/v1alpha1
 kind: IpsecHost
 metadata:
   name: ipsechost
-  namespace: default
+  namespace: ${NS:-default}
   labels:
     sdewanPurpose: $sdewan_cnf_name
 spec:
@@ -52,7 +52,7 @@ spec:
       conn_type: tunnel
       mode: start
       local_sourceip: "%config"
-      remote_subnet: $HUB_OIP/24,$hubIp/32
+      remote_subnet: $HUB_OIP,$hubIp/32
       crypto_proposal:
         - ipsecproposal
 EOF
