@@ -5,6 +5,8 @@
 
 # Provide the interface for the server to start on
 
+yum install iperf3 -y
+
 interface=$(ip route |grep "${NET1%/*}" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
 
 if [ -z "$interface" ]
@@ -13,11 +15,11 @@ then
   exit 1
 fi
 
-server_ip=$UE1_P1
+server_ip=${IPERF_SERVER?"ERROR: not set"}
 
 echo "iperf3 server is starting at IP: $server_ip, and maps to a floating IP: $EDGE1_CNF_NET1_IFIP"
 echo "Access iperf3 server, please use floating IP: $EDGE1_CNF_NET1_IFIP"
 
-#iperf3 -s "$server_ip" -i 60
+iperf3 -s "$server_ip" -i 60
 
 echo "iperf3 server is stopped"

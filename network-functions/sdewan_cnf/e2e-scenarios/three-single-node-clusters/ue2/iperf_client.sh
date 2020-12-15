@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2019-2020 Intel Corporation
 
+yum install iperf3 -y
+
 # Modify the iperf-server IP as per the setup
-server_ip=$EDGE1_CNF_NET1_IFIP
+server_ip=${IPERF_SERVER?"ERROR: not set"}
 
 # Modify interface name (net0) if needed
 client_ip=$UE2_P1
