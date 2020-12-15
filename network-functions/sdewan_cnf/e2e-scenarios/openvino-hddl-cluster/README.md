@@ -46,8 +46,7 @@ This sample application demonstrates OpenVINO object detection (pedestrian and v
 
 
    ```
-   cd edgeapps
-   APP_PATH=network-functions/sdewan_cnf/e2e-scenarios/openvino-hddl-cluster
+   APP_PATH=edgeapps/network-functions/sdewan_cnf/e2e-scenarios/openvino-hddl-cluster
    # You can change the expect parameters in ${APP_PATH}/global_vars.sh
    source ${APP_PATH}/global_vars.sh
    ```
@@ -63,6 +62,7 @@ This sample application demonstrates OpenVINO object detection (pedestrian and v
 
    ```
    sh ${APP_PATH}/collection.sh
+   ls benchmark/openvino/hddl
    ```
 
 ### REF
