@@ -10,7 +10,6 @@ Reference architecture E2E network topology based SDEWAN.
   - [SDEWAN](#SDEWAN)
   - [ovn4nfv-k8s-plugin](#ovn4nfv-k8s-plugin)
 - [Full Path Trafic Flow](#full-path-trafic-flow)
-- [Full Path Trafic Flow](#full-path-trafic-flow)
 - [Deployment](#deployment)
   - [UE1](#ue1)
   - [UE2](#ue2)
