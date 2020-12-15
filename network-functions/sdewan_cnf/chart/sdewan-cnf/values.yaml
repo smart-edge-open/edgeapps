@@ -5,7 +5,7 @@
 
 metadata:
   name: sdewan-cnf
-  namespace: default
+  namespace: cnf
   labels: sdewan-cnf
 
 spec:

@@ -35,7 +35,7 @@ spec:
             } {{- .separate -}}
             {{- end }} {{- end }}
           ]}
-        k8s.v1.cni.cncf.io/networks: '[{ "name": "ovn-networkobj"}]'
+        k8s.v1.cni.cncf.io/networks: '[{ "name": "ovn-networkobj","namespace": "default"}]'
       labels:
         sdewanPurpose: {{ .Values.metadata.labels }}
     spec:
