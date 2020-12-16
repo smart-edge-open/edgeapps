@@ -12,6 +12,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 // Connectivity constants
@@ -22,6 +24,7 @@ const (
 	CertPath      = "./certs/cert.pem"
 	RootCAPath    = "./certs/root.pem"
 	KeyPath       = "./certs/key.pem"
+	megabyte      = 1024 * 1024
 )
 
 var myURN URN
@@ -31,6 +34,16 @@ var myURN URN
 type InferenceSettings struct {
 	Model       string `json:"model"`
 	Accelerator string `json:"accelerator"`
+}
+
+//get file size
+func getFileSize(path string) (int64, error) {
+	fInfo, err := os.Stat(filepath.Clean(path))
+	if err != nil {
+		return 0, err
+	}
+
+	return fInfo.Size(), nil
 }
 
 // createEncryptedClient creates tls client with certs prorvided in
@@ -44,6 +57,16 @@ func createEncryptedClient() (*http.Client, *x509.CertPool, tls.Certificate, err
 	}
 
 	certPool := x509.NewCertPool()
+	sz, err := getFileSize(RootCAPath)
+	if err != nil {
+		log.Println("Get RootCA size failed:", err)
+		return nil, certPool, cert, err
+	}
+	// Config file can't be larger than 1MB
+	if sz > megabyte {
+		log.Println("RootCA size too large failed")
+		return nil, certPool, cert, err
+	}
 	caCert, err := ioutil.ReadFile(RootCAPath)
 	if err != nil {
 		log.Println("Read RootCA failed:", err)
