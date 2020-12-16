@@ -7,11 +7,14 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Connectivity constants
@@ -41,6 +44,16 @@ func createEncryptedClient() (*http.Client, error) {
 	cert, err := tls.LoadX509KeyPair(CertPath, KeyPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to load client certificate")
+	}
+
+	sz, err := getFileSize(RootCAPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Load config failed")
+	}
+	// file can't be larger than 1MB
+	if sz > 1024*1024 {
+		return nil, errors.New("File size can not be greater than 1MB! " +
+			RootCAPath)
 	}
 
 	certPool := x509.NewCertPool()
@@ -114,6 +127,13 @@ func discoverServices(client *http.Client) (ServiceList, error) {
 	}
 
 	return servList, nil
+}
+func getFileSize(path string) (int64, error) {
+	fInfo, err := os.Stat(filepath.Clean(path))
+	if err != nil {
+		return 0, err
+	}
+	return fInfo.Size(), nil
 }
 
 func main() {
