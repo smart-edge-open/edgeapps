@@ -1,5 +1,5 @@
 {{- $release_name := include "mrf.fullname" . }}
-
+# Copyright © 2020 Radisys Corporation
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -15,11 +15,3 @@ spec:
   storageClassName: local-storage
   hostPath:
         path: {{ required "Rootfs Volume0: Local Path Missing" .Values.PersistentVolume.rootfs.path }}  
-#  nodeAffinity:
-#    required:
-#      nodeSelectorTerms:
-#      - matchExpressions:
-#        - key: kubernetes.io/hostname
-#          operator: In
-#          values:
-#          - {{ required "Persistent Volume Hostname Missing" .Values.PersistentVolume.hostname }}

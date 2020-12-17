@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2020 Intel Corporation
+# Copyright © 2020 Radisys Corporation
 {{- $release_name := include "mrf.fullname" . }}
 
 apiVersion: kubevirt.io/v1alpha3

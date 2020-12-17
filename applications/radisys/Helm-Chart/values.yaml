@@ -1,8 +1,10 @@
+# Copyright © 2020 Radisys Corporation
 PersistentVolume:
   rootfs:
     size: "32Gi"
     path: "/var/vd/vol0"
-    imgSrc: "http://10.190.167.100:8081/KVMIMAGE-QBG1G30OC-QBG100-6.3.3.0-142059-600G.img"
+    imgSrc: "http://xxx.xxx.xxx.xxx/xxx.img"
+    #Example: imgSrc: "http://10.190.167.100:8081/KVMIMAGE-QBG1G30OC-QBG100-6.3.3.0-142059-600G.img"
 
   hostname: "zd06"
 
