@@ -132,15 +132,17 @@ Confirm sdewan-cnf pod is running, observe the pod’s name:
 
   ```
 
-Add SNAT rule to cnf to enable connection from UE to Iperf-client pod
+Enter the CNF pod and add SNAT rule to cnf to enable connection from UE to Iperf-client pod
 
   ```
-  kubectl exec -it  sdewan-cnf-bc6d67d49-p2svh -- iptables -t nat -A POSTROUTING -s 172.16.30.15 -j SNAT --to-source 192.168.2.3
+  kubectl exec -it  sdewan-cnf-bc6d67d49-p2svh -- /bin/bash 
+  sudo iptables -t nat -A POSTROUTING -s 172.16.30.15 -j SNAT --to-source 192.168.2.3
   ```
 
 ### Bring up Iperf client pod
 
-Buid iperf-client docker image and build the pod:
+Verify that server_ip and client_ip in iperf_client.sh are set up corectly.
+Build iperf-client docker image and build the pod:
 
   ```
   cd  iperf_files/iperf_img
@@ -153,7 +155,8 @@ Buid iperf-client docker image and build the pod:
 Configure default gateway on the Iperf-client pod:
 
   ```
-   kubectl exec -it   iperf-client-846f5f69f9-49vdm -- route add default gw 172.16.30.10 net0
+  kubectl exec -it   iperf-client-846f5f69f9-49vdm -- /bin/bash 
+  sudo route add default gw 172.16.30.10 net0
   ```
 ## Iperf Test
 
@@ -165,7 +168,8 @@ Start Iperf server on the UE
 Start Iperf client on the pod:
 
   ```
-  kubectl exec -it   iperf-client-846f5f69f9-49vdm -- /root/client_iperf.sh
+  kubectl exec -it   iperf-client-846f5f69f9-49vdm -- /bin/bash 
+  sudo /iperf_client.sh
   ```
 
 Observe Iperf Server on UE. The output should be similar to:
