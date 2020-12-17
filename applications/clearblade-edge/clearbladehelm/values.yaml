@@ -1,9 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 ClearBlade
+
 replicaCount: 1
 
 image:
   name: clearblade/edge:9.7.0
   pullPolicy: IfNotPresent
-  #tag: "latest"
 serviceType: NodePort
 imagePullSecrets: []
 nameOverride: ""

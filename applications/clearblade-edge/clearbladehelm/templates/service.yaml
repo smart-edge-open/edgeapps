@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 ClearBlade
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,4 +13,3 @@ spec:
     - port: 9000
       protocol: TCP
       targetPort: 9000
-      #name: sql
