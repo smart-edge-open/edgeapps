@@ -70,8 +70,8 @@ List of Certificate Signing Requests can be checked with:
 
 ```shell
 $ kubectl get csr
-NAME                  AGE     SIGNERNAME                REQUESTOR                                           CONDITION
-vas-cons-app          25s     openness.org/certsigner   system:serviceaccount:default:vas-cons-app          Approved,Issued
+NAME            AGE     SIGNERNAME                REQUESTOR                                     CONDITION
+vas-cons-app    6m41s   openness.org/certsigner   system:serviceaccount:default:vas-cons-app    Approved,Issued
 ```
 
 ### Application Results
@@ -79,12 +79,12 @@ vas-cons-app          25s     openness.org/certsigner   system:serviceaccount:de
 1. Check whether the application pod is successfully deployed.
     ```shell
     $ kubectl get pods | grep vas-cons-app
-    default       vas-cons-app-7f8bf7c978-csfwj -c vas-cons-app        0/1     Completed   0          30h
+    vas-cons-app-7b8c9f87d8-79vnq          1/1     Running   0          39s
     ```
 
 2. Check the pod's logs, results should look similar to the following:
     ```shell
-    $ kubectl logs -f vas-cons-app-7b8c9f87d8-6mjkl
+    $ kubectl logs -f vas-cons-app-7b8c9f87d8-79vnq
     go: downloading github.com/pkg/errors v0.9.1
     2020/12/17 21:01:31 Video-analytics-service Consumer Started
     2020/12/17 21:01:31 Create Encrypted client
@@ -92,10 +92,10 @@ vas-cons-app          25s     openness.org/certsigner   system:serviceaccount:de
     2020/12/17 21:01:31 &http.Client{Transport:(*http.Transport)(0xc000014640), CheckRedirect:(func(*http.Request, []*http.Request) error)(nil), Jar:http.CookieJar(nil), Timeout:0}
     2020/12/17 21:01:31 Service Discovery Started
     2020/12/17 21:01:31 Discovered service:
-    2020/12/17 21:01:31     URN.ID:        analytics-ffmpeg-xeon
-    2020/12/17 21:01:31     URN.Namespace: default
-    2020/12/17 21:01:31     Description:   Video Analytics Service
-    2020/12/17 21:01:31     EndpointURI:   http://analytics-ffmpeg:8080
+    2020/12/17 21:01:31  -> URN.ID:        analytics-ffmpeg-xeon
+    2020/12/17 21:01:31  -> URN.Namespace: default
+    2020/12/17 21:01:31  -> Description:   Video Analytics Service
+    2020/12/17 21:01:31  -> EndpointURI:   http://analytics-ffmpeg:8080
     2020/12/17 21:01:31 Sending request for pipeline emotion_recognition/1
     2020/12/17 21:01:31 Starting POST Request:  http://analytics-ffmpeg:8080/pipelines/emotion_recognition/1
     2020/12/17 21:01:31 Starting status check:  http://analytics-ffmpeg:8080/pipelines/emotion_recognition/1/1/status
@@ -133,10 +133,10 @@ vas-cons-app          25s     openness.org/certsigner   system:serviceaccount:de
     state: COMPLETED
     }
     2020/12/17 21:01:51 Discovered service:
-    2020/12/17 21:01:51     URN.ID:        analytics-gstreamer-xeon
-    2020/12/17 21:01:51     URN.Namespace: default
-    2020/12/17 21:01:51     Description:   Video Analytics Service
-    2020/12/17 21:01:51     EndpointURI:   http://analytics-gstreamer:8080
+    2020/12/17 21:01:51  -> URN.ID:        analytics-gstreamer-xeon
+    2020/12/17 21:01:51  -> URN.Namespace: default
+    2020/12/17 21:01:51  -> Description:   Video Analytics Service
+    2020/12/17 21:01:51  -> EndpointURI:   http://analytics-gstreamer:8080
     2020/12/17 21:01:51 Sending request for pipeline emotion_recognition/1
     2020/12/17 21:01:51 Starting POST Request:  http://analytics-gstreamer:8080/pipelines/emotion_recognition/1
     2020/12/17 21:01:51 Starting status check:  http://analytics-gstreamer:8080/pipelines/emotion_recognition/1/1/status
