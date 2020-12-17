@@ -4,8 +4,7 @@
 ---
 image:
   # registry: <controller_ip>:30003/intel/
-  registry: 10.237.223.106:30003/intel/
-  #registry:
+  registry:
   name: vas-cons-app
   tag: "1.0"
 pullPolicy: IfNotPresent

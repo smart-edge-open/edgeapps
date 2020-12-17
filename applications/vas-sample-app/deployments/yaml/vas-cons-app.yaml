@@ -96,8 +96,7 @@ spec:
       containers:
         - name: vas-cons-app
           #image: <controller_ip>:30003/intel/vas-cons-app:1.0
-          image: 10.237.223.106:30003/intel/vas-cons-app:1.0
-          #image: vas-cons-app:1.0
+          image: vas-cons-app:1.0
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 443
