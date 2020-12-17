@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 LINKS Foundation
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "links-location-api.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}

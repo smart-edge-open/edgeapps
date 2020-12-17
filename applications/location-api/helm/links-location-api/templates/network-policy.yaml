@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 LINKS Foundation
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:  

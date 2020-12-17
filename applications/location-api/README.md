@@ -1,14 +1,13 @@
 
-
-[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License](https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode)
-
-(CC) 2020 [LINKS Foundation](https://linksfoundation.com/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+Copyright (c) [LINKS Foundation](https://linksfoundation.com/)
 
 # MEC Location API simulator 
 
 - [MEC Location API simulator](#mec-location-api-simulator)
 	- [Application Description](#application-description)
 	- [Repository content](#repository-content)
+	- [Docker Images](#docker-images)
 	- [Pre Requisites](#pre-requisites)
 	- [Installation](#installation)
 		- [Load docker images locally](#load-docker-images-locally)
@@ -16,36 +15,37 @@
 		- [Start a simulation](#start-a-simulation)
 		- [Install consumer sample application](#install-consumer-sample-application)
 	- [How do I develop my MEC Application?](#how-do-i-develop-my-mec-application)
+	- [References](#references)
 
-Application Description
----
-The Application is a Location API Simulator registered to OpenNESS platform as producer application. It provides a MEC Location Service accessible via Location API as specified in the ETSI GS MEC013 document, appearing as a RESTful web service. It has a Graphical User Interface enabling developers to simulate mobile users' movements by feeding the simulator with a GPS track in .gpx format.  
+## Application Description
 
-Repository content
----
-The repository contains a *freeware* version of MEC Location API developed by LINKS Foundation, including:
+The Application is a Location API Simulator registered to OpenNESS platform as producer application. It provides a MEC Location Service accessible via Location API as specified in the [ETSI GS MEC013](https://www.etsi.org/deliver/etsi_gs/mec/001_099/013/02.01.01_60/gs_mec013v020101p.pdf) document, appearing as a RESTful web service. It has a Graphical User Interface enabling developers to simulate mobile users' movements by feeding the simulator with a GPS track in [GPX](https://www.topografix.com/gpx.asp) format.  
+
+## Repository content
+
+The repository contains a Apache 2.0 licensed version of MEC Location API developed by LINKS Foundation, including:
 
 -	Helm package for the installation
 -	YAML file for the consumer deploy
 
-Docker Images
----
->To get the docker images you need to send an email to mec-services@linksfoundation.com with object **Location API - Docker image request**
+## Docker Images
+
+>To get the docker images you need to send an email to mec-services@linksfoundation.com with **Object:** *Location API - Docker image request*
 
 Pre Requisites
 ---
 The application has been tested on the following software, which is also required:
 
-* [OpenNESS](https://github.com/open-ness/specs) Network Edge 
+* [OpenNESS](https://github.com/open-ness/specs) Network Edge v20.03
 * Kubernetes v1.18.4
 * Helm v3.1.2
 
-Installation
-----
+## Installation
 
 > The installation switches between *Controller* and *Edge* node. Keep attention on where each step has to be performed!
 
 ### Load docker images locally
+
 The repository contains two docker images, one for the MEC Location API Simulator named `location-api:v2.1.1`; the second one for the Location API consumer sample, named `location-api-consumer:latest`. In order to proceed to the following steps, both images have to be loaded on the *Edge Node*. If you want, you can avoid loading the Location API consumer sample, since it is just for testing the simulator. 
 
 Load the images on the **Edge Node** with the following commands: 
@@ -76,6 +76,7 @@ Both variables have to be inserted according to the **IP address** of the Edge N
 If the installation succeds, test it either opening a browser to `<ip-address>:<edge-node-port>` for seeing the GUI or typing in a terminal the command `$ curl <ip-address>:<edge-node-port>`.  
 
 ### Start a simulation
+
 The GUI allows to start a simulation. Going to `<ip-address>:<edge-node-port>`, you will see the GUI, which should look like the following: 
 
 ![Alt text](./simulator_gui.PNG)
@@ -84,23 +85,25 @@ The GUI allows to create and simulate the movement of mobile devices through a g
 
 ```xml
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<gpx version="1.0" creator="GPS Visualizer https://www.gpsvisualizer.com/" xmlns="http://www.topografix.com/GPX/1/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
-	<trk>
-  		<name>sample</name>
-  		<trkseg>
-			<trkpt lat="45.072883333" lon="7.78415">
-				<time>2013-01-30T15:41:38.9Z</time>
-			</trkpt>
-			<trkpt lat="45.0729" lon="7.784133333">
-				<time>2013-01-30T15:41:39Z</time>
-			</trkpt>
-			<!-- other track points here -->
-		</trkseg>
-	</trk>
+<gpx version="1.0" creator="GPS Visualizer https://www.gpsvisualizer.com/"
+    xmlns="http://www.topografix.com/GPX/1/0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+    <trk>
+        <name>sample</name>
+        <trkseg>
+            <trkpt lat="45.072883333" lon="7.78415">
+                <time>2013-01-30T15:41:38.9Z</time>
+            </trkpt>
+            <trkpt lat="45.0729" lon="7.784133333">
+                <time>2013-01-30T15:41:39Z</time>
+            </trkpt>
+            <!-- other track points here -->
+        </trkseg>
+    </trk>
 </gpx>
 ```
 
-> In the beginning, the simulator contains just one GPX file as a sample, but you can add as many GPX files as you want, going to the *Upload file* section. In the upper right, from the menu, you can go there and upload it. Then, it will be available in the *home* section. 
+> **Note**: In the beginning, the simulator contains just one GPX file as a sample, but you can add as many GPX files as you want, going to the *Upload file* section. In the upper right, from the menu, you can go there and upload it. Then, it will be available in the *home* section. 
 
 For starting a simulation you need to: 
 
@@ -112,23 +115,23 @@ For starting a simulation you need to:
 The simulator will start feeding location information to the Location API service.
 
 ### Install consumer sample application 
-The consumer sample application can be easily deployed through the provided YAML file. The YAML file is the simplest one, but it has a *mandatory*  field that enables the communication from *Location API Simulator Pod* and *Location API consumer Pod*. Below, the YAML file is shown: 
+
+The consumer sample application can be easily deployed through the provided YAML file. The YAML file is the simplest one, but it has a *mandatory*  field that enables the communication from **Location API Simulator Pod** and **Location API consumer Pod**. Below, the YAML file is shown: 
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-    name: consumer
-    labels:
-  		locationService: active
+  name: consumer
+  labels:
+    locationService: active
 spec:
-    containers:
-    -
-        image: "location-api-consumer:latest"
-        imagePullPolicy: Never
-        name: consumer
-            ports:
-                - containerPort: 8082
+  containers:
+  - name: "consumer"
+    image: "location-api-consumer:latest"
+    imagePullPolicy: Never
+    ports:
+    - containerPort: 8082
 ```
 
 Therefore, the label `locationService: active` **must be included** for using the Location API Simulator. All the other labels can be changed according to the proper needs.
@@ -156,6 +159,12 @@ If it is correctly started and you started the simulation in the section [above]
 
 For developing your own MEC Application, you need to go through the following steps: 
 
-1. Create a procedure for the registration of your application to the OpenNESS EAA, as described [here](https://github.com/open-ness/specs/blob/master/doc/applications-onboard/network-edge-applications-onboarding.md)
-2. Create your own docker image, which has to be build or loaded to the *Edge Node*. Inside the docker container, you will need to automate the registration process of the previous point
+1. Create a procedure for the registration of your application to the OpenNESS EAA, as described [here](https://github.com/open-ness/specs/blob/master/doc/applications-onboard/network-edge-applications-onboarding.md);
+2. Create your own docker image, which has to be build or loaded to the *Edge Node*. Inside the docker container, you will need to automate the registration process of the previous point;
 3. Create a YAML file in the *Controller Node* associated with the docker image (similar to the example above - [Install consumer sample application](#install-consumer-sample-application)). 
+
+
+## References
+
+- ETSI GS MEC 013 (V2.1.1) - Multi-access Edge Computing (MEC) Location API: https://www.etsi.org/deliver/etsi_gs/mec/001_099/013/02.01.01_60/gs_mec013v020101p.pdf
+- GPX (GPS Exchange Format). Official Site: https://www.topografix.com/gpx.asp
