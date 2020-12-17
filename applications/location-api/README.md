@@ -1,21 +1,22 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 Copyright (c) [LINKS Foundation](https://linksfoundation.com/)
 
 # MEC Location API simulator 
 
 - [MEC Location API simulator](#mec-location-api-simulator)
-	- [Application Description](#application-description)
-	- [Repository content](#repository-content)
-	- [Docker Images](#docker-images)
-	- [Pre Requisites](#pre-requisites)
-	- [Installation](#installation)
-		- [Load docker images locally](#load-docker-images-locally)
-		- [Install the MEC Location API Service](#install-the-mec-location-api-service)
-		- [Start a simulation](#start-a-simulation)
-		- [Install consumer sample application](#install-consumer-sample-application)
-	- [How do I develop my MEC Application?](#how-do-i-develop-my-mec-application)
-	- [References](#references)
+  - [Application Description](#application-description)
+  - [Repository content](#repository-content)
+  - [Docker Images](#docker-images)
+  - [Pre Requisites](#pre-requisites)
+  - [Installation](#installation)
+    - [Load docker images locally](#load-docker-images-locally)
+    - [Install the MEC Location API Service](#install-the-mec-location-api-service)
+    - [Start a simulation](#start-a-simulation)
+    - [Install consumer sample application](#install-consumer-sample-application)
+  - [How do I develop my MEC Application?](#how-do-i-develop-my-mec-application)
+  - [References](#references)
 
 ## Application Description
 
