@@ -80,9 +80,8 @@ spec:
               mountPath: /root/certs
         - name: certrequester
           image: certrequester:1.0
-          imagePullPolicy: Never
           args: ["--cfg", "/home/certrequester/config/certrequest.json"]
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           resources:
             requests:
               cpu: "0.1"
@@ -96,8 +95,10 @@ spec:
               mountPath: /home/certrequester/certs/
       containers:
         - name: vas-cons-app
-          image: vas-cons-app:1.0
-          imagePullPolicy: Never
+          #image: <controller_ip>:30003/intel/vas-cons-app:1.0
+          image: 10.237.223.106:30003/intel/vas-cons-app:1.0
+          #image: vas-cons-app:1.0
+          imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 443
           volumeMounts:
