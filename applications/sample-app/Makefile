@@ -16,7 +16,7 @@ build-docker: consumer-docker producer-docker
 consumer:
 	export GOSUMDB=off
 	mkdir -p "${BUILD_DIR}"
-	GOOS=linux go build -o "${BUILD_DIR}/consumer" ./simpleEaaConsumer
+	CGO_ENABLED=0 GARCH=amd64 GOOS=linux go build -o "${BUILD_DIR}/consumer" ./simpleEaaConsumer
 	unset GOSUMDB
 
 consumer-docker: consumer
@@ -28,7 +28,7 @@ consumer-docker: consumer
 producer:
 	export GOSUMDB=off
 	mkdir -p "${BUILD_DIR}"
-	GOOS=linux go build -o "${BUILD_DIR}/producer" ./simpleEaaProducer
+	CGO_ENABLED=0 GARCH=amd64 GOOS=linux go build -o "${BUILD_DIR}/producer" ./simpleEaaProducer
 	unset GOSUMDB
 
 producer-docker: producer

@@ -3,10 +3,10 @@
 
 ---
 image:
-    # Change Me! - please provide IP address and port of docker registry in
+    # Change Me! - please provide IP address and port of harbor registry in
     # the format  <ip_address>:<port>/<image-name>
     # <ip_address>:<port>/intel/upf
-    # of Docker registry where UPF docker image is uploaded
+    # of Harbor registry where UPF docker image is uploaded
   repository: upf-cnf
   tag: "1.0"               # The tag identifying the upf docker image,
   pullPolicy: IfNotPresent # Pull policy for docker image

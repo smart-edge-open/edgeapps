@@ -1,0 +1,1024 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: firewalldnats.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: FirewallDNAT
+    listKind: FirewallDNATList
+    plural: firewalldnats
+    singular: firewalldnat
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: FirewallDNAT is the Schema for the firewalldnats API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: FirewallDNATSpec defines the desired state of FirewallDNAT
+          properties:
+            dest:
+              type: string
+            dest_ip:
+              type: string
+            dest_port:
+              type: string
+            family:
+              type: string
+            mark:
+              type: string
+            name:
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "make" to regenerate code after modifying this file'
+              type: string
+            proto:
+              type: string
+            src:
+              type: string
+            src_dip:
+              type: string
+            src_dport:
+              type: string
+            src_ip:
+              type: string
+            src_mac:
+              type: string
+            src_port:
+              type: string
+            target:
+              type: string
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: firewallforwardings.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: FirewallForwarding
+    listKind: FirewallForwardingList
+    plural: firewallforwardings
+    singular: firewallforwarding
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: FirewallForwarding is the Schema for the firewallforwardings API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: FirewallForwardingSpec defines the desired state of FirewallForwarding
+          properties:
+            dest:
+              type: string
+            family:
+              type: string
+            name:
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "make" to regenerate code after modifying this file'
+              type: string
+            src:
+              type: string
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: firewallrules.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: FirewallRule
+    listKind: FirewallRuleList
+    plural: firewallrules
+    singular: firewallrule
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: FirewallRule is the Schema for the firewallrules API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: FirewallRuleSpec defines the desired state of FirewallRule
+          properties:
+            dest:
+              type: string
+            dest_ip:
+              type: string
+            dest_port:
+              type: string
+            extra:
+              type: string
+            family:
+              type: string
+            icmp_type:
+              items:
+                type: string
+              type: array
+            mark:
+              type: string
+            name:
+              description: Foo is an example field of FirewallRule. Edit FirewallRule_types.go
+                to remove/update
+              type: string
+            proto:
+              type: string
+            set_mark:
+              type: string
+            set_xmark:
+              type: string
+            src:
+              type: string
+            src_ip:
+              type: string
+            src_mac:
+              type: string
+            src_port:
+              type: string
+            target:
+              type: string
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: firewallsnats.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: FirewallSNAT
+    listKind: FirewallSNATList
+    plural: firewallsnats
+    singular: firewallsnat
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: FirewallSNAT is the Schema for the firewallsnats API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: FirewallSNATSpec defines the desired state of FirewallSNAT
+          properties:
+            dest:
+              type: string
+            dest_ip:
+              type: string
+            dest_port:
+              type: string
+            family:
+              type: string
+            mark:
+              type: string
+            name:
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "make" to regenerate code after modifying this file'
+              type: string
+            proto:
+              type: string
+            src:
+              type: string
+            src_dip:
+              type: string
+            src_dport:
+              type: string
+            src_ip:
+              type: string
+            src_mac:
+              type: string
+            src_port:
+              type: string
+            target:
+              type: string
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: firewallzones.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: FirewallZone
+    listKind: FirewallZoneList
+    plural: firewallzones
+    singular: firewallzone
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: FirewallZone is the Schema for the firewallzones API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: FirewallZoneSpec defines the desired state of FirewallZone
+          properties:
+            etra_dest:
+              type: string
+            extra_src:
+              type: string
+            family:
+              type: string
+            forward:
+              type: string
+            input:
+              type: string
+            masq:
+              type: string
+            masq_allow_invalid:
+              type: string
+            masq_dest:
+              items:
+                type: string
+              type: array
+            masq_src:
+              items:
+                type: string
+              type: array
+            mtu_fix:
+              type: string
+            name:
+              description: Foo is an example field of FirewallZone. Edit FirewallZone_types.go
+                to remove/update
+              type: string
+            network:
+              items:
+                type: string
+              type: array
+            output:
+              type: string
+            subnet:
+              items:
+                type: string
+              type: array
+          required:
+          - network
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: ipsechosts.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: IpsecHost
+    listKind: IpsecHostList
+    plural: ipsechosts
+    singular: ipsechost
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: IpsecHost is the Schema for the ipsechosts API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            authentication_method:
+              type: string
+            connections:
+              items:
+                properties:
+                  conn_type:
+                    type: string
+                  crypto_proposal:
+                    items:
+                      type: string
+                    type: array
+                  if_id:
+                    type: string
+                  local_firewall:
+                    type: string
+                  local_sourceip:
+                    type: string
+                  local_updown:
+                    type: string
+                  mark:
+                    type: string
+                  mode:
+                    type: string
+                  name:
+                    type: string
+                  remote_firewall:
+                    type: string
+                  remote_sourceip:
+                    type: string
+                  remote_subnet:
+                    type: string
+                  remote_updown:
+                    type: string
+                required:
+                - conn_type
+                - mode
+                - name
+                type: object
+              type: array
+            crypto_proposal:
+              items:
+                type: string
+              type: array
+            force_crypto_proposal:
+              type: string
+            local_identifier:
+              type: string
+            local_private_cert:
+              type: string
+            local_public_cert:
+              type: string
+            name:
+              type: string
+            pre_shared_key:
+              type: string
+            remote:
+              type: string
+            remote_identifier:
+              type: string
+            shared_ca:
+              type: string
+            type:
+              type: string
+          required:
+          - authentication_method
+          - connections
+          - crypto_proposal
+          - remote
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: ipsecproposals.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: IpsecProposal
+    listKind: IpsecProposalList
+    plural: ipsecproposals
+    singular: ipsecproposal
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: IpsecProposal is the Schema for the ipsecproposals API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: IpsecProposalSpec defines the desired state of IpsecProposal
+          properties:
+            dh_group:
+              type: string
+            encryption_algorithm:
+              type: string
+            hash_algorithm:
+              type: string
+            name:
+              type: string
+          required:
+          - dh_group
+          - encryption_algorithm
+          - hash_algorithm
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: ipsecsites.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: IpsecSite
+    listKind: IpsecSiteList
+    plural: ipsecsites
+    singular: ipsecsite
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: IpsecSite is the Schema for the ipsecsites API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: IpsecSiteSpec defines the desired state of IpsecSite
+          properties:
+            authentication_method:
+              type: string
+            connections:
+              items:
+                properties:
+                  conn_type:
+                    type: string
+                  crypto_proposal:
+                    items:
+                      type: string
+                    type: array
+                  if_id:
+                    type: string
+                  local_firewall:
+                    type: string
+                  local_subnet:
+                    type: string
+                  local_updown:
+                    type: string
+                  mark:
+                    type: string
+                  mode:
+                    type: string
+                  name:
+                    type: string
+                  remote_firewall:
+                    type: string
+                  remote_sourceip:
+                    type: string
+                  remote_subnet:
+                    type: string
+                  remote_updown:
+                    type: string
+                required:
+                - conn_type
+                - local_subnet
+                - mode
+                - name
+                type: object
+              type: array
+            crypto_proposal:
+              items:
+                type: string
+              type: array
+            force_crypto_proposal:
+              type: string
+            local_identifier:
+              type: string
+            local_private_cert:
+              type: string
+            local_public_cert:
+              type: string
+            name:
+              type: string
+            pre_shared_key:
+              type: string
+            remote:
+              type: string
+            remote_identifier:
+              type: string
+            shared_ca:
+              type: string
+            type:
+              type: string
+          required:
+          - authentication_method
+          - connections
+          - crypto_proposal
+          - remote
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: mwan3policies.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: Mwan3Policy
+    listKind: Mwan3PolicyList
+    plural: mwan3policies
+    singular: mwan3policy
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: Mwan3Policy is the Schema for the mwan3policies API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            members:
+              items:
+                description: Mwan3PolicySpec defines the desired state of Mwan3Policy
+                properties:
+                  metric:
+                    type: integer
+                  network:
+                    description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of
+                      cluster Important: Run "make" to regenerate code after modifying
+                      this file'
+                    type: string
+                  weight:
+                    type: integer
+                required:
+                - metric
+                - network
+                - weight
+                type: object
+              type: array
+          required:
+          - members
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: mwan3rules.batch.sdewan.akraino.org
+spec:
+  group: batch.sdewan.akraino.org
+  names:
+    kind: Mwan3Rule
+    listKind: Mwan3RuleList
+    plural: mwan3rules
+    singular: mwan3rule
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: Mwan3Rule is the Schema for the mwan3rules API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            dest_ip:
+              type: string
+            dest_port:
+              type: string
+            family:
+              type: string
+            policy:
+              type: string
+            proto:
+              type: string
+            src_ip:
+              type: string
+            src_port:
+              type: string
+            sticky:
+              type: string
+            timeout:
+              type: string
+          required:
+          - dest_ip
+          - dest_port
+          - family
+          - policy
+          - proto
+          - src_ip
+          - src_port
+          - sticky
+          - timeout
+          type: object
+        status:
+          description: status subsource used for Sdewan rule CRDs
+          properties:
+            appliedGeneration:
+              format: int64
+              type: integer
+            appliedTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            state:
+              type: string
+          required:
+          - state
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+

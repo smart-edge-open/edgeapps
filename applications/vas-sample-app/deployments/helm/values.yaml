@@ -3,6 +3,8 @@
 
 ---
 image:
-  repository: vas-cons-app
+  # registry: <controller_ip>:30003/intel/
+  registry:
+  name: vas-cons-app
   tag: "1.0"
-pullPolicy: Never
+pullPolicy: IfNotPresent

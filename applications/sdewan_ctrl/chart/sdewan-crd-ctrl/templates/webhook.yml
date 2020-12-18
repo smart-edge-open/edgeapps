@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: sdewan-system/sdewan-serving-cert
+  creationTimestamp: null
+  name: sdewan-validating-webhook-configuration
+webhooks:
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: sdewan-webhook-service
+      namespace: {{ .Values.namespace }}
+      path: /validate-sdewan-bucket-permission
+  failurePolicy: Fail
+  name: validate-sdewan-bucket.akraino.org
+  rules:
+  - apiGroups:
+    - batch.sdewan.akraino.org
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - mwan3policies
+    - mwan3rules
+    - firewallzones
+    - firewallforwardings
+    - firewallrules
+    - firewallsnats
+    - firewalldnats
+    - ipsecproposals
+    - ipsechosts
+    - ipsecsites
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: sdewan-webhook-service
+      namespace: {{ .Values.namespace }}
+      path: /validate-label
+  failurePolicy: Fail
+  name: validate-label.akraino.org
+  rules:
+  - apiGroups:
+    - apps
+    - batch.sdewan.akraino.org
+    apiVersions:
+    - v1
+    - v1alpha1
+    operations:
+    - UPDATE
+    resources:
+    - deployments
+    - mwan3policies
+    - mwan3rules
+    - firewallzones
+    - firewallforwardings
+    - firewallrules
+    - firewallsnats
+    - firewalldnats
+    - ipsecproposals
+    - ipsechosts
+

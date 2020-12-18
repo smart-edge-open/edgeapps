@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+  orchestrator:
+    host: localhost
+    port: 31298
+  clm:
+    host: localhost
+    port: 31856
+  ncm:
+    host: localhost
+    port: 32737
+  ovnaction:
+    host: localhost
+    port: 31181
+  dcm:
+    host: localhost
+    port: 31877
+  gac:
+    host: localhost
+    port: 31280

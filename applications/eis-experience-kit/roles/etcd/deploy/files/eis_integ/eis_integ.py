@@ -7,8 +7,8 @@ import os
 import json
 import logging
 import subprocess
-import zmq
-import zmq.auth
+import zmq # pylint: disable=import-error
+import zmq.auth # pylint: disable=import-error
 
 LOGGER_PATH = "/var/log/eis_integ.log"
 LOGGER_LEVEL = logging.DEBUG
@@ -76,15 +76,19 @@ def check_zmqkeys(appname):
     :type file: String
     """
     try:
-        app_pub_key = subprocess.check_output(["etcdctl", "get", "--", "/Publickeys/" + appname], stderr=subprocess.STDOUT).decode('utf-8')
+        app_pub_key = subprocess.check_output(["etcdctl", "get", "--", "/Publickeys/" + appname],
+                                              stderr=subprocess.STDOUT).decode('utf-8')
     except subprocess.CalledProcessError as e:
-        logging.error("Error returned while getting the public key for {} app from etcd: {}".format(appname, e))
+        logging.error("Error returned while getting the public key for %s app from etcd: %s",
+                      appname, e)
         raise EisIntegError(CODES.EXT_CMD_ERROR)
 
     try:
-        app_priv_key = subprocess.check_output(["etcdctl", "get", "--", "/" + appname + "/private_key"], stderr=subprocess.STDOUT).decode('utf-8')
+        app_priv_key = subprocess.check_output(["etcdctl", "get", "--", "/" + appname + "/private_key"],
+                                               stderr=subprocess.STDOUT).decode('utf-8')
     except subprocess.CalledProcessError as e:
-        logging.error("Error returned while getting the private key for {} app from etcd: {}".format(appname, e))
+        logging.error("Error returned while getting the private key for %s app from etcd: %s",
+                      appname, e)
         raise EisIntegError(CODES.EXT_CMD_ERROR)
 
     if not app_priv_key or not app_pub_key:
@@ -176,7 +180,7 @@ def etcd_remove_key(key):
     try:
         subprocess.check_output(["etcdctl", "del", "--", key], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        logging.error("Error returned while removing the {} key from etcd: {}".format(key, e))
+        logging.error("Error returned while removing the %s key from etcd: %s", key, e)
         raise EisIntegError(CODES.EXT_CMD_ERROR)
 
 def remove_user_privilege(name):
@@ -186,9 +190,9 @@ def remove_user_privilege(name):
     """
     try:
         subprocess.check_output(["etcdctl", "role", "delete", name], stderr=subprocess.STDOUT)
-        logging.info("Role {} has been removed.".format(name))
+        logging.info("Role %s has been removed.", name)
     except subprocess.CalledProcessError as err:
-        logging.error("Error returned while removing the {} role: {}".format(name, err))
+        logging.error("Error returned while removing the %s role: %s", name, err)
         raise EisIntegError(CODES.EXT_CMD_ERROR)
 
 def remove_user(name):

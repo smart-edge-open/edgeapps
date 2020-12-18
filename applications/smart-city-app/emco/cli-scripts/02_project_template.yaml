@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+# Create project
+---
+version: emco/v2
+resourceContext:
+  anchor: projects
+metadata:
+  name: {{ .ProjectName }}
