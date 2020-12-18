@@ -71,7 +71,7 @@ On all the three servers we should download the edgeapp repository and setup the
    ```
    GIT_HTTP_PROXY=http://proxy-mu.intel.com:911
    GIT_USER=YouGitName
-   git clone https://github.com/otcshare/edgeapps.git \
+   git clone https://github.com/open-ness/edgeapps.git \
    --config "http.proxy=$GIT_HTTP_PROXY" \
    --config "credential.username=$GIT_USER"
 

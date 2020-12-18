@@ -7,9 +7,9 @@ Copyright (c) 2020 Intel Corporation
 
 This sample application demonstrates OpenVINO object detection (pedestrian and vehicle detection) deployment and execution on the OpenNESS edge platform by HDDL accelerator card.
 
-- [OpenVINO Sample Application White Paper](https://github.com/otcshare/specs/blob/master/doc/applications/openness_openvino.md)
-- [OpenVINO Sample Application Onboarding Guide - Network Edge](https://github.com/otcshare/specs/blob/master/doc/applications-onboard/network-edge-applications-onboarding.md#onboarding-openvino-application)
-- [OpenVINO Sample Application Onboarding Guide - On-premises](https://github.com/otcshare/specs/blob/master/doc/applications-onboard/on-premises-applications-onboarding.md#onboarding-openvino-applications)
+- [OpenVINO Sample Application White Paper](https://github.com/open-ness/specs/blob/master/doc/applications/openness_openvino.md)
+- [OpenVINO Sample Application Onboarding Guide - Network Edge](https://github.com/open-ness/specs/blob/master/doc/applications-onboard/network-edge-applications-onboarding.md#onboarding-openvino-application)
+- [OpenVINO Sample Application Onboarding Guide - On-premises](https://github.com/open-ness/specs/blob/master/doc/applications-onboard/on-premises-applications-onboarding.md#onboarding-openvino-applications)
 
 ### Deploy Openness With HDDL Enable
 
@@ -27,7 +27,7 @@ This sample application demonstrates OpenVINO object detection (pedestrian and v
    ```
    GIT_HTTP_PROXY=http://proxy-mu.intel.com:911
    GIT_USER=YouGitName
-   git clone https://github.com/otcshare/edgeapps.git \
+   git clone https://github.com/open-ness/edgeapps.git \
    --config "http.proxy=$GIT_HTTP_PROXY" \
    --config "credential.username=$GIT_USER"
 
@@ -67,4 +67,4 @@ This sample application demonstrates OpenVINO object detection (pedestrian and v
 
 ### REF
 
-- [Troubleshooting](https://github.com/otcshare/edgeapps/tree/master/applications/openvino/benchmark#troubleshooting)
+- [Troubleshooting](https://github.com/open-ness/edgeapps/tree/master/applications/openvino/benchmark#troubleshooting)
