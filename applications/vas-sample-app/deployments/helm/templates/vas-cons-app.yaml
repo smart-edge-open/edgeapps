@@ -5,32 +5,32 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Release.Name }}-vas-cons-app
+  name: {{ .Release.Name }}
 
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-vas-cons-app-csr-requester
+  name: {{ .Release.Name }}-csr-requester
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: csr-requester
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-vas-cons-app
+    name: {{ .Release.Name }}
     namespace: default
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-vas-cons-app-csr-config
+  name: {{ .Release.Name }}-csr-config
 data:
   certrequest.json: |
     {
         "CSR": {
-            "Name": "{{ .Release.Name }}-vas-cons-app",
+            "Name": "{{ .Release.Name }}",
             "Subject": {
                 "CommonName": "default:consumer",
                 "Organization": ["Intel Corporation"]
@@ -49,18 +49,18 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-vas-cons-app
+  name: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-vas-cons-app
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-vas-cons-app
+        app: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ .Release.Name }}-vas-cons-app
+      serviceAccountName: {{ .Release.Name }}
       initContainers:
         - name: alpine
           image: alpine:3.12.0
@@ -80,9 +80,8 @@ spec:
               mountPath: /root/certs
         - name: certrequester
           image: certrequester:1.0
-          imagePullPolicy: Never
           args: ["--cfg", "/home/certrequester/config/certrequest.json"]
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           resources:
             requests:
               cpu: "0.1"
@@ -95,8 +94,8 @@ spec:
             - name: certs
               mountPath: /home/certrequester/certs/
       containers:
-        - name: {{ .Release.Name }}-vas-cons-app
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        - name: {{ .Release.Name }}
+          image: "{{.Values.image.registry}}{{ .Values.image.name }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.pullPolicy }}
           ports:
           - containerPort: 443
@@ -112,7 +111,7 @@ spec:
             type: Directory
         - name: config
           configMap:
-            name: {{ .Release.Name }}-vas-cons-app-csr-config
+            name: {{ .Release.Name }}-csr-config
         - name: ca-certrequester
           secret:
             secretName: ca-certrequester

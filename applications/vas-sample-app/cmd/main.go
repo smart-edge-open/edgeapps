@@ -169,10 +169,10 @@ func main() {
 			return
 		}
 		log.Println("Discovered service:")
-		log.Println("    URN.ID:       ", s.URN.ID)
-		log.Println("    URN.Namespace:", s.URN.Namespace)
-		log.Println("    Description:  ", s.Description)
-		log.Println("    EndpointURI:  ", s.EndpointURI)
+		log.Println(" -> URN.ID:       ", s.URN.ID)
+		log.Println(" -> URN.Namespace:", s.URN.Namespace)
+		log.Println(" -> Description:  ", s.Description)
+		log.Println(" -> EndpointURI:  ", s.EndpointURI)
 		// Subscribe to all services related to my Namespace
 		if myURN.Namespace == s.URN.Namespace {
 			// Service Request to VA-Serving
@@ -180,7 +180,13 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
-			postVAServingRequest(s.EndpointURI, vasInfo.Pipelines[0])
+
+			for _, p := range vasInfo.Pipelines {
+				if (p == "emotion_recognition/1") || (p == "object_detection/1") {
+					log.Println("Sending request for pipeline", p)
+					postVAServingRequest(s.EndpointURI, p)
+				}
+			}
 		} else {
 			log.Println("Namespace mismatch, myURN namespace:", myURN.Namespace)
 		}
