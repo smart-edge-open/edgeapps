@@ -15,7 +15,7 @@ This sample application demonstrates OpenVINO object detection (pedestrian and v
 
 ### Troubleshooting
 
-#### After deployment, OpenVINO crash with error: "proxyconnect tcp: dial tcp i/o timeout"
+#### After deployment, OpenVINO sample consumer keeps Crash with error: "proxyconnect tcp: dial tcp i/o timeout", and not able to recover after serveral times restart.
 
 The issue is caused by proxy setting issue. Modify proxy setting when building image or Edit 'openvino-cons-app.yaml' with desired proxy setting as below:
 ```yaml
