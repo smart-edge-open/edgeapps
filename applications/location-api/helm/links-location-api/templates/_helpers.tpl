@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 LINKS Foundation
 {{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
