@@ -32,6 +32,7 @@ spec:
       - name: iperf-client
         image: iperf-client:1.0
         imagePullPolicy: Never
+        command: ["/bin/sh", "-ec", "sleep 1000"]
         ports:
         - containerPort: 80
         - containerPort: 443
