@@ -7,10 +7,6 @@ ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy,eaa.openness,analytics.openness
 
-ENV GOPATH=/root/go
-ENV GOROOT=/usr/local/go
-ENV GO111MODULE=on
-ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 ##  OnPrem NTS uses CPU 0,2 and 3. 
 ##  So OpenVINO user needs to configure the value according the setup
@@ -22,7 +18,6 @@ ARG MODEL2_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin
 ARG INSTALL_DIR=/tmp/openvino_installer
 ARG OPENVINO_DEMOS_DIR=/opt/intel/openvino/deployment_tools/open_model_zoo/demos
 
-RUN mkdir $GOPATH
 RUN apt-get update && \
 	apt-get -y install build-essential gcc g++ cmake && \
 	apt-get -y install cpio && \
@@ -78,13 +73,17 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh \
 
 # Install Go
 RUN cd /tmp && \
-	wget https://dl.google.com/go/go1.12.4.linux-amd64.tar.gz && \
-	tar -xvf go1.12.4.linux-amd64.tar.gz && \
+	wget https://dl.google.com/go/go1.15.linux-amd64.tar.gz && \
+	tar -xvf go1.15.linux-amd64.tar.gz && \
 	mv go /usr/local && \
 	rm -rf /tmp/go*
 
-# Get go dependencies
-RUN go get github.com/gorilla/websocket
+ENV GOPATH=/root/go
+ENV GOROOT=/usr/local/go
+ENV GO111MODULE=on
+ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+RUN mkdir $GOPATH
+
 
 # OpenVINO inference and forwarding
 RUN mkfifo vidfifo.mjpeg
