@@ -8,11 +8,10 @@ metadata:
       locationService: active
 spec: 
     containers: 
-    - 
-        image: "location-consumer-test:latest"
-        imagePullPolicy: Never
-        name: consumer
-        ports:
-            - containerPort: 8082
+    - name: consumer
+      image: "location-consumer-test:latest"
+      imagePullPolicy: Never
+      ports:
+      - containerPort: 8082
             
         
