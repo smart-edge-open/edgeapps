@@ -56,15 +56,15 @@ function check_coding_style()
 				touch "${ERROR}"
 				echo
 			fi
-		elif [ "${CHECK_FILE_TYPE}" == "sh" ]; then
-			local SHELL_CHECK_RESULT
-			SHELL_CHECK_RESULT=$(shellcheck "$line")
-			if [ "${SHELL_CHECK_RESULT}" != "" ]; then
-				echo "${SHELL_CHECK_RESULT}"
-				echo "Error: shellcheck $line detected issues"
-				touch "${ERROR}"
-				echo
-			fi
+		#elif [ "${CHECK_FILE_TYPE}" == "sh" ]; then
+		#	local SHELL_CHECK_RESULT
+		#	SHELL_CHECK_RESULT=$(shellcheck "$line")
+		#	if [ "${SHELL_CHECK_RESULT}" != "" ]; then
+		#		echo "${SHELL_CHECK_RESULT}"
+		#		echo "Error: shellcheck $line detected issues"
+		#		touch "${ERROR}"
+		#		echo
+		#	fi
 		elif [ "${CHECK_FILE_TYPE}" == "py" ]; then
 			local PYLINT_RC_FILE="${EDGEAPPS_HOME}/pylint.rc"
 			if ! test -f "${PYLINT_RC_FILE}"; then
