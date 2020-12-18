@@ -3,8 +3,6 @@
 # Copyright (c) 2020 Intel Corporation
 
 
-
-
 set -e
 
 echo "[Pay Attention] MUST run the script on EMCO HOST ..."
@@ -34,7 +32,7 @@ fi
 
 if [ -z "$3" ]
   then
-    echo "No argument #2 supplied for cloud cluster host ip"
+    echo "No argument #3 supplied for cloud cluster host ip"
     exit
 fi
 
@@ -65,7 +63,7 @@ fi
 
 # On the OpenNESS EMCO cluster, clone the Smart City Reference Pipeline source code from GitHub and checkout the 577d483635856c1fa3ff0fbc051c6408af725712 commits
 if [ -d Smart-City-Sample ]; then
-        mv Smart-City-Sample.bak
+        mv -f Smart-City-Sample Smart-City-Sample.bak
 fi
 git clone https://github.com/OpenVisualCloud/Smart-City-Sample.git
 cd Smart-City-Sample
@@ -157,45 +155,70 @@ echo "[starting] preparing json for configmap ..."
 cd ../generic-k8s-resource/
 cp sensor-info.json /opt/ 
 
+echo "[starting] uploading clusters kubeconfig ..."
+
+if [ -d /opt/clusters_config ]; then
+        rm -rf /opt/clusters_config
+fi
+mkdir -p /opt/clusters_config/
+
+scp "root@${EDGE_HOST}:/root/.kube/config" /opt/clusters_config/edgecluster_config
+if [ $? -ne 0 ]; then
+        log "scp /opt/clusters_config/edgecluster_config ... failed."
+        exit 1
+fi
+
+scp "root@${CLOUD_HOST}:/root/.kube/config" /opt/clusters_config/cloudcluster_config
+if [ $? -ne 0 ]; then
+        log "scp /opt/clusters_config/cloudcluster_config ... failed."
+        exit 1
+fi
+
 echo "[starting] creating secret ..."
 cd ../cli-scripts/Smart-City-Sample/deployment/tunnel
-./create-key.sh "root@${CLOUD_HOST}" "${REGISTRY_HOST}"
+./create-key.sh "root@${CLOUD_HOST}"
+if [ $? -ne 0 ]; then
+        log "creating secret ... failed."
+        exit 1
+fi
 
-# CLOUD_HOST
-scp .key/id_rsa.pub "root@${CLOUD_HOST}:/root/tunnel_secret"
-scp .key/id_rsa "root@${CLOUD_HOST}:/root/tunnel_secret"
+ # on edge and cloud, create k8s secret for ssh
+PRIKEY=.key/id_rsa
+PUBKEY=.key/id_rsa.pub
+KNOWHOSTS=.ssh/known_hosts
+kubectl --kubeconfig=/opt/clusters_config/cloudcluster_config create secret generic tunnel-secret --from-file=${PRIKEY} --from-file=${PUBKEY} --from-file=${KNOWHOSTS} 
+if [ $? -ne 0 ]; then
+        log "create k8s secret for cloud ... failed."
+        exit 1
+fi
 
-# EDGE_HOST
-scp .key/id_rsa.pub "root@${EDGE_HOST}:/root/tunnel_secret"
-scp .key/id_rsa "root@${EDGE_HOST}:/root/tunnel_secret"
-
-# known_hosts
-scp .ssh/known_hosts "root@${CLOUD_HOST}:/root/tunnel_secret"
-scp .ssh/known_hosts "root@${EDGE_HOST}:/root/tunnel_secret"
-
+kubectl --kubeconfig=/opt/clusters_config/edgecluster_config create secret generic tunnel-secret --from-file=${PRIKEY} --from-file=${PUBKEY} --from-file=${KNOWHOSTS} 
+if [ $? -ne 0 ]; then
+        log "create k8s secret for edge ... failed."
+        exit 1
+fi
 
 echo "[starting] creating certificate ..."
 cd ../certificate
 ./self-sign.sh "${REGISTRY}"
-
-scp self.crt self.key "root@${CLOUD_HOST}:/root/tunnel_secret"
-
-echo "[starting] uploading clusters kubeconfig ..."
-mkdir -p /opt/clusters_config/
-scp "root@${EDGE_HOST}:/root/.kube/config" /opt/clusters_config/edgecluster_config
-scp "root@${CLOUD_HOST}:/root/.kube/config" /opt/clusters_config/cloudcluster_config
-
-
-# on edge and cloud, create k8s secret for ssh
-# PRIKEY=/root/tunnel_secret/id_rsa
-# PUBKEY=/root/tunnel_secret/id_rsa.pub
-# KNOWHOSTS=/root/tunnel_secret/known_hosts
-# kubectl create secret generic tunnel-secret --from-file=${PRIKEY} --from-file=${PUBKEY} --from-file=${KNOWHOSTS}
+if [ $? -ne 0 ]; then
+        log "create certificate ... failed."
+        exit 1
+fi
 
 # only on cloud, create k8s secret fo/tunnel_secret/self.crtr certificate
-# CRT=/root/tunnel_secret/self.crt
-# SELFKEY=/root//tunnel_secret/self.key
-# kubectl create secret generic self-signed-certificate --from-file=${CRT}  --from-file=${SELFKEY}
+CRT=self.crt
+SELFKEY=self.key
+kubectl --kubeconfig=/opt/clusters_config/cloudcluster_config create secret generic self-signed-certificate --from-file=${CRT}  --from-file=${SELFKEY}
+if [ $? -ne 0 ]; then
+        log "create k8s secret/certificate for cloud ... failed."
+        exit 1
+fi
+
+echo "[starting] prepare edge cluster environment ..."
+# clean up network policy on cloud and edge
+kubectl --kubeconfig=/opt/clusters_config/edgecluster_config delete netpol block-all-ingress cdi-upload-proxy-policy >/dev/null 2>&1
+kubectl --kubeconfig=/opt/clusters_config/cloudcluster_config delete netpol block-all-ingress cdi-upload-proxy-policy >/dev/null 2>&1
 
 log "Env Setup Successfully."
 exit 0
