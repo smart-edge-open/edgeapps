@@ -142,6 +142,7 @@ Enter the CNF pod and add SNAT rule to cnf to enable connection from UE to Iperf
 ### Bring up Iperf client pod
 
 Verify that server_ip and client_ip in iperf_client.sh are set up corectly.
+
 Build iperf-client docker image and build the pod:
 
   ```
