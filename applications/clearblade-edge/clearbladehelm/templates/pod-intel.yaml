@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 ClearBlade, Inc. All rights reserved.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: intelopenness2
+spec:
+  volumes:
+  - name: edge-config2
+    persistentVolumeClaim:
+      claimName: edge-config-claim2
+  containers:
+  - name: intelopenness2
+    image: clearblade/edge:9.7.0
+    ports:
+      - containerPort: 9000
+    command: ["edge"]
+    args: ["-db=sqlite", "-sqlite-path=clearblclearblade2.db", "-platform-ip=platform.clearblade.com", "-edge-id=intelopenness2", "-edge-ip=localhost", "-edge-cookie=3qqR326UH616JrqH01Oj7t89D9", "-parent-system=849fd0f60b98b28b83e2faf3a617", "-log-level=debug"]
+  restartPolicy: OnFailure
