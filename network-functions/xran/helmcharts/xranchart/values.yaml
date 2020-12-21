@@ -7,11 +7,11 @@ namespace: default
 
 # image provides description of the docker image used by both pods
 image:
-  # name is the name of the image to be downloaded from the docker registry
+  # name is the name of the image to be downloaded from the Harbor registry
   name: xran-sample-app
-  # registryIpAddress provides the ip address of the docker registry - PLEASE CHANGE IT !!!
+  # registryIpAddress provides the ip address of the Harbor registry - PLEASE CHANGE IT !!!
   registryIpAddress: <registry_ip_address>
-  # registryPort is the port used to access the image in the docker registry - PLEASE CHANGE IT !!!
+  # registryPort is the port used to access the image in the Harbor registry - PLEASE CHANGE IT !!!
   registry_port: <registry_port>
   # tag helps to identify the image in the registry
   tag: 1.0
@@ -80,7 +80,7 @@ duResources:
 # nodeSelector sets the variables used by node selector
 nodeSelector:
   # kernelVersion holds the kernel verion of the host
-  kernelVersionFull: '3.10.0-1062.12.1.rt56.1042.el7.x86_64'
+  kernelVersionFull: '3.10.0-1127.19.1.rt56.1116.el7.x86_64'
   # systemOS specifies OS on the host 
   systemOS: 'centos'
 

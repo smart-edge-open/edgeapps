@@ -13,12 +13,14 @@ import eis_integ
 def parse_arguments(_cli_args):
     """ Parse argument passed to function """
     parser = argparse.ArgumentParser(description="Specify Application name")
-    parser.add_argument("app", help= "Name of the client application")
-    parser.add_argument("--force", action='store_true', help="Force putting new generated ZMQ keys without checking" +
-        "if they already exist")
+    parser.add_argument("app", help="Name of the client application")
+    parser.add_argument("--force", action='store_true',
+                        help="Force putting new generated ZMQ keys without checking" +
+                        "if they already exist")
     return parser.parse_args()
 
 def main(args):
+    """ Main """
     eis_integ.init_logger()
 
     os.environ["ETCDCTL_ENDPOINTS"] = "https://" + \
@@ -30,14 +32,14 @@ def main(args):
 
     skip_gen = False
     if not args.force:
-        logging.info("Check if ZMQ key pair for {} app already exists".format(args.app))
+        logging.info("Check if ZMQ key pair for %s app already exists", args.app)
         skip_gen = eis_integ.check_zmqkeys(args.app)
 
     if not skip_gen:
-        logging.info("Generate ZMQ pair keys for {} and put them to the etcd database".format(args.app))
+        logging.info("Generate ZMQ pair keys for %s and put them to the etcd database", args.app)
         eis_integ.put_zmqkeys(args.app)
     else:
-        logging.info("ZMQ pair keys generation skipped for {} app".format(args.app))
+        logging.info("ZMQ pair keys generation skipped for %s app", args.app)
 
     return eis_integ.CODES.NO_ERROR
 

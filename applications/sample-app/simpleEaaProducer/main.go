@@ -61,12 +61,9 @@ func main() {
 		},
 	}
 
-	// common name is namespace and producer id separated by semicolon
-	commonName := common.Cfg.Namespace + ":" + common.Cfg.ProducerAppID
-
 	// Create secure client
 	// for more information go to /common/csr.go
-	cli, err := common.CreateTLSClient(commonName)
+	cli, err := common.CreateEncryptedClient()
 
 	if err != nil {
 		log.Fatal(err)
@@ -77,14 +74,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// We can ask for list of available producer to be sure
-	// if we are indeed registered
-	allProducers, err := getServiceList(cli)
+	// check if we have a producer available
+	isAvailable, allProducers := isProducerAvailable(cli, producer)
 
-	if err != nil {
-		log.Panicln("Failed to get producers list " + err.Error())
+	if !isAvailable {
+		log.Panicln("No producers available")
 	}
 
+	log.Println("\nCurrent producers: ")
 	log.Println(allProducers)
 
 	// after program finishes unregister producer

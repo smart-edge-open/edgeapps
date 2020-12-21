@@ -12,6 +12,7 @@ Smart City application is a sample application that is built on top of the OpenV
 - [Deploying the Smart City Application](#deploying-the-smart-city-application)
 - [Deploying the Smart City Application with VCAC-A](#deploying-the-smart-city-application-with-vcac-a)
 - [Un-Installing the Smart City Application](#un-installing-the-smart-city-application)
+- [Deploying the Smart City Application with EMCO](#deploying-the-smart-city-application-with-emco)
 - [References](#references)
 
 ## Installing OpenNESS
@@ -45,11 +46,11 @@ This mode provide an easy and quick start with executing the application in the 
     ```shell
     mkdir build
     cd build
-    cmake -DREGISTRY=<controller-node-ip>:5000 .. 
+    cmake -DREGISTRY=<controller-node-ip>:30003/intel/ .. 
     make
     ```
 
-    > **NOTE:** OpenNESS Docker registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
+    > **NOTE:** OpenNESS Harobor registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
 
 3. Execute the `pre-install.sh` script to generate, self-sign and create certificates secret
 
@@ -95,11 +96,11 @@ Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card compris
     ```shell
     mkdir build
     cd build
-    cmake -DPLATFORM=VCAC-A -DREGISTRY=<controller-node-ip>:5000 ..
+    cmake -DPLATFORM=VCAC-A -DREGISTRY=<controller-node-ip>:30003/intel ..
     make
     ```
 
-    > **NOTE:** OpenNESS Docker registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
+    > **NOTE:** OpenNESS Harbor registry is deployed on the controller node. To push the Smart City docker images to the registry, the OpenNESS Controller node IP address should be substituted in place of `<controller-node-ip>`.
 
 6. Execute the `pre-install.sh` script to generate, self-sign and create certificates secret
 
@@ -124,6 +125,11 @@ To uninstall the Smart City application, execute the following commands,
 helm uninstall smart-city-app
 ./clean.sh
 ```
+
+## Deploying the Smart City Application with EMCO
+EMCO (Edge Multi-Cluster Orchestration) is a Geo-distributed application orchestrator for Kubernetes\*. The main objective of EMCO is automation of the deployment of applications and services across clusters. It acts as a central orchestrator that can manage edge services and network functions across geographically distributed edge clusters from different third parties. Finally, the resource orchestration within a cluster of nodes will leverage Kubernetes* and Helm charts.
+
+For more details, refer to [OpenNESS EMCO whitepaper](https://github.com/open-ness/specs/blob/master/doc/building-blocks/emco/openness-emco.md).
 
 
 ## References

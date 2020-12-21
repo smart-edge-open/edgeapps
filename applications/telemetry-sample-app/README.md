@@ -3,7 +3,7 @@
 
 The following are the steps to bring up the sample application pod with side-car agent container:
 
-1. Build the Docker image for sample metric application and push it to OpenNESS local docker registry
+1. Build the Docker image for sample metric application and push it to OpenNESS local Harbor Registry
 	- `cd image`
 	- `./build.sh push <registry_IP> <registry_port>`
 
