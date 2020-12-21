@@ -1,6 +1,5 @@
 ```text
-SPDX-License-Identifier: Apache-2.0
-Copyright (c) 2020 Actian Corporation
+Copyright (c) 2020 ClearBlade, Inc. All rights reserved.
 ```
 # ClearBlade Overview
 ClearBlade is the industry-leading Edge Computing software company that enables enterprises to rapidly engineer and run secure, real-time, scalable IoT applications. Headquartered in Austin, Texas, ClearBlade is an award-winning, fully scalable, secure, flexible, and autonomous IoT edge platform that enables companies to ingest, analyze, adapt and act on any data in real-time and at extreme scale. ClearBlade provides a consistent platform across the edge, cloud, and on-premise environments. 
