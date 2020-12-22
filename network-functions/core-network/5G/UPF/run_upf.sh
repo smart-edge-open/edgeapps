@@ -11,8 +11,8 @@ pfcp_thread_cores=$CONFIG_PFCP_THREAD_CORES
 no_of_pfcp_threads=$CONFIG_NO_OF_PFCP_THREADS        
 
 # Inferface names, ex: VirtualFunctionEthernetaf/a/0
-n3_iface=$CONFIG_VF_IF_NAME
-n6_iface=$CONFIG_VF_IF_NAME
+n3_iface=$CONFIG_VFIF_NAME
+n6_iface=$CONFIG_VFIF_NAME
 
 # Ip address along with the subnet ex:192.168.1.170/24
 n3_ip=$CONFIG_N3_IP_ADDR
@@ -437,7 +437,7 @@ echo "=========== Start =========" > /root/upf/run.log
 
 echo "$LD_LIBRARY_PATH" >> $upf_path/run.log
 echo "at step-1" >> $upf_path/run.log
-cd $upf_path
+cd $upf_path || exit
 echo "at step-2" >> $upf_path/run.log
 pwd >> $upf_path/run.log
 

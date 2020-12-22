@@ -31,7 +31,7 @@ spec:
 {{ end }}
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
-        - name: CONFIG_VF_IF_NAME
+        - name: CONFIG_VFIF_NAME
           value: {{ .Values.upf.vf_if_name }}
         - name: CONFIG_PCI_BUS_ADDR
           value: {{ .Values.upf.pci_bus_addr }}
