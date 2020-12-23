@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2019 Intel Corporation
 
-FROM centos:7.6.1810
+FROM alpine:3.12.0
 
-WORKDIR /root/
+RUN addgroup -S samplegroup && adduser -S sample -G samplegroup
+USER sample
+WORKDIR /home/sample
 
-COPY ./producer .
+COPY ./producer ./
 
-CMD ["./producer"]
+ENTRYPOINT ["./producer"]

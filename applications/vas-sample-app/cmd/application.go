@@ -51,7 +51,7 @@ func postVAServingRequest(vaEndPoint string, vaPipeline string) error {
 	}
 
 	endPointStr := vaEndPoint + "/pipelines/" + vaPipeline
-	log.Println("Starting POST Request: ", endPointStr)
+	log.Println("Starting POST Request:", endPointStr)
 
 	VASReqPayload, err := json.Marshal(VASRequest)
 	if err != nil {

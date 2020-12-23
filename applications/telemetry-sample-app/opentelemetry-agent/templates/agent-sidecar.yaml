@@ -16,6 +16,9 @@ spec:
       # Memory Ballast size should be max 1/3 to 1/2 of memory.
       - "--mem-ballast-size-mib=165"
       - "--log-level=DEBUG"
+    env:
+    - name: GODEBUG
+      value: "x509ignoreCN=0"
     image: {{ .Values.agent.image }}
     imagePullPolicy: {{ .Values.pullPolicy }}
     name: {{ .Values.agent.name }}
@@ -39,6 +42,8 @@ spec:
       value: "on"
     - name: OTEL_AGENT_ENDPOINT
       value: "{{ .Values.agent.receiver.opencensus.endpoint }}"
+    - name: GODEBUG
+      value: "x509ignoreCN=0"
     name: {{ .Values.app.name }}
     image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
     imagePullPolicy: {{ .Values.pullPolicy }}
