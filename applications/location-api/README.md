@@ -1,7 +1,7 @@
-
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-Copyright (c) [LINKS Foundation](https://linksfoundation.com/)
+```text
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2020 LINKS Foundation
+```
 
 # MEC Location API simulator 
 
