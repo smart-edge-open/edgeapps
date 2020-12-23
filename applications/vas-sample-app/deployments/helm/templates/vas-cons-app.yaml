@@ -2,32 +2,118 @@
 # Copyright (c) 2020 Intel Corporation
 
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csr-requester
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: csr-requester
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}
+    namespace: default
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-csr-config
+data:
+  certrequest.json: |
+    {
+        "CSR": {
+            "Name": "{{ .Release.Name }}",
+            "Subject": {
+                "CommonName": "default:consumer",
+                "Organization": ["Intel Corporation"]
+            },
+            "DNSSANs": [],
+            "IPSANs": [],
+            "KeyUsages": [
+                "digital signature", "key encipherment", "client auth"
+            ]
+        },
+        "Signer": "openness.org/certsigner",
+        "WaitTimeout": "5m"
+    }
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-vas-cons-app
+  name: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-vas-cons-app
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-vas-cons-app
+        app: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ .Release.Name }}
+      initContainers:
+        - name: alpine
+          image: alpine:3.12.0
+          command: ["/bin/sh"]
+          args: ["-c", "cp /root/ca-certrequester/cert.pem /root/certs/root.pem"]
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "0.1"
+            limits:
+              cpu: "0.1"
+              memory: "128Mi"
+          volumeMounts:
+            - name: ca-certrequester
+              mountPath: /root/ca-certrequester
+            - name: certs
+              mountPath: /root/certs
+        - name: certrequester
+          image: certrequester:1.0
+          args: ["--cfg", "/home/certrequester/config/certrequest.json"]
+          imagePullPolicy: Never
+          resources:
+            requests:
+              cpu: "0.1"
+            limits:
+              cpu: "0.1"
+              memory: "128Mi"
+          volumeMounts:
+            - name: config
+              mountPath: /home/certrequester/config/
+            - name: certs
+              mountPath: /home/certrequester/certs/
       containers:
-      - name: {{ .Release.Name }}-vas-cons-app
-        image: "{{ .Values.image.repository }}: {{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.pullPolicy }}
-        ports:
-        - containerPort: 80
-        - containerPort: 443
-        volumeMounts:
-        - name: tmp
-          mountPath: /tmp
+        - name: {{ .Release.Name }}
+          image: "{{.Values.image.registry}}{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          ports:
+          - containerPort: 443
+          volumeMounts:
+          - name: tmp
+            mountPath: /tmp
+          - name: certs
+            mountPath: /root/certs/
       volumes:
-      - name: tmp
-        hostPath:
-          path: /tmp
-          type: Directory
+        - name: tmp
+          hostPath:
+            path: /tmp
+            type: Directory
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-csr-config
+        - name: ca-certrequester
+          secret:
+            secretName: ca-certrequester
+        - name: certs
+          emptyDir: {}

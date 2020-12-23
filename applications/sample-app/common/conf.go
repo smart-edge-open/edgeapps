@@ -13,6 +13,9 @@ type appConfig struct {
 	EdgeNodeEndpoint string
 	ProducerEndpoint string
 	EaaCommonName    string
+	CertPath         string
+	RootCAPath       string
+	KeyPath          string
 	ProducerTimeout  int
 	ConsumerTimeout  int
 }
@@ -27,5 +30,8 @@ var Cfg = appConfig{
 	EdgeNodeEndpoint: "eaa.openness",
 	ProducerEndpoint: "eaa.openness",
 	EaaCommonName:    "eaa.openness",
+	CertPath:         "./certs/cert.pem",
+	RootCAPath:       "./certs/root.pem",
+	KeyPath:          "./certs/key.pem",
 	ProducerTimeout:  180, // in seconds
 	ConsumerTimeout:  120} // in seconds

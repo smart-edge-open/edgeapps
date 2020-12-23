@@ -22,7 +22,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.image }}
-          command: ["/bin/bash", "-c", "trap : TERM INT;/tmp/streamstart.sh {{ .Values.demoType }} {{.Values.cameraStreamPort }}"]
+          command: ["/bin/sh", "-c", "trap : TERM INT;/tmp/streamstart.sh {{ .Values.demoType }} {{.Values.cameraStreamPort }}"]
           ports:
             - name: camstream-port
               containerPort: {{ .Values.cameraStreamPort }}

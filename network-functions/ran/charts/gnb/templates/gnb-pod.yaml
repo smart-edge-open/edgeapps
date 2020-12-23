@@ -1,0 +1,76 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}
+  annotations:
+    k8s.v1.cni.cncf.io/networks: '[{"name": "sriov-openness-vf-g2"},{"name": "sriov-openness-vf-g2"}]'
+spec:
+  containers:
+  - securityContext:
+      privileged: {{ .Values.isPrivileged }}
+      capabilities:
+        add:
+          - IPC_LOCK
+          - SYS_NICE
+    name: {{ .Release.Name }}
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+    imagePullPolicy: {{ .Values.pullPolicy }}
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "trap : TERM INT; sleep infinity & wait" ]
+    volumeMounts:
+    - mountPath: /hugepages
+      name: hugepage
+    - name: time
+      mountPath: /etc/localtime
+      readOnly: false
+    - name: varrun
+      mountPath: /var/run/dpdk
+      readOnly: false
+    - name: sysfs
+      mountPath: /sys
+      readOnly: false
+    resources:
+      requests:
+        intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
+        {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}
+        memory: {{ .Values.memory }}
+        intel.com/intel_sriov_VF_G1: '2'
+        intel.com/intel_sriov_VF_G2: '2'
+      limits:
+        intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
+        {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}                
+        memory: {{ .Values.memory }}
+        intel.com/intel_sriov_VF_G1: '2'
+        intel.com/intel_sriov_VF_G2: '2'
+  volumes:
+  - name: hugepage
+    emptyDir:
+      medium: HugePages
+  - hostPath:
+      path: "/etc/localtime"
+    name: time
+  - name: varrun
+    emptyDir: {}
+  - name: sysfs
+    hostPath:
+      path: "/sys"
+  nodeSelector:
+    feature.node.kubernetes.io/pci-1200_8086.present: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX2: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512BW: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512CD: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512DQ: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512F: 'true'
+    feature.node.kubernetes.io/cpu-cpuid.AVX512VL: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTL3CA: 'true'
+    feature.node.kubernetes.io/cpu-rdt.RDTMBA: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ: 'true'
+    feature.node.kubernetes.io/kernel-config.NO_HZ_FULL: 'true'
+    feature.node.kubernetes.io/kernel-config.PREEMPT: 'true'
+    feature.node.kubernetes.io/kernel-version.full: '{{ .Values.kernelVersion }}'
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+    feature.node.kubernetes.io/system-os_release.ID: '{{ .Values.os}}'

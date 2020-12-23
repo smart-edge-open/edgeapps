@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+namespace: "sdewan-system"
+
+spec:
+  name: "sdewan-crd-controller"
+  label: "controller-manager"
+  replicas: 1
+  proxy:
+    # image details must be changed before chart installation
+    image:
+      registry: "<ip_address>:<port>/"
+      name: "gcr.io/kubebuilder/kube-rbac-proxy"
+      tag: "v0.4.1"
+    imagePullPolicy: IfNotPresent
+    name: "kube-rbac-proxy"
+  sdewan:
+    # adjust image details before chart installation
+    image:
+      registry: "<ip_address>:<port>/"
+      name: "integratedcloudnative/sdewan-controller"
+      tag: "0.3.0"
+    imagePullPolicy: IfNotPresent
+    name: "manager"
+

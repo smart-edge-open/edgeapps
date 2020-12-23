@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-FROM centos:centos7.6.1810
+FROM centos:7.8.2003
 
 ENV ftp_proxy=$ftp_proxy
 ENV https_proxy $https_proxy

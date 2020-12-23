@@ -8,9 +8,16 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"reflect"
+	"time"
 
 	"github.com/open-ness/edgeapps/applications/sample-app/common"
 	"github.com/pkg/errors"
+)
+
+const (
+	maxWaitTime   = 3 * time.Second
+	checkInterval = 500 * time.Millisecond
 )
 
 // payload struct contains data send in notification
@@ -162,4 +169,33 @@ func getServiceList(cli *http.Client) (common.ServiceList, error) {
 	}
 
 	return *list, nil
+}
+
+func isServiceInList(service common.Service, list []common.Service) bool {
+	for _, s := range list {
+		if reflect.DeepEqual(service, s) {
+			return true
+		}
+	}
+	return false
+}
+
+// We can ask for list of available producer to be sure
+// if we are indeed registered
+func isProducerAvailable(cli *http.Client, producer common.Service) (bool, common.ServiceList) {
+	allProducers := common.ServiceList{}
+	var err error
+	for start := time.Now(); time.Since(start) < maxWaitTime; {
+		allProducers, err = getServiceList(cli)
+
+		if err != nil {
+			log.Panicln("Failed to get producers list " + err.Error())
+		}
+
+		if isServiceInList(producer, allProducers.Services) {
+			return true, allProducers
+		}
+		time.Sleep(checkInterval)
+	}
+	return false, allProducers
 }
