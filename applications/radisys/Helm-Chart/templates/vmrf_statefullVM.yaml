@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright © 2020 Radisys Corporation
+{{- $release_name := include "mrf.fullname" . }}
+
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  name: {{ template "mrf.fullname" . }}-vm
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: {{ template "mrf.fullname" . }}
+    spec:
+      domain:
+        cpu:
+          cores: {{ if .Values.mrfVM.numCores }} {{- .Values.mrfVM.numCores -}} {{ else }} {{- "4" -}} {{ end }}
+        devices:
+          disks:
+          - disk:
+            bus: virtio
+            name: rootfs
+          interfaces:
+          - name: default
+            bridge: {}
+        resources:
+          requests:
+            memory: {{ if .Values.mrfVM.memory }} {{- .Values.mrfVM.memory -}} {{ else }} {{- "4096M" -}} {{ end }}
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - name: rootfs
+          dataVolume:
+            name: {{ template "mrf.fullname" . }}-dv
+
+  dataVolumeTemplates:
+    - metadata:
+        name: {{ template "mrf.fullname" . }}-dv
+      spec:
+        source:
+          http:
+            url: {{ .Values.PersistentVolume.rootfs.imgSrc }}
+        pvc:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: {{ .Values.PersistentVolume.rootfs.size }}
+          storageClassName: local-storage
