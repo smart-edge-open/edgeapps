@@ -1,4 +1,4 @@
-# Copyright © 2020 Radisys Corporation
+# Copyright (c) 2020 Radisys Corporation
 PersistentVolume:
   rootfs:
     size: "32Gi"

@@ -1,6 +1,6 @@
 # Radisys Engage Media Server
 
-`Radisys Corporation © `
+`Copyright (c) 2020 Radisys Corporation`
 
 Engage Media Server is a media processing powerhouse for a wide range of
 revenue-generating services. Within a single platform, Radisys enables

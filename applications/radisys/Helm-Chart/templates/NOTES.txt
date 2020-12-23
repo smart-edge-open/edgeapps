@@ -1,2 +1,2 @@
-# Copyright © 2020 Radisys Corporation
+# Copyright (c) 2020 Radisys Corporation
 MRF installed
