@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+metadata:
+  name: sdewan-cnf
+  namespace: cnf
+  labels: sdewan-cnf
+
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+
+strategy:
+  maxSurge: 25%
+  maxUnavailable: 25%
+
+## these are details of sample networks
+# user is expected to modify extend this list of networks
+# as per their cnf requirements.
+nfn:
+  - defaultGateway: false
+    interface: ""
+    ipAddress: ""
+    name: ""
+    separate: ","
+  - defaultGateway: false
+    interface: ""
+    ipAddress: ""
+    name: ""
+    separate: ""
+
+containers:
+  name: sdewan
+  # adjust image details before SDEWAN CNF chart installation
+  image:
+    registry: "<ip_address>:<port>/"
+    name: "integratedcloudnative/openwrt"
+    tag: "0.3.1"
+  imagePullPolicy: IfNotPresent
+
+labelName: "sdewan"
+labelValue: "true"
+
+restartPolicy: Always
+

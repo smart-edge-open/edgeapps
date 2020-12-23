@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 ClearBlade, Inc. All rights reserved.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: clearblade-edge2
+  labels:
+    app: clearblade-edge2
+spec:
+  type: {{ .Values.serviceType }}
+  ports:
+    - port: 9000
+      protocol: TCP
+      targetPort: 9000

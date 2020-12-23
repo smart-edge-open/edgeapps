@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: v1
+data:
+  entrypoint.sh: |-
+    #!/bin/bash
+    # Always exit on errors.
+    set -ex
+    echo "" > /etc/config/network
+    cat > /etc/config/mwan3 <<EOF
+    config globals 'globals'
+        option mmx_mask '0x3F00'
+        option local_source 'lan'
+    EOF
+    eval "networks=$(grep nfn-network /tmp/podinfo/annotations | awk  -F '=' '{print $2}')"
+    for net in $(echo -e $networks | jq -c ".interface[]")
+    do
+      interface=$(echo $net | jq -r .interface)
+      ipaddr=$(ifconfig $interface | awk '/inet/{print $2}' | cut -f2 -d ":" | awk 'NR==1 {print $1}')
+      vif="$interface"
+      netmask=$(ifconfig $interface | awk '/inet/{print $4}'| cut -f2 -d ":" | head -1)
+      cat >> /etc/config/network <<EOF
+    config interface '$vif'
+        option ifname '$interface'
+        option proto 'static'
+        option ipaddr '$ipaddr'
+        option netmask '$netmask'
+    EOF
+      cat >> /etc/config/mwan3 <<EOF
+    config interface '$vif'
+            option enabled '1'
+            option family 'ipv4'
+            option reliability '2'
+            option count '1'
+            option timeout '2'
+            option failure_latency '1000'
+            option recovery_latency '500'
+            option failure_loss '20'
+            option recovery_loss '5'
+            option interval '5'
+            option down '3'
+            option up '8'
+    EOF
+    done
+    /sbin/procd &
+    /sbin/ubusd &
+    iptables -S
+    sleep 1
+    /etc/init.d/rpcd start
+    /etc/init.d/dnsmasq start
+    /etc/init.d/network start
+    /etc/init.d/odhcpd start
+    /etc/init.d/uhttpd start
+    /etc/init.d/log start
+    /etc/init.d/dropbear start
+    /etc/init.d/mwan3 restart
+    sysctl -w net.ipv4.conf.all.rp_filter=1
+    sysctl -w net.ipv4.ip_forward=1
+    echo "Entering sleep... (success)"
+    # Sleep forever.
+    while true; do sleep 100; done
+kind: ConfigMap
+metadata:
+  name: sdewan-sh
+  namespace: {{ .Values.metadata.namespace }}
+
+

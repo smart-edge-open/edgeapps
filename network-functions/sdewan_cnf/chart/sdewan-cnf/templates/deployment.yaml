@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.metadata.name }}
+  namespace: {{ .Values.metadata.namespace }}
+  labels:
+    sdewanPurpose: {{ .Values.metadata.labels }}
+spec:
+  progressDeadlineSeconds: {{ .Values.spec.progressDeadlineSeconds }}
+  replicas: {{ .Values.spec.replicas }}
+  selector:
+    matchLabels:
+      sdewanPurpose: {{ .Values.metadata.labels }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.strategy.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.maxUnavailable }}
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        k8s.plugin.opnfv.org/nfn-network: |-
+          { "type": "ovn4nfv", "interface": [
+          {{- range .Values.nfn }} {{- with . }}
+            {
+              "defaultGateway": "{{- .defaultGateway -}}",
+              "interface": "{{- .interface -}}",
+              "ipAddress": "{{- .ipAddress -}}",
+              "name": "{{- .name -}}"
+            } {{- .separate -}}
+            {{- end }} {{- end }}
+          ]}
+        k8s.v1.cni.cncf.io/networks: '[{ "name": "ovn-networkobj","namespace": "default"}]'
+      labels:
+        sdewanPurpose: {{ .Values.metadata.labels }}
+    spec:
+      containers:
+      - command:
+        - /usr/bin/sudo
+        - /bin/sh
+        - /tmp/sdewan/entrypoint.sh
+        image: "{{ .Values.containers.image.registry }}{{ .Values.containers.image.name }}:{{ .Values.containers.image.tag }}"
+        imagePullPolicy: {{ .Values.containers.imagePullPolicy }}
+        name: {{ .Values.containers.name }}
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        securityContext:
+          privileged: true
+          procMount: Default
+        volumeMounts:
+        - mountPath: /tmp/sdewan
+          name: sdewan-sh
+          readOnly: true
+        - mountPath: /tmp/podinfo
+          name: podinfo
+          readOnly: true
+      nodeSelector:
+        {{ .Values.labelName }}: "{{ .Values.labelValue }}"
+      restartPolicy: {{ .Values.restartPolicy }}
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: sdewan-sh
+        name: sdewan-sh
+      - name: podinfo
+        downwardAPI:
+          items:
+            - path: "annotations"
+              fieldRef:
+                fieldPath: metadata.annotations
+

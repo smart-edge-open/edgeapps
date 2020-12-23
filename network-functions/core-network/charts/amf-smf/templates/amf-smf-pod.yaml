@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    name: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: sriov-openness-vf-g2
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            privileged: {{ .Values.isPrivileged }}
+            capabilities:
+                 add: ["NET_ADMIN"]
+          command: ["/bin/bash", "-c", "--"]
+          args:
+{{- if eq .Values.amf_smf_autostart true }}
+          - |
+            cd /root/amf-smf/;./cp_config.sh;sleep 10;./cp_restart.sh;
+            while true ; do
+              sleep 90000000
+            done
+{{ else }}
+
+          - |
+            while true ; do
+              sleep 90000000
+            done
+{{ end }}
+
+          volumeMounts:
+            - name: amf-smf-vol
+              mountPath: /root/amf-smf
+              readOnly: false
+          resources:
+            limits:
+              intel.com/intel_sriov_VF_G2: '1'
+            requests:
+              intel.com/intel_sriov_VF_G2: '1'
+      volumes:
+      - name: amf-smf-vol
+        hostPath:
+          path: {{ .Values.node.path }}

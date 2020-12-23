@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 ClearBlade, Inc. All rights reserved.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: edge-config2
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/edgedata"

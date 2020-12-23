@@ -21,7 +21,7 @@ Clone the edgeapps repo. The scripts required for preparing the OpenNESS setup f
 
 2. Build the CDN Transcode Application.
 
-> **Note**: "ovc-clone-compile.sh" script can be used to clone and build the CDN Transcode Sample Application. This script also takes care of passing the docker registry (in OpenNESS Master) for storing the docker images. Run the following to clone and build as below
+> **Note**: "ovc-clone-compile.sh" script can be used to clone and build the CDN Transcode Sample Application. This script also takes care of passing the Harbor registry (in OpenNESS Master) for storing the docker images. Run the following to clone and build as below
 ```
 ./ovc-clone-compile.sh
 ```
