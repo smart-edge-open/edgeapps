@@ -6,7 +6,7 @@
 # setup rules for cnf on edge1
 
 CNFPOD=$(kubectl get pod -l sdewanPurpose=sdewan-cnf -o name)
-kubectl exec -it  "$CNFPOD" -- ip route
+kubectl exec -it  "$CNFPOD" -n $NS  -- ip route
 
 # These command just to set provider route DNAT rule.
 FROM_ADDR=${EDGE1_CNF_NET3_IFIP?"Error: not set"}
@@ -29,7 +29,7 @@ kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- iptables -t nat -A POSTROUTING
 NET=${NET4?"Error: not set"}
 VIA=${HUB_CNF_NET3_IFIP?"Error: not set"}
 INTERFACE=net3
-kubectl exec -it "$CNFPOD" -- ip r a "$NET" via "$VIA" dev "$INTERFACE"
+kubectl exec -it "$CNFPOD" -n $NS -- ip r a "$NET" via "$VIA" dev "$INTERFACE"
 
 # watch the status by this command
 # watch -n 1 kubectl exec -it  "$CNFPOD" -- iptables -t nat -L -n --line -v
