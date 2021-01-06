@@ -6,8 +6,10 @@
 # setup 2 provider networks for sdewan cnf
 PNET1=$NET3
 PNET2=$NET4
-PNET1_IF=$(ip route |grep "$PNET1" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
-PNET2_IF=$(ip route |grep "$PNET2" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
+pNET1=$HUB_P1
+pNET2=$HUB_P2
+PNET1_IF=$(ip route |grep "$pNET1" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
+PNET2_IF=$(ip route |grep "$pNET2" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
 echo "$PNET1_IF"
 echo "$PNET2_IF"
 
