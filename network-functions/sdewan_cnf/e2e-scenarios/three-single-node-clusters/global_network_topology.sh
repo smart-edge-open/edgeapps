@@ -35,5 +35,3 @@ export O_TUNNEL1_NET=172.16.30.0/24
 export NS=cnf
 
 EOF
-
-source ~/.profile
