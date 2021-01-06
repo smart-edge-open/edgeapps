@@ -5,7 +5,7 @@
 
 # setup rules for cnf on edge2
 
-CNFPOD=$(kubectl get pod -l sdewanPurpose=sdewan-cnf -n $NS -o name)
+CNFPOD=$(kubectl get pod -l sdewanPurpose=sdewan-cnf -n "$NS" -o name)
 kubectl exec -it  "$CNFPOD" -n "$NS" -- ip route
 
 # These command just to set provider route SNAT rule.
