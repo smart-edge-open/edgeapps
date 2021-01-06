@@ -37,5 +37,3 @@ O_TUNNEL1_EDGE2_IP=172.16.30.6
 O_TUNNEL1_HUB_IP=172.16.30.1
 
 EOF
-
-source ~/.profile
