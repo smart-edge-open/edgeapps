@@ -6,6 +6,6 @@
 trap "exit" SIGINT SIGTERM
 set -m
 ./tx_video.sh &
-sleep 2
-taskset -c 1 ffplay -reorder_queue_size 0 -i downstream.sdp 
+sleep 4
+taskset -c 1 ffplay -i rtmp://127.0.0.1/live/out.flv 
 fg

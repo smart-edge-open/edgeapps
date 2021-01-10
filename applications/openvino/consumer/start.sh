@@ -5,6 +5,6 @@
 
 source /opt/intel/openvino/bin/setupvars.sh
 echo "192.168.1.10 analytics.openness" >> /etc/hosts
-./fwd.sh &
+nginx -g /etc/nginx/nginx.conf & 
 ./main
 fg

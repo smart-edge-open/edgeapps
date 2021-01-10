@@ -12,13 +12,13 @@ ENV no_proxy=$no_proxy,eaa.openness,analytics.openness
 ##  So OpenVINO user needs to configure the value according the setup
 ENV OPENVINO_TASKSET_CPU=8
 
-ARG OPENVINO_LINK=https://registrationcenter-download.intel.com/akdlm/irc_nas/17504/l_openvino_toolkit_p_2021.2.185.tgz
-#ARG OPENVINO_LINK=https://registrationcenter-download.intel.com/akdlm/irc_nas/17275/l_openvino_toolkit_fpga_p_2020.3.341.tgz
+ARG OPENVINO_LINK=https://registrationcenter-download.intel.com/akdlm/irc_nas/17062/l_openvino_toolkit_p_2021.1.110.tgz
 ARG YEAR=2021
 ARG MODEL1_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin_20190329_105530/pedestrian-detection-adas-0002/
 ARG MODEL2_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin_20190329_105530/vehicle-detection-adas-0002/
-
 ARG OPENVINO_DEMOS_DIR=/opt/intel/openvino_$YEAR/deployment_tools/open_model_zoo/demos
+ARG MODEL_ROOT=/opt/intel/openvino_2021/deployment_tools/open_model_zoo/tools/downloader
+ARG APP_DIR=/opt/intel/openvino_2021/deployment_tools/inference_engine/demos/python_demos/object_detection_demo/
 
 RUN apt-get update && \
 	apt-get -y install build-essential gcc g++ cmake && \
@@ -30,9 +30,11 @@ RUN apt-get update && \
 	apt-get -y install autoconf libtool && \
 	apt-get -y install ffmpeg x264 && \
 	apt-get -y install git && \
+	apt-get -y install nginx libnginx-mod-rtmp && \
 	apt-get -y install util-linux && \
 	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.65-dev libboost-thread1.65 libboost-filesystem1.65
 
+COPY nginx.conf /etc/nginx/nginx.conf
 ENV DEBIAN_FRONTEND=noninteractive
 # OpenVino installation
 RUN cd /tmp && \
@@ -50,12 +52,13 @@ RUN echo "source /opt/intel/openvino_$YEAR/bin/setupvars.sh" >> ~/.bashrc
 RUN bash -c "source ~/.bashrc"
 
 # Build OpenVINO samples
-RUN /bin/bash -c "source /opt/intel/openvino_$YEAR/bin/setupvars.sh \
-	&& $OPENVINO_DEMOS_DIR/build_demos.sh"
+ADD object_detection_demo_ssd_async.patch $APP_DIR
+RUN patch object_detection_demo_ssd_async.py < object_detection_demo_ssd_async.patch
 
 # Download OpenVINO pre-trained models
-RUN wget -r -np -nH --cut-dirs=5 -R index.html* $MODEL1_LINK
-RUN wget -r -np -nH --cut-dirs=5 -R index.html* $MODEL2_LINK
+RUN cd $MODEL_ROOT && python3 -mpip install --user -r ./requirements.in && \
+    ./downloader.py --name pedestrian-detection-adas-0002 --precisions FP16 && \
+    ./downloader.py --name vehicle-detection-adas-0002 --precisions FP32
 
 # Rebuilding libusb without UDEV support -- required for Intel Movidius Stick
 RUN cd /tmp && \
@@ -84,14 +87,9 @@ WORKDIR /root
 
 # Get go dependencies
 RUN git config --global http.proxy $http_proxy
-RUN git config --global https.proxy $https_proxy
 RUN go get github.com/gorilla/websocket
 COPY cmd/ ./
 RUN go build main.go openvino.go eaa_interface.go
 
 # OpenVINO inference and forwarding
-RUN mkfifo vidfifo.mjpeg
-COPY start.sh ./
-COPY fwd.sh ./
-
 ENTRYPOINT ["./start.sh"]
