@@ -6,6 +6,6 @@
 trap "exit" SIGINT SIGTERM
 set -m
 ./tx_video.sh &
-sleep 4
-taskset -c 1 ffplay -i rtmp://127.0.0.1/live/out.flv 
+sleep 3
+taskset -c 1 ffplay -i rtmp://$POD_IP/live/out.flv
 fg

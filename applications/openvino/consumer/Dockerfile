@@ -17,8 +17,8 @@ ARG YEAR=2021
 ARG MODEL1_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin_20190329_105530/pedestrian-detection-adas-0002/
 ARG MODEL2_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin_20190329_105530/vehicle-detection-adas-0002/
 ARG OPENVINO_DEMOS_DIR=/opt/intel/openvino_$YEAR/deployment_tools/open_model_zoo/demos
-ARG MODEL_ROOT=/opt/intel/openvino_2021/deployment_tools/open_model_zoo/tools/downloader
-ARG APP_DIR=/opt/intel/openvino_2021/deployment_tools/inference_engine/demos/python_demos/object_detection_demo/
+ARG MODEL_ROOT=/opt/intel/openvino_$YEAR/deployment_tools/open_model_zoo/tools/downloader
+ARG APP_DIR=/opt/intel/openvino_$YEAR/deployment_tools/inference_engine/demos/python_demos/object_detection_demo_ssd_async/
 
 RUN apt-get update && \
 	apt-get -y install build-essential gcc g++ cmake && \
@@ -30,6 +30,7 @@ RUN apt-get update && \
 	apt-get -y install autoconf libtool && \
 	apt-get -y install ffmpeg x264 && \
 	apt-get -y install git && \
+	apt-get -y install python3-pip && \
 	apt-get -y install nginx libnginx-mod-rtmp && \
 	apt-get -y install util-linux && \
 	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.65-dev libboost-thread1.65 libboost-filesystem1.65
@@ -53,7 +54,7 @@ RUN bash -c "source ~/.bashrc"
 
 # Build OpenVINO samples
 ADD object_detection_demo_ssd_async.patch $APP_DIR
-RUN patch object_detection_demo_ssd_async.py < object_detection_demo_ssd_async.patch
+RUN cd $APP_DIR && patch -p0 object_detection_demo_ssd_async.py object_detection_demo_ssd_async.patch
 
 # Download OpenVINO pre-trained models
 RUN cd $MODEL_ROOT && python3 -mpip install --user -r ./requirements.in && \
@@ -76,6 +77,7 @@ RUN cd /tmp && \
 	mv go /usr/local && \
 	rm -rf /tmp/go*
 
+ENV OPENVINO_ROOT=/opt/intel/openvino_$YEAR
 ENV GOPATH=/root/go
 ENV GOROOT=/usr/local/go
 ENV GO111MODULE=on
@@ -89,7 +91,9 @@ WORKDIR /root
 RUN git config --global http.proxy $http_proxy
 RUN go get github.com/gorilla/websocket
 COPY cmd/ ./
+ADD start.sh /root/
 RUN go build main.go openvino.go eaa_interface.go
+RUN rm -rf $GOPATH $GOROOT *.go go.*
 
 # OpenVINO inference and forwarding
 ENTRYPOINT ["./start.sh"]
