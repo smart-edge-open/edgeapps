@@ -57,6 +57,7 @@ func callOpenVINO(model string, accl string) {
 	cmd.Dir = openvinoPath
 	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
 		"python3", openvinoCmd, "-d", accl,
+		"-at", "ssd",
 		"-i", "rtp://127.0.0.1/live/test.flv",
 		"-m", modelXML)
 
