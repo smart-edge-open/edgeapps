@@ -4,10 +4,11 @@
 package main
 
 import (
-	"io"
 	"log"
 	"os"
+	"io"
 	"os/exec"
+	"strings"
 )
 
 // OpenVINO acceleration types
@@ -32,7 +33,7 @@ func callOpenVINO(model string, accl string) {
 	}
 
 	// kill already running process if not the first time
-	if cmd != nil {
+	if cmd != nil && cmd.Process != nil {
 		err := cmd.Process.Kill()
 		if err != nil {
 			log.Fatal("Failed to kill OpenVINO process:", err)
@@ -41,7 +42,7 @@ func callOpenVINO(model string, accl string) {
 	}
 
 	var openvinoPath = "/opt/intel/openvino_2021/deployment_tools/inference_engine/demos/python_demos/object_detection_demo/"
-	var openvinoCmd = "object_detection_demo_ssd_async.py"
+	var openvinoCmd = "object_detection_demo.py"
 
 	var modelXML string
 	if accl == CPU {
@@ -54,27 +55,48 @@ func callOpenVINO(model string, accl string) {
 	openvinoTasksetCPU := os.Getenv("OPENVINO_TASKSET_CPU")
 
 	// #nosec
-	cmd.Dir = openvinoPath
+	err := os.Chdir(openvinoPath)
+	if err != nil {
+		log.Fatal("Failed to change directory:", err)
+	}
 	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
 		"python3", openvinoCmd, "-d", accl,
 		"-at", "ssd",
-		"-i", "rtp://127.0.0.1/live/test.flv",
+		"-i", "rtmp://127.0.0.1/live/test.flv",
 		"-m", modelXML)
 
-	go func() {
-		stdout, _ := cmd.StdoutPipe()
-		if _, err := io.Copy(os.Stdout, stdout); err != nil {
-			log.Println(err)
+	stderr, _ := cmd.StderrPipe()
+	go func(reader io.ReadCloser) {
+		bucket := make([]byte, 1024)
+		buffer := make([]byte, 100)
+		for {
+			num, err := reader.Read(buffer)
+			if err != nil {
+				if err == io.EOF || strings.Contains(err.Error(), "closed") {
+					err = nil
+				}
+				return
+			}
+			if num > 0 {
+				line := ""
+				bucket = append(bucket, buffer[:num]...)
+				tmp := string(bucket)
+				if strings.Contains(tmp, "\n") {
+					ts := strings.Split(tmp, "\n")
+					if len(ts) > 1 {
+						line = strings.Join(ts[:len(ts)-1], "\n")
+						bucket = []byte(ts[len(ts)-1])
+					} else {
+						line = ts[0]
+						bucket = bucket[:0]
+					}
+					log.Printf("%s\n", line)
+				}
+			}
 		}
-	}()
-	go func() {
-		stderr, _ := cmd.StderrPipe()
-		if _, err := io.Copy(os.Stderr, stderr); err != nil {
-			log.Println(err)
-		}
-	}()
+	}(stderr)
 
-	err := cmd.Start()
+	err = cmd.Start()
 	if err != nil {
 		log.Fatal("Failed to run OpenVINO process:", err)
 	}

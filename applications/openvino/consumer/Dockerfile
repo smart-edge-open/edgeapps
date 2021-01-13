@@ -56,8 +56,11 @@ RUN cd $APP_DIR && patch -p0 object_detection_demo.py object_detection_demo_ssd_
 
 # Download OpenVINO pre-trained models
 RUN cd $MODEL_ROOT && python3 -mpip install --user -r ./requirements.in && \
-    ./downloader.py --name pedestrian-detection-adas-0002 --precisions FP16 && \
-    ./downloader.py --name vehicle-detection-adas-0002 --precisions FP32
+    ./downloader.py --name pedestrian-detection-adas-0002 && \
+    ./downloader.py --name vehicle-detection-adas-0002
+
+RUN cp -r $MODEL_ROOT/intel/vehicle-detection-adas-0002 $APP_DIR/ && \
+    cp -r $MODEL_ROOT/intel/pedestrian-detection-adas-0002 $APP_DIR/
 
 # Rebuilding libusb without UDEV support -- required for Intel Movidius Stick
 RUN cd /tmp && \
@@ -74,6 +77,9 @@ RUN cd /tmp && \
 	tar -xvf go1.15.linux-amd64.tar.gz && \
 	mv go /usr/local && \
 	rm -rf /tmp/go*
+
+# Install numpy
+RUN pip3 install numpy
 
 ENV OPENVINO_ROOT=/opt/intel/openvino_$YEAR
 ENV GOPATH=/root/go
