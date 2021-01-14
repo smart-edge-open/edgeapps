@@ -25,6 +25,6 @@ sed -i -e ":a;N;\$!ba; s/\(ipAddress: \)/\1$ONET_IP/2" $SDEWAN_VALUES_FILE
 sed -i -e ":a;N;\$!ba; s/\(name: \)/\1$ONET_NAME/3" $SDEWAN_VALUES_FILE
 sed -i -e 's/\([^ ]\)""/\1/' $SDEWAN_VALUES_FILE
 
-cd edgeapps/network-functions/sdewan_cnf
+cd edgeapps/network-functions/sdewan_cnf || return
 helm install sdewan-cnf chart/sdewan-cnf/
-cd -
+cd - || return
