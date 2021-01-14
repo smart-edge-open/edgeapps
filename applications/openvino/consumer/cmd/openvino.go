@@ -4,9 +4,9 @@
 package main
 
 import (
+	"io"
 	"log"
 	"os"
-	"io"
 	"os/exec"
 	"strings"
 )
