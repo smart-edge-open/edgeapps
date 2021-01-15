@@ -10,7 +10,6 @@ sdewan_cnf_name=sdewan-cnf
 hubIp="$HUB_CNF_NET3_IFIP/32,$HUB_CNF_NET4_IFIP/32"
 HUB_OIP=$O_TUNNEL1_NET
 TUNNEL_NAME=sdewan-hub
-NS=cnf
 
 echo "--------------------- Applying CRDs ---------------------"
 cat > ipsec_proposal.yaml << EOF
