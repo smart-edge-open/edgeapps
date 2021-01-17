@@ -32,7 +32,8 @@ The issue is caused by proxy setting issue. Modify proxy setting when building i
 If the issue still exists, can try to re-deploy as below:
 ```shell
 # kubectl delete -f openvino-cons-app.yaml
-# kubectl delete csr openvino-cons-app
+# kubectl delete csr openvino-cons-app 
+
 ```
 
 Then re-deploy after the consumer has been terminated completely (Use `kubectl get pods` to check termination status).  
