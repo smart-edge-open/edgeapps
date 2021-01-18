@@ -7,5 +7,5 @@ trap "exit" SIGINT SIGTERM
 set -m
 ./tx_video.sh &
 sleep 3
-taskset -c 1 ffplay -i rtmp://openvino.openness/live/out.flv
+taskset -c 1 ffplay -i rtmp://openvino.openness:5000/live/out.flv
 fg

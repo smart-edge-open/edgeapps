@@ -41,8 +41,8 @@ func callOpenVINO(model string, accl string) {
 		_ = cmd.Wait()
 	}
 
-	var openvinoPath = "/opt/intel/openvino_2021/deployment_tools/inference_engine/demos/python_demos/object_detection_demo/"
-	var openvinoCmd = "object_detection_demo.py"
+	var openvinoPath = "/opt/intel/openvino_2021/deployment_tools/inference_engine/demos/python_demos/object_detection_demo_ssd_async/"
+	var openvinoCmd = "object_detection_demo_ssd_async.py"
 
 	var modelXML string
 	if accl == CPU {
@@ -61,7 +61,6 @@ func callOpenVINO(model string, accl string) {
 	}
 	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
 		"python3", openvinoCmd, "-d", accl,
-		"-at", "ssd",
 		"-i", "rtmp://127.0.0.1/live/test.flv",
 		"-m", modelXML)
 

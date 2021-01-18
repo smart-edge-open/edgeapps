@@ -1,18 +1,22 @@
---- object_detection_demo.py	2021-01-12 10:48:01.926644033 +0800
-+++ object_detection_demo_changed.py	2021-01-12 10:50:08.666649762 +0800
-@@ -37,6 +37,8 @@
- logging.basicConfig(format='[ %(levelname)s ] %(message)s', level=logging.INFO, stream=sys.stdout)
- log = logging.getLogger()
+--- object_detection_demo_ssd_async.py	2021-01-18 17:50:43.247224340 +0800
++++ object_detection_demo_ssd_async_changed.py	2021-01-18 17:56:16.007239382 +0800
+@@ -34,6 +34,8 @@
+ sys.path.append(osp.join(osp.dirname(osp.dirname(osp.abspath(__file__))), 'common'))
+ import monitors
  
 +import os
 +os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "protocol_whitelist;file,rtp,udp,rtmp,tcp"
  
- def build_argparser():
-     parser = ArgumentParser(add_help=False)
-@@ -230,6 +232,28 @@
-         log.error('OpenCV: Failed to open capture: ' + str(input_stream))
-         sys.exit(1)
- 
+ logging.basicConfig(format='[ %(levelname)s ] %(message)s', level=logging.INFO, stream=sys.stdout)
+ log = logging.getLogger()
+@@ -451,6 +453,32 @@
+     except ValueError:
+         input_stream = args.input
+     cap = cv2.VideoCapture(input_stream)
++    if not cap.isOpened():
++        log.error('OpenCV: Failed to open capture: ' + str(input_stream))
++        sys.exit(1)
++
 +    ret, frame = cap.read()
 +    height, width, ch = frame.shape
 +    dimension = '{}x{}'.format(width, height)
@@ -30,31 +34,21 @@
 +    '-pix_fmt', 'yuv420p',
 +    '-preset', 'ultrafast',
 +    '-f', 'flv',
-+    'rtmp://127.0.0.1/live/out.flv']
++    'rtmp://127.0.0.1:5000/live/out.flv']
 +
 +    import subprocess as sp
 +    proc = sp.Popen(command, stdin=sp.PIPE, shell=False)
 +
+     wait_key_time = 1
+ 
      next_frame_id = 0
-     next_frame_id_to_show = 0
+@@ -523,7 +551,8 @@
+                 put_highlighted_text(frame, latency_message, (15, 50), cv2.FONT_HERSHEY_COMPLEX, 0.75, (200, 10, 10), 2)
  
-@@ -260,7 +284,8 @@
-             frame = draw_detections(frame, objects, palette, model.labels, args.prob_threshold, has_landmarks)
-             metrics.update(start_time, frame)
              if not args.no_show:
 -                cv2.imshow('Detection Results', frame)
 +                #cv2.imshow('Detection Results', frame)
 +                proc.stdin.write(frame.tobytes())
-                 key = cv2.waitKey(1)
- 
-                 ESC_KEY = 27
-@@ -306,7 +331,8 @@
-             frame = draw_detections(frame, objects, palette, model.labels, args.prob_threshold, has_landmarks)
-             metrics.update(start_time, frame)
-             if not args.no_show:
--                cv2.imshow('Detection Results', frame)
-+                #cv2.imshow('Detection Results', frame)
-+                proc.stdin.write(frame.tobytes())
-                 key = cv2.waitKey(1)
+                 key = cv2.waitKey(wait_key_time)
  
                  ESC_KEY = 27

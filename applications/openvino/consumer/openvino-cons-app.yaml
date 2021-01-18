@@ -98,7 +98,8 @@ spec:
           image: openvino-cons-app:1.0
           imagePullPolicy: Never
           ports:
-          - containerPort: 1935
+          - containerPort: 443
+          - containerPort: 5000
             protocol: TCP
           volumeMounts:
             - name: tmp
