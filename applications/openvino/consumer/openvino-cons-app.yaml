@@ -79,7 +79,7 @@ spec:
               mountPath: /root/certs
         - name: certrequester
           image: certrequester:1.0
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           args: ["--cfg", "/home/certrequester/config/certrequest.json"]
           imagePullPolicy: IfNotPresent
           resources:
@@ -96,7 +96,7 @@ spec:
       containers:
         - name: openvino-cons-app
           image: openvino-cons-app:1.0
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 443
           - containerPort: 5000
