@@ -61,7 +61,7 @@ func callOpenVINO(model string, accl string) {
 	}
 	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
 		"python3", openvinoCmd, "-d", accl,
-		"-i", "rtmp://127.0.0.1/live/test.flv",
+		"-i", "rtmp://127.0.0.1:5000/live/test.flv",
 		"-m", modelXML)
 
 	stderr, _ := cmd.StderrPipe()

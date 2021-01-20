@@ -99,5 +99,4 @@ RUN go build main.go openvino.go eaa_interface.go
 RUN rm -rf $GOPATH $GOROOT *.go go.*
 
 # OpenVINO inference and forwarding
-#ENTRYPOINT ["./start.sh"]
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["./start.sh"]
