@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 LINKS Foundation
+apiVersion: v2
+name: links-location-api
+description: MEC Location API powered by LINKS Foundation
+type: application
+version: 0.1.1
+appVersion: 2.1.1
