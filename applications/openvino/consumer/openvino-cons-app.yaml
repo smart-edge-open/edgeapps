@@ -105,13 +105,15 @@ spec:
             protocol: UDP 
           volumeMounts:
             - name: tmp
-              mountPath: /tmp
+              mountPath: /var/tmp
             - name: certs
               mountPath: /root/certs/
+            - name: shm
+              mountPath: /dev/shm
       volumes:
         - name: tmp
           hostPath:
-            path: /tmp
+            path: /var/tmp
             type: Directory
         - name: config
           configMap:
@@ -121,3 +123,7 @@ spec:
             secretName: ca-certrequester
         - name: certs
           emptyDir: {}
+        - name: shm
+          hostPath:
+            path: /dev/shm
+            type: Directory
