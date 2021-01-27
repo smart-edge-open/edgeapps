@@ -12,7 +12,7 @@ ENV no_proxy=$no_proxy,eaa.openness,analytics.openness
 ##  So OpenVINO user needs to configure the value according the setup
 ENV OPENVINO_TASKSET_CPU=8
 
-ARG OPENVINO_LINK=http://registrationcenter-download.intel.com/akdlm/irc_nas/15791/l_openvino_toolkit_fpga_p_2019.2.275.tgz
+ARG OPENVINO_LINK=http://registrationcenter-download.intel.com/akdlm/irc_nas/16612/l_openvino_toolkit_p_2020.2.120.tgz
 ARG MODEL1_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin_20190329_105530/pedestrian-detection-adas-0002/
 ARG MODEL2_LINK=https://download.01.org/opencv/2019/open_model_zoo/R1/models_bin_20190329_105530/vehicle-detection-adas-0002/
 ARG INSTALL_DIR=/tmp/openvino_installer
