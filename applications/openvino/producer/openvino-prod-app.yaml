@@ -104,6 +104,9 @@ spec:
               mountPath: /tmp
             - name: certs
               mountPath: /root/certs/
+          env:
+            - name: OPENVINO_ACCL
+              value: "CPU_HDDL"
       volumes:
         - name: tmp
           hostPath:
