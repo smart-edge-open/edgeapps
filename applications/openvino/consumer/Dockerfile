@@ -28,6 +28,7 @@ RUN apt-get update && \
 	apt-get -y install autoconf libtool && \
 	apt-get -y install ffmpeg libav-tools x264 && \
 	apt-get -y install git && \
+	apt-get -y install libjson-c-dev && \
 	apt-get -y install util-linux && \
 	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.58-dev libboost-thread1.58 libboost-filesystem1.58
 
