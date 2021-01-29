@@ -106,26 +106,8 @@ spec:
               mountPath: /tmp
             - name: certs
               mountPath: /root/certs/
-            - name: i2c5
-              mountPath: /dev/i2c-5
             - name: openvino
               mountPath: /var/tmp
-            - name: myriad0
-              mountPath: /dev/myriad0
-            - name: myriad1
-              mountPath: /dev/myriad1
-            - name: myriad2
-              mountPath: /dev/myriad2
-            - name: myriad3
-              mountPath: /dev/myriad3
-            - name: myriad4
-              mountPath: /dev/myriad4
-            - name: myriad5
-              mountPath: /dev/myriad5
-            - name: myriad6
-              mountPath: /dev/myriad6
-            - name: myriad7
-              mountPath: /dev/myriad7
             - name: shm
               mountPath: /dev/shm
       volumes:
@@ -141,37 +123,11 @@ spec:
             secretName: ca-certrequester
         - name: certs
           emptyDir: {}
-        - name: i2c5
-          hostPath:
-            path: /dev/i2c-5
         - name: openvino
           hostPath:
             path: /var/tmp
             type: Directory
-        - name: myriad0
-          hostPath:
-            path: /dev/myriad0
-        - name: myriad1
-          hostPath:
-            path: /dev/myriad1
-        - name: myriad2
-          hostPath:
-            path: /dev/myriad2
-        - name: myriad3
-          hostPath:
-            path: /dev/myriad3
-        - name: myriad4
-          hostPath:
-            path: /dev/myriad4
-        - name: myriad5
-          hostPath:
-            path: /dev/myriad5
-        - name: myriad6
-          hostPath:
-            path: /dev/myriad6
-        - name: myriad7
-          hostPath:
-            path: /dev/myriad7
+           path: /dev/myriad7
         - name: shm
           hostPath:
             path: /dev/shm
