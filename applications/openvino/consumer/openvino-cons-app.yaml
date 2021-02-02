@@ -127,7 +127,6 @@ spec:
           hostPath:
             path: /var/tmp
             type: Directory
-           path: /dev/myriad7
         - name: shm
           hostPath:
             path: /dev/shm
