@@ -1,6 +1,6 @@
---- main.cpp	2019-09-19 18:11:55.607355860 +0100
-+++ main.cpp_changed	2019-09-19 18:11:46.981355924 +0100
-@@ -79,6 +79,10 @@
+--- main.cpp	2021-01-28 17:28:51.064453475 +0100
++++ "main.cpp_changed"	2021-01-28 18:56:29.174184316 +0100
+@@ -80,6 +80,10 @@
          const size_t width  = (size_t) cap.get(cv::CAP_PROP_FRAME_WIDTH);
          const size_t height = (size_t) cap.get(cv::CAP_PROP_FRAME_HEIGHT);
  
@@ -11,28 +11,30 @@
          // read input (video) frame
          cv::Mat curr_frame;  cap >> curr_frame;
          cv::Mat next_frame;
-@@ -232,7 +236,7 @@
+@@ -244,7 +248,7 @@
          slog::info << "Start inference " << slog::endl;
  
          bool isLastFrame = false;
 -        bool isAsyncMode = false;  // execution is always started using SYNC mode
-+        bool isAsyncMode = true;  // execution is always started using SYNC mode
++        bool isAsyncMode = true;
          bool isModeChanged = false;  // set to TRUE when execution mode is changed (SYNC<->ASYNC)
  
          typedef std::chrono::duration<double, std::ratio<1, 1000>> ms;
-@@ -345,7 +349,7 @@
+@@ -331,7 +335,7 @@
+                 const float *detections = async_infer_request_curr->GetBlob(outputName)->buffer().as<PrecisionTrait<Precision::FP32>::value_type*>();
+                 for (int i = 0; i < maxProposalCount; i++) {
+                     float image_id = detections[i * objectSize + 0];
+-                    if (image_id < 0) {
++                    if (image_id != 0) {
+                         break;
                      }
-                 }
+ 
+@@ -363,7 +367,7 @@
              }
--            cv::imshow("Detection results", curr_frame);
-+            video.write(curr_frame);
+ 
+             if (!FLAGS_no_show) {
+-                cv::imshow("Detection results", curr_frame);
++                video.write(curr_frame);
+             }
  
              t1 = std::chrono::high_resolution_clock::now();
-             ocv_render_time = std::chrono::duration_cast<ms>(t1 - t0).count();
-@@ -395,4 +399,4 @@
- 
-     slog::info << "Execution successful" << slog::endl;
-     return 0;
--}
-\ No newline at end of file
-+}

@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"sync"
 )
 
 // OpenVINO acceleration types
@@ -59,21 +60,32 @@ func callOpenVINO(model string, accl string) {
 		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
 		"-m", modelXML)
 
+	stdout, _ := cmd.StdoutPipe()
+	stderr, _ := cmd.StderrPipe()
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
 	go func() {
-		stdout, _ := cmd.StdoutPipe()
 		if _, err := io.Copy(os.Stdout, stdout); err != nil {
 			log.Println(err)
 		}
+		wg.Done()
 	}()
 	go func() {
-		stderr, _ := cmd.StderrPipe()
 		if _, err := io.Copy(os.Stderr, stderr); err != nil {
 			log.Println(err)
 		}
+		wg.Done()
 	}()
 
-	err := cmd.Start()
-	if err != nil {
+	if err := cmd.Start(); err != nil {
 		log.Fatal("Failed to run OpenVINO process:", err)
+	}
+
+	wg.Wait()
+
+	if err := cmd.Wait(); err != nil {
+		log.Println(err)
 	}
 }
