@@ -45,7 +45,29 @@ RUN cd /tmp && \
 	./install.sh -s silent.cfg && \
 	rm -rf /tmp/l_openvino_toolkit*
 
-WORKDIR /root
+# Install numpy
+RUN pip3 install numpy
+
+# Rebuilding libusb without UDEV support -- required for Intel Movidius Stick
+RUN cd /tmp && \
+	wget https://github.com/libusb/libusb/archive/v1.0.22.zip && \
+	unzip v1.0.22.zip && cd libusb-1.0.22 && \
+	./bootstrap.sh && \
+	./configure --disable-udev --enable-shared && \
+	make -j4 && make install && \
+	rm -rf /tmp/*1.0.22*
+
+# Creating user openvino and adding it to groups "video" and "users" to use GPU and VPU
+RUN useradd -ms /bin/bash -G video,users openvino && \
+    chown openvino -R /home/openvino
+
+COPY cmd/ /home/openvino
+ADD start.sh /home/openvino
+
+RUN chown -R openvino:openvino /opt/intel/openvino*
+RUN chown -R openvino:openvino /home/openvino/*
+
+USER openvino
 RUN echo "source /opt/intel/openvino_$YEAR/bin/setupvars.sh" >> ~/.bashrc
 RUN bash -c "source ~/.bashrc"
 
@@ -61,42 +83,25 @@ RUN cd $MODEL_ROOT && python3 -mpip install --user -r ./requirements.in && \
 RUN cp -r $MODEL_ROOT/intel/vehicle-detection-adas-0002 $APP_DIR/ && \
     cp -r $MODEL_ROOT/intel/pedestrian-detection-adas-0002 $APP_DIR/
 
-# Rebuilding libusb without UDEV support -- required for Intel Movidius Stick
-RUN cd /tmp && \
-	wget https://github.com/libusb/libusb/archive/v1.0.22.zip && \
-	unzip v1.0.22.zip && cd libusb-1.0.22 && \
-	./bootstrap.sh && \
-	./configure --disable-udev --enable-shared && \
-	make -j4 && make install && \
-	rm -rf /tmp/*1.0.22*
-
 # Install Go
 RUN cd /tmp && \
 	wget https://dl.google.com/go/go1.15.linux-amd64.tar.gz && \
-	tar -xvf go1.15.linux-amd64.tar.gz && \
-	mv go /usr/local && \
-	rm -rf /tmp/go*
-
-# Install numpy
-RUN pip3 install numpy
+	tar -xvf go1.15.linux-amd64.tar.gz
 
 ENV OPENVINO_ROOT=/opt/intel/openvino_$YEAR
-ENV GOPATH=/root/go
-ENV GOROOT=/usr/local/go
+ENV GOPATH=/home/openvino/go
+ENV GOROOT=/tmp/go
 ENV GO111MODULE=on
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 RUN mkdir $GOPATH
 
 # Work Dir
-WORKDIR /root
+WORKDIR /home/openvino
 
 # Get go dependencies
 RUN git config --global http.proxy $http_proxy
 RUN go get github.com/gorilla/websocket
-COPY cmd/ ./
-ADD start.sh /root/
 RUN go build main.go openvino.go eaa_interface.go
-RUN rm -rf $GOPATH $GOROOT *.go go.*
 
 # OpenVINO inference and forwarding
 ENTRYPOINT ["./start.sh"]
