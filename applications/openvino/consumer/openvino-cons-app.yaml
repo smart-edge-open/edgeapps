@@ -101,9 +101,12 @@ spec:
           - containerPort: 443
           - containerPort: 5000
             protocol: TCP
+          resources:
+            requests:
+              cpu: "1"
+            limits:
+              cpu: "3"
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
             - name: certs
               mountPath: /home/openvino/certs/
             - name: openvino
@@ -111,10 +114,6 @@ spec:
             - name: shm
               mountPath: /dev/shm
       volumes:
-        - name: tmp
-          hostPath:
-            path: /tmp
-            type: Directory
         - name: config
           configMap:
             name: openvino-cons-app-csr-config
