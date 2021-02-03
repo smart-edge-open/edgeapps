@@ -7,16 +7,11 @@ ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy,eaa.openness,analytics.openness
 
-
-##  OnPrem NTS uses CPU 0,2 and 3. 
-##  So OpenVINO user needs to configure the value according the setup
-ENV OPENVINO_TASKSET_CPU=8
-
 ARG OPENVINO_LINK=https://registrationcenter-download.intel.com/akdlm/irc_nas/17062/l_openvino_toolkit_p_2021.1.110.tgz
 ARG YEAR=2021
 ARG OPENVINO_DEMOS_DIR=/opt/intel/openvino_$YEAR/deployment_tools/open_model_zoo/demos
 ARG MODEL_ROOT=/opt/intel/openvino_$YEAR/deployment_tools/open_model_zoo/tools/downloader
-ARG APP_DIR=/opt/intel/openvino_$YEAR/deployment_tools/inference_engine/demos/python_demos/object_detection_demo_ssd_async/
+ENV APP_DIR=/opt/intel/openvino_$YEAR/deployment_tools/inference_engine/demos/python_demos/object_detection_demo_ssd_async/
 
 RUN apt-get update && \
 	apt-get -y install build-essential gcc g++ cmake && \
