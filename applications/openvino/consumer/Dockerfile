@@ -28,7 +28,6 @@ RUN apt-get update && \
 	apt-get -y install util-linux && \
 	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.65-dev libboost-thread1.65 libboost-filesystem1.65
 
-COPY nginx.conf /etc/nginx/nginx.conf
 ENV DEBIAN_FRONTEND=noninteractive
 # OpenVino installation
 RUN cd /tmp && \
@@ -43,6 +42,9 @@ RUN cd /tmp && \
 # Install numpy
 RUN pip3 install numpy
 
+COPY nginx.conf /etc/nginx/nginx.conf
+RUN chmod +s /usr/sbin/nginx
+
 # Rebuilding libusb without UDEV support -- required for Intel Movidius Stick
 RUN cd /tmp && \
 	wget https://github.com/libusb/libusb/archive/v1.0.22.zip && \
@@ -53,14 +55,17 @@ RUN cd /tmp && \
 	rm -rf /tmp/*1.0.22*
 
 # Creating user openvino and adding it to groups "video" and "users" to use GPU and VPU
-RUN useradd -ms /bin/bash -G video,users openvino && \
-    chown openvino -R /home/openvino
+RUN useradd -ms /bin/bash -G video,users,www-data openvino && \
+    chown -R openvino /home/openvino
 
 COPY cmd/ /home/openvino
 ADD start.sh /home/openvino
 
 RUN chown -R openvino:openvino /opt/intel/openvino*
 RUN chown -R openvino:openvino /home/openvino/*
+
+# add analytics.openness into hosts
+RUN echo "192.168.1.10 analytics.openness" >> /etc/hosts
 
 USER openvino
 RUN echo "source /opt/intel/openvino_$YEAR/bin/setupvars.sh" >> ~/.bashrc

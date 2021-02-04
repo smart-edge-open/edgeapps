@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"sync"
+	"strings"
 )
 
 // OpenVINO acceleration types
@@ -36,7 +36,7 @@ func callOpenVINO(model string, accl string) {
 	}
 
 	// kill already running process if not the first time
-	if cmd != nil {
+	if cmd != nil && cmd.Process != nil {
 		if err := cmd.Process.Kill(); err != nil {
 			log.Fatal("Failed to kill OpenVINO process:", err)
 		}
@@ -54,32 +54,39 @@ func callOpenVINO(model string, accl string) {
 				"-i", "rtmp://127.0.0.1:5000/live/test.flv",
 				"-m", modelXML)
 
-	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
 
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	go func() {
-		if _, err := io.Copy(os.Stdout, stdout); err != nil {
-			log.Println(err)
+	go func(reader io.ReadCloser) {
+		bucket := make([]byte, 1024)
+		buffer := make([]byte, 100)
+		for {
+			num, err := reader.Read(buffer)
+			if err != nil {
+				if err == io.EOF || strings.Contains(err.Error(), "closed") {
+					err = nil
+				}
+				return
+			}
+			if num > 0 {
+				line := ""
+				bucket = append(bucket, buffer[:num]...)
+				tmp := string(bucket)
+				if strings.Contains(tmp, "\n") {
+					ts := strings.Split(tmp, "\n")
+					if len(ts) > 1 {
+						line = strings.Join(ts[:len(ts)-1], "\n")
+						bucket = []byte(ts[len(ts)-1])
+					} else {
+						line = ts[0]
+						bucket = bucket[:0]
+					}
+					log.Printf("%s\n", line)
+				}
+			}
 		}
-		wg.Done()
-	}()
-	go func() {
-		if _, err := io.Copy(os.Stderr, stderr); err != nil {
-			log.Println(err)
-		}
-		wg.Done()
-	}()
+	}(stderr)
 
 	if err := cmd.Start(); err != nil {
 		log.Fatal("Failed to run OpenVINO process:", err)
-	}
-
-	wg.Wait()
-
-	if err := cmd.Wait(); err != nil {
-		log.Println(err)
 	}
 }

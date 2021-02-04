@@ -23,9 +23,9 @@ COPY --from=Builder /lib64/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2
 # CPU | MYRIAD | HDDL | CPU_HDDL | CPU_MYRIAD
 ENV OPENVINO_ACCL=CPU
 
-RUN addgroup -g 101 -S user \
-    && adduser -S -D -H -u 101 -h /var/cache/user -s /sbin/nologin -G user -g user user
-COPY --from=Builder /root/main /var/cache/user/main
-WORKDIR /var/cache/user
+RUN adduser -S -D -H -u 100 -h /var/user -s /sbin/nologin -G users -g user user
+COPY --from=Builder /root/main /var/user/main
+WORKDIR /var/user
+USER user
 
-CMD ["/var/cache/user/main"]
+CMD ["./main"]

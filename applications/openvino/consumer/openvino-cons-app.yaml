@@ -64,7 +64,9 @@ spec:
         - name: alpine
           image: alpine:3.12.0
           command: ["/bin/sh"]
-          args: ["-c", "cp /home/openvino/ca-certrequester/cert.pem /home/openvino/certs/root.pem"]
+          args:
+            - "-c"
+            - "cp /ca-certrequester/cert.pem /root/certs/root.pem"
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -74,9 +76,9 @@ spec:
               memory: "128Mi"
           volumeMounts:
             - name: ca-certrequester
-              mountPath: /home/openvino/ca-certrequester
+              mountPath: /ca-certrequester
             - name: certs
-              mountPath: /home/openvino/certs
+              mountPath: /root/certs
         - name: certrequester
           image: certrequester:1.0
           imagePullPolicy: IfNotPresent
@@ -90,9 +92,25 @@ spec:
               memory: "128Mi"
           volumeMounts:
             - name: config
-              mountPath: /home/certrequester/config/
+              mountPath: /home/certrequester/config
             - name: certs
-              mountPath: /home/certrequester/certs/
+              mountPath: /home/certrequester/certs
+        - name: alpine2
+          image: alpine:3.12.0
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - "chmod -R 0777 /root/certs"
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "0.1"
+            limits:
+              cpu: "0.1"
+              memory: "128Mi"
+          volumeMounts:
+            - name: certs
+              mountPath: /root/certs
       containers:
         - name: openvino-cons-app
           image: openvino-cons-app:1.0
@@ -101,14 +119,9 @@ spec:
           - containerPort: 443
           - containerPort: 5000
             protocol: TCP
-          resources:
-            requests:
-              cpu: "1"
-            limits:
-              cpu: "3"
           volumeMounts:
             - name: certs
-              mountPath: /home/openvino/certs/
+              mountPath: /home/openvino/certs
             - name: openvino
               mountPath: /var/tmp
             - name: shm
