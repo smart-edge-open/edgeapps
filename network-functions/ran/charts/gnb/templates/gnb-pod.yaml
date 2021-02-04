@@ -15,6 +15,8 @@ spec:
         add:
           - IPC_LOCK
           - SYS_NICE
+          - SYS_ADMIN
+          - NET_ADMIN
     name: {{ .Release.Name }}
     image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
     imagePullPolicy: {{ .Values.pullPolicy }}
