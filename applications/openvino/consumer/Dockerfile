@@ -64,8 +64,8 @@ ADD start.sh /home/openvino
 RUN chown -R openvino:openvino /opt/intel/openvino*
 RUN chown -R openvino:openvino /home/openvino/*
 
-# add analytics.openness into hosts
-RUN echo "192.168.1.10 analytics.openness" >> /etc/hosts
+# chmod /etc/hosts
+RUN chmod 0777 /etc/hosts
 
 USER openvino
 RUN echo "source /opt/intel/openvino_$YEAR/bin/setupvars.sh" >> ~/.bashrc
