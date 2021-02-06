@@ -46,11 +46,15 @@ func callOpenVINO(model string, accl string) {
 	openvinoPath := os.Getenv("APP_DIR")
 	openvinoCmd := "object_detection_demo_ssd_async.py"
 
+	// get taskset cpu from env
+	openvinoTasksetCPU := os.Getenv("OPENVINO_TASKSET_CPU")
+
 	if err := os.Chdir(openvinoPath); err != nil {
 		log.Fatal("Failed to change directory:", err)
 	}
 
-	cmd = exec.Command("python3", openvinoCmd, "-d", accl,
+	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
+		"python3", openvinoCmd, "-d", accl,
 		"-i", "rtmp://127.0.0.1:5000/live/test.flv",
 		"-m", modelXML)
 

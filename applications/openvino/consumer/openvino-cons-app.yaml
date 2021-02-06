@@ -122,7 +122,7 @@ spec:
           volumeMounts:
             - name: certs
               mountPath: /home/openvino/certs
-            - name: openvino
+            - name: tmp
               mountPath: /var/tmp
             - name: shm
               mountPath: /dev/shm
@@ -135,7 +135,7 @@ spec:
             secretName: ca-certrequester
         - name: certs
           emptyDir: {}
-        - name: openvino
+        - name: tmp
           hostPath:
             path: /var/tmp
             type: Directory
