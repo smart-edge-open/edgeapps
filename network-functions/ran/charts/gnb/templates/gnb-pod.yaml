@@ -39,12 +39,14 @@ spec:
         intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
         {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}
         memory: {{ .Values.memory }}
+        cpu: {{ .Values.cpu }}
         intel.com/intel_sriov_VF_G1: '2'
         intel.com/intel_sriov_VF_G2: '2'
       limits:
         intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
         {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}                
         memory: {{ .Values.memory }}
+        cpu: {{ .Values.cpu }}
         intel.com/intel_sriov_VF_G1: '2'
         intel.com/intel_sriov_VF_G2: '2'
   volumes:

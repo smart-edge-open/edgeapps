@@ -19,3 +19,4 @@ numberOfFECVf: 2                                          # Number of FEC VFs to
 hugePageSize: hugepages-1Gi                               # Possible values: hugepages-1Gi hugepages-2Mi
 hugePageAmount: 30Gi                                      # Amount of hugepages to be reserved for the pod
 memory: 30Gi                                              # Amount of memory to be reserved for the pod
+cpu: 6                                                    # Number of CPUs to be reserved for the pod
