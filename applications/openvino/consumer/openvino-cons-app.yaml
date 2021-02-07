@@ -64,7 +64,9 @@ spec:
         - name: alpine
           image: alpine:3.12.0
           command: ["/bin/sh"]
-          args: ["-c", "cp /root/ca-certrequester/cert.pem /root/certs/root.pem"]
+          args:
+            - "-c"
+            - "cp /ca-certrequester/cert.pem /root/certs/root.pem"
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -74,12 +76,12 @@ spec:
               memory: "128Mi"
           volumeMounts:
             - name: ca-certrequester
-              mountPath: /root/ca-certrequester
+              mountPath: /ca-certrequester
             - name: certs
               mountPath: /root/certs
         - name: certrequester
           image: certrequester:1.0
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           args: ["--cfg", "/home/certrequester/config/certrequest.json"]
           imagePullPolicy: IfNotPresent
           resources:
@@ -90,29 +92,41 @@ spec:
               memory: "128Mi"
           volumeMounts:
             - name: config
-              mountPath: /home/certrequester/config/
+              mountPath: /home/certrequester/config
             - name: certs
-              mountPath: /home/certrequester/certs/
+              mountPath: /home/certrequester/certs
+        - name: alpine2
+          image: alpine:3.12.0
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - "chmod -R 0777 /root/certs"
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "0.1"
+            limits:
+              cpu: "0.1"
+              memory: "128Mi"
+          volumeMounts:
+            - name: certs
+              mountPath: /root/certs
       containers:
         - name: openvino-cons-app
           image: openvino-cons-app:1.0
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 443
           - containerPort: 5000
             protocol: TCP
-          - containerPort: 5000
-            protocol: UDP 
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
             - name: certs
-              mountPath: /root/certs/
+              mountPath: /home/openvino/certs
+            - name: tmp
+              mountPath: /var/tmp
+            - name: shm
+              mountPath: /dev/shm
       volumes:
-        - name: tmp
-          hostPath:
-            path: /tmp
-            type: Directory
         - name: config
           configMap:
             name: openvino-cons-app-csr-config
@@ -121,3 +135,11 @@ spec:
             secretName: ca-certrequester
         - name: certs
           emptyDir: {}
+        - name: tmp
+          hostPath:
+            path: /var/tmp
+            type: Directory
+        - name: shm
+          hostPath:
+            path: /dev/shm
+            type: Directory
