@@ -76,9 +76,6 @@ spec:
         - name: class
           mountPath: /sys/devices
           readOnly: false
-        - name: upf-vol
-          mountPath: /root/upf
-          readOnly: false
         - name: sysfs
           mountPath: /sys
           readOnly: false
@@ -106,9 +103,6 @@ spec:
   - name: sysfs
     hostPath:
         path: /sys
-  - name: upf-vol
-    hostPath:
-      path: {{ .Values.node.path }}
   - name: host-proc
     hostPath:
         path: /proc
