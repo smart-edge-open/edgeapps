@@ -98,6 +98,7 @@ func connectConsumer(client *http.Client) (*websocket.Conn, error) {
 			Certificates: []tls.Certificate{
 				transport.TLSClientConfig.Certificates[0]},
 			ServerName: common.Cfg.EaaCommonName,
+			MinVersion: tls.VersionTLS12,
 		},
 	}
 
