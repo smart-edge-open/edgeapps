@@ -15,7 +15,7 @@ This sample application demonstrates OpenVINO object detection (pedestrian and v
 
 ### Troubleshooting
 
-#### After deployment, OpenVINO sample consumer keeps Crash with error: "proxyconnect tcp: dial tcp i/o timeout", and not able to recover after serveral times restart.
+#### 1. After deployment, OpenVINO sample consumer keeps Crash with error: "proxyconnect tcp: dial tcp i/o timeout", and not able to recover after serveral times restart.
 
 The issue is caused by proxy setting issue. Modify proxy setting when building image or Edit 'openvino-cons-app.yaml' with desired proxy setting as below:
 ```yaml
@@ -37,14 +37,17 @@ If the issue still exists, can try to re-deploy as below:
 ```
 
 Then re-deploy after the consumer has been terminated completely (Use `kubectl get pods` to check termination status).  
-#### After deployment, Traffic from external server does not receive in Consumer pod.
-1.install tcpdump on controller
-2.use this command to capture log
+#### 2. After deployment, Traffic from external server does not receive in Consumer pod.
+Install tcpdump on controller
+Use command to capture log
 ```shell
     kubectl ko tcpdump default/openvino-cons-app-xxxx port 5000
 ```
-pod name could use kubectl get po to get .
-3. log should as:
+Pod name could use below command to get.
+```shell
+    kubectl get po 
+```    
+Log should as:
 ```log
 06:59:57.086038 IP 192.168.1.10.58786 > 10.16.0.36.5000: Flags [P.], seq 1940984:1941120, ack 1, win 298, options [nop,nop,TS val 216647345 ecr 79868771], length 136
 06:59:57.086096 IP 192.168.1.10.58786 > 10.16.0.36.5000: Flags [P.], seq 1941120:1942152, ack 1, win 298, options [nop,nop,TS val 216647346 ecr 79868771], length 1032
@@ -55,7 +58,7 @@ pod name could use kubectl get po to get .
 06:59:57.086355 IP 10.16.0.36.5000 > 192.168.1.10.58786: Flags [.], ack 1947183, win 2614, options [nop,nop,TS val 79868802 ecr 216647346], length 0
 06:59:57.086438 IP 192.168.1.10.58786 > 10.16.0.36.5000: Flags [P.], seq 194718
 ```
-4. if no log, there should no traffic data receive by consumer, so pls check your networkpolicy as:
+If no log, there should no traffic data received by consumer, so pls check your network policy which allowing ingress traffic on port 5000 (tcp and udp) from 192.168.1.0/24 network to the OpenVINO consumer application pod as:
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -78,4 +81,8 @@ spec:
     - protocol: UDP
       port: 5000
 ```
-or you could try to 'kubectl delete networkpolicies block-all-ingress', if it works, there should be something error in your network policy. block-all-ingress should not be deleted in normal step, it is only for debug.
+Or you could try to delete default ingress policy
+```shell
+    kubectl delete networkpolicies block-all-ingress'
+```
+If it works, there should be something error in your network policy for consumer. (block-all-ingress should not be deleted in normal step, it is only for debug.)
