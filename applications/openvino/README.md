@@ -46,7 +46,7 @@ Pod name could be got use below command:
 ```shell
     kubectl get po 
 ```    
-Log should as:
+Log should look like:
 ```log
 06:59:57.086038 IP 192.168.1.10.58786 > 10.16.0.36.5000: Flags [P.], seq 1940984:1941120, ack 1, win 298, options [nop,nop,TS val 216647345 ecr 79868771], length 136
 06:59:57.086096 IP 192.168.1.10.58786 > 10.16.0.36.5000: Flags [P.], seq 1941120:1942152, ack 1, win 298, options [nop,nop,TS val 216647346 ecr 79868771], length 1032
@@ -57,7 +57,7 @@ Log should as:
 06:59:57.086355 IP 10.16.0.36.5000 > 192.168.1.10.58786: Flags [.], ack 1947183, win 2614, options [nop,nop,TS val 79868802 ecr 216647346], length 0
 06:59:57.086438 IP 192.168.1.10.58786 > 10.16.0.36.5000: Flags [P.], seq 194718
 ```
-If no log, there should no traffic data received by consumer, so pls check your network policy which allowing ingress traffic on port 5000 (tcp and udp) from 192.168.1.0/24 network to the OpenVINO consumer application pod as:
+If no log, there should be no traffic data received by consumer, so pls check your network policy which allowing ingress traffic on port 5000 (tcp and udp) from 192.168.1.0/24 network to the OpenVINO consumer application pod as:
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -80,8 +80,8 @@ spec:
     - protocol: UDP
       port: 5000
 ```
-Or you could try to delete default ingress policy:
+Or you could try to delete default block ingress policy:
 ```shell
     kubectl delete networkpolicies block-all-ingress
 ```
-If data received after delete the ingress policy, there should be something error in your network policy for consumer, please check and re-apply it. (block-all-ingress should not be deleted in normal step, it is only for debug.)
+If data received after deleting the ingress policy, there should be something error in your network policy for consumer, please check and re-apply it. (block-all-ingress should not be deleted in production environment.)
