@@ -38,12 +38,12 @@ If the issue still exists, can try to re-deploy as below:
 
 Then re-deploy after the consumer has been terminated completely (Use `kubectl get pods` to check termination status).  
 #### 2. After deployment, Traffic from external server does not receive in Consumer pod.
-Install tcpdump on controller
-Use command to capture log
+Install tcpdump on controller.
+Use command to capture log:
 ```shell
     kubectl ko tcpdump default/openvino-cons-app-xxxx port 5000
 ```
-Pod name could use below command to get.
+Pod name could be got use below command:
 ```shell
     kubectl get po 
 ```    
@@ -85,4 +85,4 @@ Or you could try to delete default ingress policy
 ```shell
     kubectl delete networkpolicies block-all-ingress'
 ```
-If it works, there should be something error in your network policy for consumer. (block-all-ingress should not be deleted in normal step, it is only for debug.)
+If data received after delete the ingress polidy, there should be something error in your network policy for consumer, please check and re-apply it. (block-all-ingress should not be deleted in normal step, it is only for debug.)
