@@ -81,8 +81,8 @@ spec:
     - protocol: UDP
       port: 5000
 ```
-Or you could try to delete default ingress policy
+Or you could try to delete default ingress policy:
 ```shell
-    kubectl delete networkpolicies block-all-ingress'
+    kubectl delete networkpolicies block-all-ingress
 ```
 If data received after delete the ingress polidy, there should be something error in your network policy for consumer, please check and re-apply it. (block-all-ingress should not be deleted in normal step, it is only for debug.)
