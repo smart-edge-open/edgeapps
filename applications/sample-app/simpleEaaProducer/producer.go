@@ -5,12 +5,14 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"log"
 	"net/http"
 	"reflect"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/open-ness/edgeapps/applications/sample-app/common"
 	"github.com/pkg/errors"
 )
@@ -198,4 +200,43 @@ func isProducerAvailable(cli *http.Client, producer common.Service) (bool, commo
 		time.Sleep(checkInterval)
 	}
 	return false, allProducers
+}
+
+// ConnectProducerWebsocket establishes a websocket connection for posting
+// notifications to all subscribed consumers
+func ConnectProducerWebsocket(client *http.Client) (*websocket.Conn, error) {
+	// Get hold of the session handle
+	transport, ok := client.Transport.(*http.Transport)
+	if !ok {
+		return nil, errors.New("HTTP client doens't have http.Transport")
+	}
+
+	// Construct websocket handle after populating it with the TLS configuration
+	socket := &websocket.Dialer{
+		TLSClientConfig: &tls.Config{
+			RootCAs: transport.TLSClientConfig.RootCAs,
+			Certificates: []tls.Certificate{
+				transport.TLSClientConfig.Certificates[0]},
+			ServerName: common.Cfg.EaaCommonName,
+		},
+	}
+
+	// Set header for HTTP request to the websocket endpoint
+	hostHeader := http.Header{}
+	hostHeader.Add("Host", common.Cfg.Namespace+":"+common.Cfg.ProducerAppID)
+
+	// Establish websocket connection by issuing a request to /notifications
+	conn, resp, err := socket.Dial("wss://"+common.Cfg.EdgeNodeEndpoint+
+		"/notifications", hostHeader)
+	if err != nil {
+		return nil, errors.Wrap(err, "Couldn't dial to wss")
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Println("Failed to close response body")
+		}
+	}()
+
+	// Return websocket connection handle
+	return conn, nil
 }

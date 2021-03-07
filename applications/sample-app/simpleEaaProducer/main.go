@@ -8,6 +8,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/open-ness/edgeapps/applications/sample-app/common"
 	"github.com/pkg/errors"
 )
@@ -97,6 +98,17 @@ func main() {
 	// stop producer after set timeout
 	done := time.After(time.Second * time.Duration(common.Cfg.ProducerTimeout))
 
+	// Establish websocket connection for issuing notifications
+	websocketConn, err := ConnectProducerWebsocket(cli)
+	if err != nil {
+		log.Panicln("Cannot open web socket: " + err.Error())
+	}
+	defer func() {
+		if conErr := websocketConn.Close(); conErr != nil {
+			log.Println("Failed to close socket")
+		}
+	}()
+
 workLoop:
 	for {
 		select {
@@ -114,17 +126,34 @@ workLoop:
 				break
 			}
 
-			// bild event
+			// build notification event
 			newEvent := common.NotificationFromProducer{
 				Name:    common.Cfg.Notification,
 				Version: common.Cfg.VerNotif,
 				Payload: send,
 			}
-			// send event to edgeNode
-			if err := produceEvent(cli, newEvent); err != nil {
-				log.Fatal(err)
+
+			// Serialize notification event to JSON
+			notificationJSON, err := json.Marshal(newEvent)
+			if err != nil {
+				log.Println(err)
 			}
+			// Post notification event to websocket
+			if err := websocketConn.WriteMessage(websocket.TextMessage, notificationJSON); err != nil {
+				log.Println(err)
+			}
+
+			/*
+				Note: Below is an equivalent method for issuing notifications via a HTTP POST request
+				to /notifications. As individual notifications require separate POST requests,
+				establishing a TLS session, etc., it takes a performance hit in comparison to
+				posting the notification to an open websocket as above. But both methods remain
+				viable.
+				// send event to edgeNode
+				if err := produceEvent(cli, newEvent); err != nil {
+					log.Fatal(err)
+				}
+			*/
 		}
 	}
-
 }
