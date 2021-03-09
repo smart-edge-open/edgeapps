@@ -45,9 +45,11 @@ User can manage which components will be executed during the deployment.
 ### Getting The Sources
 `eis-experience-kit` supports two ways of getting EIS sources. User can choose between cloning the repository from Git and use release package.
 
-To use the release package, user should get it manually and the path to it should be passed in `host_vars/localhost.yml` file in field `release_package_path`. The package will be extracted and source code will be used in the same way as repository.
+To use the release package, user should get it manually and the path to it should be passed in `host_vars/localhost.yml` file in field `release_package_path`. The path should be till IEdgeInsights folder. 
 
-The release package can be downloaded here: [https://software.intel.com/content/www/us/en/develop/topics/iot/edge-solutions/industrial-recipes.html](https://software.intel.com/content/www/us/en/develop/topics/iot/edge-solutions/industrial-recipes.html)
+The release package can be downloaded here: [https://software.intel.com/iot/edgesoftwarehub/download/home/industrialinsights](https://software.intel.com/iot/edgesoftwarehub/download/home/industrialinsights)
+
+After release package download follow link for preparing release code base: [https://software.intel.com/content/www/us/en/develop/documentation/edge-insights-industrial-doc/get-started-guide.html](https://software.intel.com/content/www/us/en/develop/documentation/edge-insights-industrial-doc/get-started-guide.html)
 
 ### Build Stage
 Overview on `eis-experience-kit` architecture:
@@ -143,7 +145,7 @@ set port="8554"
     `/eis-experience-kit/scripts/send_rtsp_stream_linux.sh`
     `/eis-experience-kit/scripts/send_rtsp_stream_win.bat`
     `/opt/eis_repo/IEdgeInsights/VideoIngestion/test_videos/pcb_d2000.avi`
-    `/opt/eis_repo/IEdgeInsights/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.avi`
+    `/opt/eis_repo/IEdgeInsights/CustomUdfs/NativeSafetyGearIngestion/Safety_Full_Hat_and_Vest.avi`
 
 
 ### View Visualizer HOST Server
@@ -167,7 +169,7 @@ After all the configuration is done, script `deploy_eis.sh` needs to be executed
 
 After EIS deployed successfully output can be viewed using
 
-`https://<controller_IP>:5050`
+`https://<controller_IP>:30007`
 
 username:`admin`
 

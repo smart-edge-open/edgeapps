@@ -20,8 +20,8 @@ proxy_os_noproxy: ""
 proxy_yum_url: "http://proxy.example.org:3128"
 
 ### EIS repository configuration
-eis_source: "gitclone"      # set string  as "gitclone" or "release" 
-release_package_path: ""    # provide release package archive path when eis_source set to "release"
+eis_source: "release"      # set string  as "gitclone" or "release" 
+release_package_path: "/root/Edge_Insights_for_Industrial_2.4/IEdgeInsights/"    # provide release package archive path when eis_source set to "release"
 
 eis_env_file: "{{ eis_sources_dir }}/build/.env"
 

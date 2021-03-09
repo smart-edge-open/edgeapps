@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+- name: delete folder if available
+  file:
+    path: "{{ eis_sources_dir }}"
+    state: absent
+  ignore_errors: yes
+
+- name: create directory for copying provision script
+  file:
+    path: "{{ eis_sources_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: copy build folder file
+  copy:
+    src: "{{ eis_sources_dir }}/build.tar.gz"
+    dest: "{{ eis_sources_dir }}/build.tar.gz"
+
+- name: untar build.tar.gz
+  command: tar -xvf build.tar.gz
+  args:
+    chdir: "{{ eis_sources_dir }}"
+  changed_when: true
+
+- name: 'Update ETCD_HOST'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^ETCD_HOST=*$'
+      line: 'ETCD_HOST={{ etcd_ip }}'
+
+- name: 'Update ETCD_NAME'
+  replace:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^ETCD_NAME.*$'
+      replace: 'ETCD_NAME=master'
+
+- name: 'Update HOST_TIME_ZONE'
+  replace:
+      path: '{{ eis_sources_dir }}/build/provision/provision_eis.sh'
+      regexp: '"zone"'
+      replace: 'zone:'
+
+- name: run eis provision script
+  shell: source {{ eis_sources_dir }}/build/.env ; sudo ./provision_eis.sh ../docker-compose.yml
+  args:
+    chdir: "{{ eis_sources_dir }}/build/provision"
+  changed_when: true
+
