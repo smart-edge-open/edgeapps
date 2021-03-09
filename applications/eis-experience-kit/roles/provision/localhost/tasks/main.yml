@@ -1,0 +1,114 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+- name: 'Update .env DEV_MODE as false'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^DEV_MODE.*$'
+      line: 'DEV_MODE=false'
+
+- name: 'add HOST_IP'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^HOST_IP=*$'
+      line: 'HOST_IP={{ host_ip }}'
+
+- name: 'Update DOCKER_REGISTRY'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^DOCKER_REGISTRY=*$'
+      line: 'DOCKER_REGISTRY={{ docker_registry_address }}'
+
+- name: 'Update ETCD_HOST'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^ETCD_HOST=*$'
+      line: 'ETCD_HOST=127.0.0.1'
+
+- name: 'Update ETCD_NAME'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^ETCD_NAME=*$'
+      line: 'ETCD_NAME=$HOSTNAME'
+
+- name: 'Update ETCD_CLIENT_PORT'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^ETCD_CLIENT_PORT=*$'
+      line: 'ETCD_CLIENT_PORT={{ edtc_client_port }}'
+
+- name: 'Update ETCD_PEER_PORT'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/.env'
+      regexp: '^ETCD_PEER_PORT=*$'
+      line: 'ETCD_PEER_PORT={{ edtc_peer_port }}'
+
+- name: 'Update PROVISION_MODE'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/provision/.env'
+      regexp: '^PROVISION_MODE=*$'
+      line: 'PROVISION_MODE=k8s'
+
+- name: 'Update EIS_LOCAL_PATH'
+  lineinfile:
+      path: '{{ eis_sources_dir }}/build/provision/.env'
+      regexp: '^EIS_LOCAL_PATH=*$'
+      line: 'EIS_LOCAL_PATH={{ eis_sources_dir }}'
+
+- name: 'Update HOST_TIME_ZONE'
+  replace:
+      path: '{{ eis_sources_dir }}/build/provision/provision_eis.sh'
+      regexp: '"zone"'
+      replace: 'zone:'
+
+- name: Copy pcb app file  config file
+  template:
+    src: "pcb_app.xml.j2"
+    dest: "{{ eis_sources_dir }}/build/pcb_app.xml"
+    mode: 0744
+  when: demo_type == 'pcb'
+
+- name: Copy safety app file  config file
+  template:
+    src: "safety_app.xml.j2"
+    dest: "{{ eis_sources_dir }}/build/safety_app.xml"
+    mode: 0744
+  when: demo_type == 'safety'
+
+- name: run  generate_eis_bundle.py for safety demo app
+  command: sudo python3 eis_builder.py -f safety_app.xml
+  args:
+    chdir: "{{ eis_sources_dir }}/build"
+  when: demo_type == 'safety'
+
+- name: run  generate_eis_bundle.py for pcb demo app
+  command: sudo python3 eis_builder.py -f pcb_app.xml
+  args:
+    chdir: "{{ eis_sources_dir }}/build"
+  when: demo_type == 'pcb'
+
+- name: 'add HOST_IP'
+  replace:
+      path: '{{ eis_sources_dir }}/build/k8s/eis-k8s-deploy.yml'
+      regexp: 'value: ":0"'
+      replace: 'value: "{{ display_host_ip }}:{{ display_no }}"'
+
+
+- name: Copy eis_config.json config file
+  template:
+    src: "eis_config_{{ demo_type }}.json.j2"
+    dest: "{{ eis_sources_dir }}/build/provision/config/eis_config.json"
+    mode: 0744
+
+- name: run eis provision script
+  shell: source {{ eis_sources_dir }}/build/.env ;chmod 755 provision_eis.sh; sudo ./provision_eis.sh
+  args:
+    chdir: "{{ eis_sources_dir }}/build/provision"
+  changed_when: true
+
+- name: create tarball for build directory
+  command: tar -cvzf build.tar.gz build
+  args:
+    chdir: "{{ eis_sources_dir }}/"
+  changed_when: true

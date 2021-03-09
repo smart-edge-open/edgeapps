@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Delete eis pod
+  shell:  source {{ eis_sources_dir }}/build/.env; kubectl delete -f eis-k8s-deploy.yml
+  args:
+    chdir: "{{ eis_sources_dir }}/build/k8s"
+  changed_when: true
+  ignore_errors: yes
+
+- name: delete pcb image
+  command : "{{ item }}"
+  with_items:
+    - docker rmi {{ docker_registry_address }}ia_video_ingestion:{{ eis_image_tag }} --force
+    - docker rmi {{ docker_registry_address }}ia_video_analytics:{{ eis_image_tag }} --force
+    - docker rmi {{ docker_registry_address }}ia_visualizer:{{ eis_image_tag }} --force
+    - docker rmi {{ docker_registry_address }}ia_web_visualizer:{{ eis_image_tag }} --force
+  changed_when: true
+  ignore_errors: yes
+
+- name: delete safety image
+  command : "{{ item }}"
+  with_items:
+    - docker rmi {{ docker_registry_address }}python_safety_gear_analytics:{{ eis_image_tag }} --force
+    - docker rmi {{ docker_registry_address }}python_safety_gear_ingestion:{{ eis_image_tag }} --force
+  when: demo_type == 'safety'
+  changed_when: true
+  ignore_errors: yes

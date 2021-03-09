@@ -7,7 +7,7 @@
   command: "helm -n {{ k8s_eis_namespace }} uninstall {{ helm_release_name }}"
   changed_when: true
   ignore_errors: yes
-    
+
 - name: Remove {{ app_name }} Helm charts
   file:
     path: "{{ helm_chart_ingestion }}"
