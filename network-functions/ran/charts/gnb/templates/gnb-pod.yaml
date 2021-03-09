@@ -42,6 +42,7 @@ spec:
         cpu: {{ .Values.cpu }}
         intel.com/intel_sriov_VF_G1: '2'
         intel.com/intel_sriov_VF_G2: '2'
+        qat.intel.com/generic: '2'
       limits:
         intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
         {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}                
@@ -49,6 +50,7 @@ spec:
         cpu: {{ .Values.cpu }}
         intel.com/intel_sriov_VF_G1: '2'
         intel.com/intel_sriov_VF_G2: '2'
+        qat.intel.com/generic: '2'
   volumes:
   - name: hugepage
     emptyDir:
