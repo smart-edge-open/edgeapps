@@ -3,19 +3,20 @@
 
   orchestrator:
     host: localhost
-    port: 31298
+    port: 30415
   clm:
     host: localhost
-    port: 31856
+    port: 30461
   ncm:
     host: localhost
-    port: 32737
+    port: 30431
   ovnaction:
     host: localhost
-    port: 31181
+    port: 30471
   dcm:
     host: localhost
-    port: 31877
+    port: 30477
+  # gRPC port
   gac:
     host: localhost
-    port: 31280
+    port: 30491

@@ -1,16 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-# Creating smart city composite app entry
----
-version: emco/v2
-resourceContext:
-  anchor: projects/{{ .ProjectName }}/composite-apps
-metadata:
-  name: {{ .CompositeApp }}
-spec:
-  version: v1
-
 # Adding edge app to the composite app
 ---
 version: emco/v2
@@ -58,22 +48,6 @@ metadata:
 spec:
   app-name: {{ .AppCloud }}
 file: {{ .ProfileCloudApp }}
-
-# Create the deployment intent group
----
-version: emco/v2
-resourceContext:
-  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups
-metadata:
-  name: {{ .DeploymentIntent }}
-  description: smtc deployment intent group
-  userData1: test1
-  userData2: test2
-spec:
-  profile: {{ .CompositeProfile }}
-  version: r1
-  logical-cloud: {{ .AdminCloud }}
-  override-values: []
 
 # Create the intent in  deployment intent group
 ---
