@@ -1,4 +1,6 @@
 #!/bin/bash -e
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
 
 DIR="$(dirname "$(readlink -f "$0")")"
 USER="docker"

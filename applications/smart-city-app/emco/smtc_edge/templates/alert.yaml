@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
 
 {{- range $scenarioIdx,$scenarioName := $.Values.scenario }}
 {{- $args := dict "scenarioName" $scenarioName "Values" $.Values }}
