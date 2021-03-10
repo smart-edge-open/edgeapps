@@ -34,12 +34,14 @@ spec:
     - name: sysfs
       mountPath: /sys
       readOnly: false
+    - name: devfs
+      mountPath: /dev
+      readOnly: false
     resources:
       requests:
         intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
         {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}
         memory: {{ .Values.memory }}
-        cpu: {{ .Values.cpu }}
         intel.com/intel_sriov_VF_G1: '2'
         intel.com/intel_sriov_VF_G2: '2'
         qat.intel.com/generic: '2'
@@ -47,7 +49,6 @@ spec:
         intel.com/{{ .Values.resourceName}}: '{{ .Values.numberOfFECVf }}'
         {{ .Values.hugePageSize }}: {{ .Values.hugePageAmount }}                
         memory: {{ .Values.memory }}
-        cpu: {{ .Values.cpu }}
         intel.com/intel_sriov_VF_G1: '2'
         intel.com/intel_sriov_VF_G2: '2'
         qat.intel.com/generic: '2'
@@ -63,6 +64,9 @@ spec:
   - name: sysfs
     hostPath:
       path: "/sys"
+  - name: devfs
+    hostPath:
+      path: "/dev"
   nodeSelector:
     feature.node.kubernetes.io/pci-1200_8086.present: 'true'
     feature.node.kubernetes.io/cpu-cpuid.AVX: 'true'
