@@ -43,7 +43,6 @@ import (
 
 func main() {
 
-    log.Println("Starting producer")
 	// prepare producer structure
 	producer := common.Service{
 		URN: &common.URN{
