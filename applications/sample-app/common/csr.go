@@ -16,6 +16,7 @@ import (
 // CreateEncryptedClient creates tls client with certs prorvided in
 // Cfg struct (sample-app/common/conf.go)
 func CreateEncryptedClient() (*http.Client, error) {
+	log.Println("new log")
 
 	cert, err := tls.LoadX509KeyPair(Cfg.CertPath, Cfg.KeyPath)
 	if err != nil {
