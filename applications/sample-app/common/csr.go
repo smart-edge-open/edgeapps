@@ -35,6 +35,7 @@ func CreateEncryptedClient() (*http.Client, error) {
 			TLSClientConfig: &tls.Config{RootCAs: certPool,
 				Certificates: []tls.Certificate{cert},
 				ServerName:   Cfg.EaaCommonName,
+				MinVersion:   tls.VersionTLS12,
 			},
 		}}
 
