@@ -2,22 +2,21 @@
 # Copyright (c) 2020 Intel Corporation
 
 dist: bionic
-jobs:
-  include:
-    - language: minimal
-      
-      git:
-        submodules: false
-      
-      before_install:
-        - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.32.0
-        - sudo apt-get install -y shellcheck
-        - sudo apt-get install -y pylint
-      
-      script:
-        - ./run_ci_build.sh
+include:
+  - language: minimal
     
-    - language: Go
-      go:
-        - 1.15.5
+    git:
+      submodules: false
+    
+    before_install:
+      - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.32.0
+      - sudo apt-get install -y shellcheck
+      - sudo apt-get install -y pylint
+    
+    script:
+      - ./run_ci_build.sh
   
+  - language: Go
+    go:
+      - 1.15.5
+
