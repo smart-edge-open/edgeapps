@@ -26,6 +26,7 @@ consumer-docker: consumer
 	cd "${TMP_DIR}" && VER=${VER} docker-compose -f docker-compose.yml build consumer
 
 producer:
+	go version
 	export GOSUMDB=off
 	mkdir -p "${BUILD_DIR}"
 	CGO_ENABLED=0 GARCH=amd64 GOOS=linux go build -o "${BUILD_DIR}/producer" ./simpleEaaProducer
