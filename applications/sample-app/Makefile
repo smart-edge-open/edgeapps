@@ -27,6 +27,7 @@ consumer-docker: consumer
 
 producer:
 	go version
+	whereis go
 	export GOSUMDB=off
 	mkdir -p "${BUILD_DIR}"
 	CGO_ENABLED=0 GARCH=amd64 GOOS=linux go build -o "${BUILD_DIR}/producer" ./simpleEaaProducer
