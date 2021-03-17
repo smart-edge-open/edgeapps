@@ -4,9 +4,6 @@
 dist: bionic
 language: minimal
 
-go:
-  - 1.15.5
-
 git:
   submodules: false
 
@@ -25,3 +22,8 @@ before_install:
 
 script:
   - ./run_ci_build.sh
+
+language: Go
+go:
+  - 1.15.5
+
