@@ -9,7 +9,7 @@ BUILD_DIR ?=build
 
 VER:=1.0
 
-build: consumer producer
+build: producer consumer 
 
 build-docker: consumer-docker producer-docker
 
