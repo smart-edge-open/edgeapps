@@ -9,7 +9,7 @@ BUILD_DIR ?=build
 
 VER:=1.0
 
-build: producer consumer 
+build: consumer producer 
 
 build-docker: consumer-docker producer-docker
 
@@ -26,8 +26,6 @@ consumer-docker: consumer
 	cd "${TMP_DIR}" && VER=${VER} docker-compose -f docker-compose.yml build consumer
 
 producer:
-	go version
-	whereis go
 	export GOSUMDB=off
 	mkdir -p "${BUILD_DIR}"
 	CGO_ENABLED=0 GARCH=amd64 GOOS=linux go build -o "${BUILD_DIR}/producer" ./simpleEaaProducer
