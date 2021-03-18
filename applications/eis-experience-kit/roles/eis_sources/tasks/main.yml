@@ -49,10 +49,25 @@
       changed_when: true
   when: eis_source == "release"
 
-- name: generate eis  config build file
-  shell : "{{ item }}"
-  with_items:
-    - cd IEdgeInsights/build; pip3 install -r requirements.txt; pip3 install pyyaml; python3 eis_builder.py ; cd deploy ; sudo python3 generate_eis_bundle.py -p;
+- name: install python requirements.txt
+  command: "pip3 install -r requirements.txt"
   args:
-    chdir: "{{ eis_repo_dir }}"
+    chdir: "{{ eis_repo_dir }}/IEdgeInsights/build"
   changed_when: true
+
+- name: install pip3 pyyaml
+  command: "sudo pip3 install pyyaml"
+  changed_when: true
+
+- name: run eis_builder.py
+  command: "python3 eis_builder.py"
+  args:
+    chdir: "{{ eis_repo_dir }}/IEdgeInsights/build"
+  changed_when: true
+
+- name: run generate_eis_bundle.py
+  command: "python3 generate_eis_bundle.py -p"
+  args:
+    chdir: "{{ eis_repo_dir }}/IEdgeInsights/build/deploy"
+  changed_when: true
+

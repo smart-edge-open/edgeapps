@@ -44,8 +44,5 @@
   - name: Cleanup EIS deploy
     include_tasks: ./roles/deploy/tasks/cleanup.yml
 
-  - name: Load EIS Provision vars
-    include_vars: ./roles/provision/controlplane/defaults/main.yml
-
   - name: Cleanup EIS Provision
     include_tasks: ./roles/provision/controlplane/tasks/cleanup.yml

@@ -44,8 +44,12 @@
       replace: 'zone:'
 
 - name: run eis provision script
-  shell: source {{ eis_sources_dir }}/build/.env ; sudo ./provision_eis.sh ../docker-compose.yml
-  args:
-    chdir: "{{ eis_sources_dir }}/build/provision"
-  changed_when: true
-
+  block:
+    - name: source .env
+      shell: source {{ eis_sources_dir }}/build/.env
+      changed_when: true
+    - name: run provision_eis.sh
+      command: sudo ./provision_eis.sh ../docker-compose.yml
+      args:
+        chdir: "{{ eis_sources_dir }}/build/provision"
+      changed_when: true

@@ -11,20 +11,20 @@
   ignore_errors: yes
 
 - name: delete pcb image
-  command : "{{ item }}"
+  command : "docker rmi {{ docker_registry_address }}{{ item }}:{{ eis_image_tag }}"
   with_items:
-    - docker rmi {{ docker_registry_address }}ia_video_ingestion:{{ eis_image_tag }} --force
-    - docker rmi {{ docker_registry_address }}ia_video_analytics:{{ eis_image_tag }} --force
-    - docker rmi {{ docker_registry_address }}ia_visualizer:{{ eis_image_tag }} --force
-    - docker rmi {{ docker_registry_address }}ia_web_visualizer:{{ eis_image_tag }} --force
+    - ia_video_ingestion
+    - ia_video_analytics
+    - ia_visualizer
+    - ia_web_visualizer
   changed_when: true
   ignore_errors: yes
 
 - name: delete safety image
-  command : "{{ item }}"
+  command : "docker rmi {{ docker_registry_address }}{{ item }}:{{ eis_image_tag }}"
   with_items:
-    - docker rmi {{ docker_registry_address }}python_safety_gear_analytics:{{ eis_image_tag }} --force
-    - docker rmi {{ docker_registry_address }}python_safety_gear_ingestion:{{ eis_image_tag }} --force
+    - python_safety_gear_analytics
+    - python_safety_gear_ingestion
   when: demo_type == 'safety'
   changed_when: true
   ignore_errors: yes

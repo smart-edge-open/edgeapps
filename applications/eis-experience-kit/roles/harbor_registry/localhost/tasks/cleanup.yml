@@ -5,6 +5,6 @@
 
 - name: delete certificate from node
   file:
-    path: "{{ docker_registry_ip }}:{{ docker_registry_port }}"
+    path: "/etc/docker/certs.d/{{ docker_registry_ip }}:{{ docker_registry_port }}"
     state: absent
   ignore_errors: yes

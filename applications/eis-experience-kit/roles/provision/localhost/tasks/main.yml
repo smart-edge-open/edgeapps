@@ -102,10 +102,19 @@
     mode: 0744
 
 - name: run eis provision script
-  shell: source {{ eis_sources_dir }}/build/.env ;chmod 755 provision_eis.sh; sudo ./provision_eis.sh
-  args:
-    chdir: "{{ eis_sources_dir }}/build/provision"
-  changed_when: true
+  block:
+    - name: source .env
+      shell: source {{ eis_sources_dir }}/build/.env
+      changed_when: true
+    - name: chmod provision_eis.sh
+      file:
+        path: "{{ eis_sources_dir }}/build/provision/provision_eis.sh"
+        mode: '0755'
+    - name: run provision_eis.sh
+      command: sudo ./provision_eis.sh
+      args:
+        chdir: "{{ eis_sources_dir }}/build/provision"
+      changed_when: true
 
 - name: create tarball for build directory
   command: tar -cvzf build.tar.gz build

@@ -11,11 +11,11 @@
   changed_when: true
 
 - name: Push common images to Docker Registry
-  command : "{{ item }}"
+  command : "docker push {{ docker_registry_address }}{{ item }}:{{ eis_version }}"
   with_items:
-    - docker push {{ docker_registry_address }}ia_video_common:{{ eis_version }}
-    - docker push {{ docker_registry_address }}ia_common:{{ eis_version }}
-    - docker push {{ docker_registry_address }}ia_openvino_base:{{ eis_version }}
-    - docker push {{ docker_registry_address }}ia_eisbase:{{ eis_version }}
+    - ia_video_common
+    - ia_common
+    - ia_openvino_base
+    - ia_eisbase
   changed_when: true
 

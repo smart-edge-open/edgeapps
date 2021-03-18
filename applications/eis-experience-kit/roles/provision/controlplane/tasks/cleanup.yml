@@ -13,3 +13,13 @@
   changed_when: true
   ignore_errors: yes
 
+- name: delete ia_etcd docker image
+  command: docker rmi ia_etcd:{{ eis_version }}
+  changed_when: true
+  ignore_errors: yes
+
+- name: delete ia_etcd_provision docker image
+  command: docker rmi ia_etcd_provision:{{ eis_version }}
+  changed_when: true
+  ignore_errors: yes
+
