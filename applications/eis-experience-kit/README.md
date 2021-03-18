@@ -49,7 +49,22 @@ To use the release package, user should get it manually and the path to it shoul
 
 The release package can be downloaded here: [https://software.intel.com/iot/edgesoftwarehub/download/home/industrialinsights](https://software.intel.com/iot/edgesoftwarehub/download/home/industrialinsights)
 
-After release package download follow link for preparing release code base: [https://software.intel.com/content/www/us/en/develop/documentation/edge-insights-industrial-doc/get-started-guide.html](https://software.intel.com/content/www/us/en/develop/documentation/edge-insights-industrial-doc/get-started-guide.html)
+
+```sh
+Download Version :2.4
+Target System OS :Ubuntu 18.04.LTS
+Select Use Case :Video Analytic + Time Series
+```
+During  download we will get product key, keep this product key which will use while preparing edgesoftware download.
+
+After release package download follow this link for preparing eis release code base on Ubuntu Host: [https://software.intel.com/content/www/us/en/develop/documentation/edge-insights-industrial-doc/get-started-guide.html](https://software.intel.com/content/www/us/en/develop/documentation/edge-insights-industrial-doc/get-started-guide.html)
+
+```sh
+#unzip edge_insights_industrial.zip
+#cd edge_insights_industrial
+#./edgesoftware download
+```
+After download success copy "Edge_Insights_for_Industrial_2.4" folder on OpenNESS ansible host build machine.
 
 ### Build Stage
 Overview on `eis-experience-kit` architecture:
@@ -62,13 +77,18 @@ All the `build` tasks are perfomed on `localhost`. It is the same machine that A
 `Deploy` tasks are executed on OpenNESS Master Node. These tasks include ETCD certificates and ZMQ keys generation process and adding apps configs to ETCD. All these things are done just before the particular application has been deployed. For the deployment `kubectl` command and Kubernetes manifest files have been used. 
 
 ### Cleanup
-All the roles in Ansible Playbook have clean up scripts that can be run to reverse the build and deploy tasks. It should be used only for debug purposes. It is not guarantee that clean up scripts will remove everything that has been added by build & deployment stages. In the most cases it is enough for running the deployment of particular application or the whole EIS again. `cleanup_eis_pcb_demo.sh` is a shell scripts that is running a sequence of cleaning tasks that should cover all the `deploy_eis_pcb_demo.sh` changes on the setup.
+All the roles in Ansible Playbook have clean up scripts that can be run to reverse the build and deploy tasks. It should be used only for debug purposes. It is not guarantee that clean up scripts will remove everything that has been added by build & deployment stages. In the most cases it is enough for running the deployment of particular application or the whole EIS again. `cleanup_eis_deployment.sh` is a shell scripts that is running a sequence of cleaning tasks that should cover all the `deploy_eis.sh` changes on the setup.
 
 ## Configuration
 User can configure the installation of EIS by modifying the files that contain variables used widely in Ansible Playbook. All the variables that can be adjusted by the user are placed in `host_vars` directory.
 
 ### Getting Sources Settings
-`eis-experience-kit` supports two ways of getting sources. It can be done by cloning the repository using git or use pre-downloaded release package. The first one can be chosen by setting `eis_source` to `gitclone`. User needs to be authorized to clone the repo from Gitlab and may be asked for credentials (or ssh key needs to be added to the Gitlab account). The second one requires `eis_source` to be set to `release` and `release_package_path` to be set to the release package path. Then package will be automatically extracted and used by Ansible scripts. These settings are available in `host_vars/localhost.yml`.
+`eis-experience-kit` supports two ways of getting sources. It can be done by cloning the repository using git or use pre-downloaded release package. The first one can be chosen by setting `eis_source` to `gitclone`. User needs to be authorized to clone the repo from Gitlab and may be asked for credentials (or ssh key needs to be added to the Gitlab account). The second one requires `eis_source` to be set to `release` and `release_package_path` to be set to the release package path. Then package will be automatically copy and used by Ansible scripts. These settings are available in `host_vars/localhost.yml`.
+
+```sh
+eis_source: "release"
+release_package_path: "<eis_release_codebase_path>/IEdgeInsights/"
+```
 
 ### Build Settings
 `localhost.yml` file contains all the settings specific for build process that is performed on localhost. User can set proxy settings and how the EIS sources will be handled.
@@ -77,10 +97,10 @@ User can configure the installation of EIS by modifying the files that contain v
 The second one is regarding the `deploy` process. All the settings are in `openness_controller.yml` file. It is for the action that will occur on OpenNESS Master Node. It contains mostly the values for certificates generation process and paths for Kubernetes deployment related files.
 
 ### Inventory
-User needs to set the OpenNESS Master Node IP address. It can be done in `inventory.ini` file.
+User needs to set the OpenNESS Controller IP address. It can be done in `inventory.ini` file.
 
 ### Playbook Main File
-The main file for playbook is `eis_pcb_demo.yml`. User can define here which roles should be run during the build & deployment. They can be switch by using comments for unnecessary roles.
+The main file for playbook is `eis.yml`. User can define here which roles should be run during the build & deployment. They can be switch by using comments for unnecessary roles.
 
 ### EIS Demo Setting
 eis-experience-kit currently  we can configure for  Demo type as 
@@ -165,6 +185,19 @@ update the display on above `display_no`.
 ## Installation
 After all the configuration is done, script `deploy_eis.sh` needs to be executed to start the deployment process. No more actions are required, all the installation steps are fully automated. 
 
+After deployment success all pod should be in running state on eis namespace
+
+```sh
+# kubectl -n eis get pod
+NAME                                          READY   STATUS    RESTARTS   AGE
+deployment-video-analytics-77c55fc4b5-dc2hf   1/1     Running   0          19h
+deployment-video-ingestion-6566957ddc-96mgq   1/1     Running   0          19h
+deployment-webvisualizer-6877cfbdbd-h9dmv     1/1     Running   0          19h
+ia-camera-stream-f487cf9d-7jzxt               1/1     Running   0          19h
+ia-etcd                                       1/1     Running   0          19h
+#
+```
+
 ## Web Visualizer display
 
 After EIS deployed successfully output can be viewed using
@@ -176,7 +209,7 @@ username:`admin`
 password:`admin@123`
 
 **Note**:
-Open Web Visualizer on google chrome browser, if Your connection is not private show, select Advanced option and proceed to.
+Open Web Visualizer on google chrome browser, if connection is not private show, select Advanced option and proceed to.
 
 
 ## Removal
