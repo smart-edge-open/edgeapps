@@ -11,7 +11,7 @@ env:
   global:
     - GO111MODULE=on
     - PATH=${TRAVIS_BUILD_DIR}/bin:${PATH}:/usr/local/go/bin
-    - GOROOT=
+    - GOROOT=/usr/local/go
 
 before_install:
   - rm -rf /usr/local/go 
