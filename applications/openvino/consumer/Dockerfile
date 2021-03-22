@@ -30,7 +30,7 @@ RUN apt-get update && \
 	apt-get -y install python3-pip && \
 	apt-get -y install nginx libnginx-mod-rtmp libjson-c-dev && \
 	apt-get -y install util-linux && \
-	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.65-dev libboost-thread1.65 libboost-filesystem1.65
+	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.65-dev libboost-thread1.65 libboost-filesystem1.65 libjpeg-turbo8
 
 ENV DEBIAN_FRONTEND=noninteractive
 # OpenVino installation
