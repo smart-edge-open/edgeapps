@@ -42,7 +42,7 @@ Configure the interface that is connected to Edge Node Server
 
 ### Deploy OpenNESS
 
-Clone OpenNESS Experience Kit from github, and follow this [guide](https://openness.atlassian.net/wiki/spaces/CERA/pages/119177504/OpenNESS+Experience+Kit) to prepare the node.
+Clone Converged Edge Experience Kits from github, and follow this [guide](https://openness.atlassian.net/wiki/spaces/CERA/pages/119177504/OpenNESS+Experience+Kit) to prepare the node.
 
 
 Deploy OpenNESS:
