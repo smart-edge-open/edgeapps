@@ -285,7 +285,6 @@ func() {
     echo "EDGE_IP: edge cluster ip."
     echo "EDGE_IP: cloud cluster ip."
     echo "-r: rebuild SmartCity images from SmartCity source code(It will take about two hours)"
-    echo "-n: pull SmartCity images from docker registry(the Cluster should configured with docker registry)"
     exit -1
 }
 while getopts 'e:c:d:rnh' OPT; do
@@ -294,7 +293,6 @@ while getopts 'e:c:d:rnh' OPT; do
         d) edge_ip="$OPTARG";;
         c) cloud_ip="$OPTARG";;
         r) pull_from_harbor "$emco_ip" "$edge_ip" "$cloud_ip";;
-        n) pull_from_docker "$emco_ip" "$edge_ip" "$cloud_ip";;
         h) func;;
     esac
 done
