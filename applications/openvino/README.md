@@ -77,11 +77,11 @@ spec:
     ports:
     - protocol: TCP
       port: 5000
-    - protocol: UDP
-      port: 5000
 ```
 Or you could try to delete default block ingress policy:
 ```shell
     kubectl delete networkpolicies block-all-ingress
 ```
 If data received after deleting the ingress policy, there should be something error in your network policy for consumer, please check and re-apply it. (block-all-ingress should not be deleted in production environment.)
+### RTMP
+RTMP is the acronym for Real Time Messaging Protocol. The protocol is based on TCP and is a protocol family, including RTMP basic protocol and RTMPT/RTMPS/RTMPE and many other variants. RTMP is a network protocol designed for real-time data communication. It is mainly used for audio, video and data communication between the Flash/AIR platform and a streaming media/interactive server that supports the RTMP protocol.
