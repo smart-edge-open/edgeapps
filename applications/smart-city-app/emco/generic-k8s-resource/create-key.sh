@@ -1,4 +1,6 @@
 #!/bin/bash -e
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
 
 case "$(cat < /proc/1/sched | head -n 1)" in
 *create-key.sh*)  # in docker
