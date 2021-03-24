@@ -1,6 +1,4 @@
 #!/bin/bash -e
-# SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2020 Intel Corporation
 
 DIR="$(dirname "$(readlink -f "$0")")"
 USER="docker"
@@ -25,6 +23,6 @@ EOL
     OPTIONS=("--volume=$DIR:/home/$USER:rw")
     echo "$IMAGE" >/dev/null
     echo "${OPTIONS[@]}" >/dev/null
-    . "/opt/smart_secret/shell.sh" /home/$USER/self-sign.sh "$(hostname -f)" 
+    . "/opt/openness/smart_secret/shell.sh" /home/$USER/self-sign.sh "$(hostname -f)" 
     ;;
 esac

@@ -1,6 +1,4 @@
 #!/bin/bash -e
-# SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2020 Intel Corporation
 
 case "$(cat < /proc/1/sched | head -n 1)" in
 *create-key.sh*)  # in docker
@@ -21,6 +19,6 @@ case "$(cat < /proc/1/sched | head -n 1)" in
     OPTIONS=(-v "$DIR:/home:rw")
     echo "$IMAGE" >/dev/null
     echo "${OPTIONS[@]}" >/dev/null
-    . "/opt/smart_secret/shell.sh" /home/create-key.sh "$1"
+    . "/opt/openness/smart_secret/shell.sh" /home/create-key.sh "$1"
     ;;
 esac

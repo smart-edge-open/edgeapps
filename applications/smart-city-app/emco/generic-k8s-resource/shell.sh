@@ -1,6 +1,4 @@
 #!/bin/bash -e
-# SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2020 Intel Corporation
 
 if test -z "${DIR}"; then
     echo "This script should not be called directly."
