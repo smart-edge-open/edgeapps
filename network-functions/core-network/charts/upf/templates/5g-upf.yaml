@@ -7,8 +7,10 @@ kind: Pod
 metadata:
   name: {{ .Release.Name }}
   annotations:
-    k8s.v1.cni.cncf.io/networks: sriov-openness
+    k8s.v1.cni.cncf.io/networks: sriov-openness-dpdk
 spec:
+  securityContext:
+    runAsUser: 1000
   nodeName: {{ .Values.node.name }}
   containers:
     - name: {{ .Release.Name }}
@@ -20,7 +22,7 @@ spec:
       args:
 {{- if eq .Values.upf_autostart true }}
         - |
-          /root/run_upf.sh; while true ; do
+          /home/upf/run_upf.sh; while true ; do
             sleep 90000000
           done
 {{ else }}
