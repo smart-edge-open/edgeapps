@@ -2,14 +2,16 @@
 # Copyright (c) 2020 Intel Corporation
 
 
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy
+ENV DEBIAN_FRONTEND=noninteractive
 
-ARG DOWNLOAD_LINK=http://registrationcenter-download.intel.com/akdlm/irc_nas/16612/l_openvino_toolkit_p_2020.2.120.tgz
-ARG INSTALL_DIR=/opt/intel/openvino
+ARG OPENVINO_LINK=https://registrationcenter-download.intel.com/akdlm/irc_nas/17062/l_openvino_toolkit_p_2021.1.110.tgz
+ARG YEAR=2021
+ARG INSTALL_DIR=/opt/intel/openvino_$YEAR
 ARG TEMP_DIR=/tmp/openvino_installer
 
 # hadolint ignore=DL3003,DL3008,DL3009
@@ -19,22 +21,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     python3-pip \
     python3-setuptools \
-    libboost-filesystem1.65 \
-    libboost-thread1.65 \
-    libboost-program-options1.65 \
+    libboost-filesystem1.71 \
+    libboost-thread1.71 \
+    libboost-program-options1.71 \
     lsb-release \
     libjson-c-dev
 
+
 WORKDIR $TEMP_DIR 
-RUN wget $DOWNLOAD_LINK 
-RUN tar xf l_openvino_toolkit*.tgz 
+RUN wget $OPENVINO_LINK && \
+        tar xf l_openvino_toolkit*.tgz && \
+        cd l_openvino_toolkit* && \
+        sed -i 's/decline/accept/g' silent.cfg && \
+        ./install_openvino_dependencies.sh && \
+        ./install.sh -s silent.cfg && \
+        rm -rf /tmp/l_openvino_toolkit*
 
-WORKDIR $TEMP_DIR/l_openvino_toolkit_p_2020.2.120
-RUN sed -i 's/decline/accept/g' silent.cfg && \
-    ./install.sh -s silent.cfg && \
-    rm -rf $TEMP_DIR
-
-RUN $INSTALL_DIR/install_dependencies/install_openvino_dependencies.sh
 
 # build Inference Engine samples
 RUN mkdir $INSTALL_DIR/deployment_tools/inference_engine/samples/cpp/build 
@@ -42,13 +44,13 @@ WORKDIR $INSTALL_DIR/deployment_tools/inference_engine/samples/cpp/build
 RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && cmake .. && make -j1"
 RUN pip3 install networkx==2.3
 
-WORKDIR /opt/intel/openvino/deployment_tools/demo
+WORKDIR /opt/intel/openvino_$YEAR/deployment_tools/demo
 RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./demo_squeezenet_download_convert_run.sh"
 
 #Download OpenVINO pre-trained models
 
 RUN pip3 install pyyaml requests
-WORKDIR /opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader
+WORKDIR /opt/intel/openvino_$YEAR/deployment_tools/open_model_zoo/tools/downloader
 RUN ./downloader.py  --name face-detection-retail-0004
 RUN ./downloader.py  --name squeezenet1.1
 RUN ./downloader.py  --name semantic-segmentation-adas-0001

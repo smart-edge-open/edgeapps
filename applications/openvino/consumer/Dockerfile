@@ -33,7 +33,6 @@ RUN apt-get update && \
 	apt-get -y install util-linux && \
 	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.71-dev libboost-thread1.71 libboost-filesystem1.71
 
-ENV DEBIAN_FRONTEND=noninteractive
 # OpenVino installation
 RUN cd /tmp && \
 	wget $OPENVINO_LINK && \
