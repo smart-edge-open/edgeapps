@@ -1,0 +1,282 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Astri Corporation
+
+# https://fdio-vpp.readthedocs.io/en/latest/gettingstarted/users/configuring/startup.html
+
+
+kind: ConfigMap
+metadata:
+  name: vpp-conf
+apiVersion: v1
+data:
+  startup.conf: |
+    heapsize 2G
+    unix {
+        nodaemon
+        cli-listen /run/vpp/cli.sock
+        exec /etc/vpp.conf
+    }
+    socksvr {
+        default
+    }
+    statseg {
+        size 256m
+    }
+    cpu {
+            main-core {{.Values.upf.maincore}}
+            corelist-workers {{.Values.upf.worker}}
+    }
+    dpdk {
+        {{- range $i, $network := .Values.upf.networks }}
+        {{- if $network.device }}
+        dev {{ $network.device }} {
+                  num-rx-queues {{$.Values.upf.rxqueue}}
+        }
+        {{- end }}
+        {{- end }}
+    }
+    plugins {
+        plugin gtpu_plugin.so { disable }
+    }
+  vpp.conf_template: |
+    create host-interface name net1
+    set interface mac address host-net1 MAC-ADDRESS
+    set interface ip addr host-net1 {{.Values.upf.N4IP}}/{{.Values.upf.N4MASK}}
+    
+    set interface state host-net1 up
+    
+    set int ip address NAME-1BUS-1/DEV-1/FUN-1 {{.Values.upf.N3IP}}/{{.Values.upf.N3MASK}}
+    set int state NAME-1BUS-1/DEV-1/FUN-1 up
+    {{- range $i, $network := .Values.upf.networks }}
+    {{- if eq $i  1  }}
+    set interface tag NAME-1BUS-1/DEV-1/FUN-1 {{ $network.name }}
+    {{- end }}
+    {{- end }}
+    
+    set int state NAME-2BUS-2/DEV-2/FUN-2 up      
+    set int ip address NAME-2BUS-2/DEV-2/FUN-2 {{.Values.upf.N6IP}}/{{.Values.upf.N6MASK}}
+    {{- range $i, $network := .Values.upf.networks }}
+    {{- if eq $i  2  }}
+    set interface tag NAME-2BUS-2/DEV-2/FUN-2 {{ $network.name }}
+    {{- end }}
+    {{- end }}
+
+    upf nwi name epc vrf 0
+    
+    upf pfcp endpoint ip {{.Values.upf.N4IP}} vrf 0
+    
+    upf gtpu endpoint ip {{.Values.upf.N3IP}} nwi epc TEID-Range-Indication {{.Values.upf.TEIDRangeIndication}}
+    
+    upf enable-disable 
+
+  generate.sh: |
+    #/bin/sh
+    {{- range $index, $network := .Values.upf.networks }}
+    {{- if $network.device -}}
+    dev[{{ $index }}]={{ $network.device}}
+    rate[{{ $index }}]={{ $network.rate}}
+    {{ end }}
+    {{ end }}
+    #
+    #dev[1]=0000:09:00.0
+    #rate[1]=10
+    #
+    #dev[2]=0000:09:00.1
+    #rate[2]=10
+    #
+    ip addr flush dev net1
+    
+    cp /etc/vpp/vpp.conf_template /etc/vpp.conf
+    
+    for i in 1 2 3
+    do
+            echo ${dev[$i]}
+            echo ${rate[$i]}
+            if [[ ${dev[$i]} ]]
+            then
+                    dev_bus[$i]=${dev[$i]:5:2}
+                    echo dev_bus, $i, ${dev_bus[$i]}
+                    if [[ ${dev_bus[$i]:0:1} == 0 ]]
+                    then
+                            dev_bus[$i]=${dev_bus[$i]:1:1}
+                            echo dev_bus. $i, ${dev_bus[$i]}
+                    fi
+    
+                    dev_dev[$i]=${dev[$i]:8:2}
+                    echo dev_dev, $i, ${dev_dev[$i]}
+                    if [[ ${dev_dev[$i]:0:1} == 0 ]]
+                    then
+                            dev_dev[$i]=${dev_dev[$i]:1:1}
+                            echo dev_dev. $i, ${dev_dev[$i]}
+                    fi
+    
+                    dev_fun[$i]=${dev[$i]:11}
+                    echo dev_fun. $i, ${dev_fun[$i]}
+    
+                    case ${rate[$i]} in
+                            1)
+                                    dpdk_vnterface_name[i]="GigabitEthernet"
+                                    ;;
+                            10)
+                                    dpdk_interface_name[i]="TenGigabitEthernet"
+                                    ;;
+                            25)
+                                    dpdk_interface_name[i]="TwentyFiveGigabitEthernet"
+                                    ;;
+                            40)
+                                    dpdk_interface_name[i]="FortyGigabitEthernet"
+                                    ;;
+                            100)
+                                    dpdk_interface_name[i]="HundredGigabitEthernet"
+                                    ;;
+                    esac
+                    echo ${dpdk_interface_name[$i]}
+                    if [[  ${dpdk_interface_name[$i]} ]]
+                    then
+                            #echo "sed -i 's/NAME-$i/${dpdk_interface_name[$i]}/g' /etc/vpp.conf"
+                            #echo "sed -i \"s/NAME-$i/${dpdk_interface_name[$i]}/g\" /etc/vpp.conf"
+                            sed -i "s/NAME-$i/${dpdk_interface_name[$i]}/g" /etc/vpp.conf
+                            touch /etc/2
+                            sed -i "s/BUS-$i/${dev_bus[$i]}/g" /etc/vpp.conf
+                            sed -i "s/DEV-$i/${dev_dev[$i]}/g" /etc/vpp.conf
+                            sed -i "s/FUN-$i/${dev_fun[$i]}/g" /etc/vpp.conf
+                    fi
+            fi
+    done
+    
+    mac_addr=`ip link show | grep link/ether | awk '{print $2}'`
+    mac_addr=`echo $mac_addr |  awk '{print $2}'`
+    echo $mac_addr
+    sed -i "s/MAC-ADDRESS/$mac_addr/g" /etc/vpp.conf
+---
+kind: ConfigMap
+metadata:
+  name: agent-config
+apiVersion: v1
+data:
+  telemetry.conf: |
+    polling-interval: {{.Values.upfagent.metricsinterval}}
+  filedb.conf: |
+    # A set of files/directories with configuration files. If target is a directory, all .json or .yaml files are read.
+    configuration-paths: ["/etc/vpp-agent/"]
+
+    # Path where the status data will be stored. If not defined, status is not propagated. File extension determines
+    # whether the data will be stored as .json or .yaml. Target may cannot a directory.
+    status-path: "/etc/vpp-agent/ha.json"
+  ha.json: |
+    {"data":[{"key":"/vnf-agent/vpp1/config/vpp/upf/v2/ha/status","value":{"status":0}}]}
+  redis.conf: |
+    # NodeConfig
+    db: 0
+    dial-timeout: 0
+    enable-query-on-slave: false
+    endpoint: 127.0.0.1:6379
+    password: ""
+    pool:
+      busy-timeout: 0
+      idle-check-frequency: 0
+      idle-timeout: 0
+      max-connections: 0
+    ead-timeout: 0
+    tls:
+      ca-file: ""
+      cert-file: ""
+      enabled: false
+      key-file: ""
+      skip-verify: false
+    write-timeout: 0
+  kvscheduler.conf: |
+    print-txn-summary: false
+  linux-ifplugin.conf: |
+    stopwatch: true
+  keepalived.master.conf: |
+    # Keepalived.conf file on the master network node
+    vrrp_script chk_script {
+      script        "/etc/vpp-agent/chk_vpp_script.sh"
+      interval 1    # check every 3 seconds
+    }
+    
+    vrrp_instance R1 {         # VRRP instance for the master network node
+      state MASTER             # State of VRRP on this node i.e. MASTER or BACKUP
+      interface enp2s0f0       # Network interface for the VRRP Instance
+      virtual_router_id 2      # VRRP Router ID - Must be the same on all nodes
+      priority 200             # Highest pritority becomes the master
+      advert_int 1             # VRRP Advertisement interval in seconds
+    
+      unicast_src_ip 10.1.1.1 # Bind keepalived to this unnicast IP address
+      unicast_peer {
+        10.1.1.2  # Send unicast to VRRP peer instead of multicast
+      }
+    
+      # Optional VIP Setting
+      # virtual_ipaddress {
+      #  192.168.1.1 dev enp2s0f0
+      # }
+      # The below script is executed regularly per the settings in the vrrp_script.
+      # Return value: 0 for "everything is fine", 1 for "something went wrong".
+      # Keepalived uses the return value to take action
+      # i.e. Drop or Raise VRRP Priority to trigger an election
+      track_script {
+        chk_script
+      }
+    
+      # Shell script to be executed during transition to master state
+      # notify_master: <script_name> <hostname>
+      # In the example below, R1 is the hostname of the master network node
+      notify_master "/etc/vpp-agent/master.sh R1"
+    
+      # Shell script to be executed during transition to backup state
+      # notify_backup: <script_name> <hostname>
+      notify_backup "/etc/vpp-agent/backup.sh R1"
+    }
+  keepalived.backup.conf: |
+    # Keepalived.conf file on the backup network node
+    vrrp_script chk_script {
+      script        "/etc/vpp-agent/chk_vpp_script.sh"
+      interval 1    # check every 3 seconds
+    }
+    
+    vrrp_instance R2 {         # VRRP instance for the backup network node
+      state BACKUP             # State of VRRP on this node i.e. MASTER or BACKUP
+      interface enp2s0f0       # Network interface for the VRRP Instance
+      virtual_router_id 2      # VRRP Router ID - Must be the same on all nodes
+      priority 150             # Highest pritority becomes the master
+      advert_int 1             # VRRP Advertisement interval in seconds
+    
+      unicast_src_ip 10.1.1.2 # Bind keepalived to this unnicast IP address
+      unicast_peer {
+        10.1.1.1  # Send unicast to VRRP peer instead of multicast
+      }
+    
+      # Optional VIP Setting
+      # virtual_ipaddress {
+      #  192.168.1.1 dev enp2s0f0
+      # }
+      # The below script is executed regularly per the settings in the vrrp_script.
+      # Return value: 0 for "everything is fine", 1 for "something went wrong".
+      # Keepalived uses the return value to take action
+      # i.e. Drop or Raise VRRP Priority to trigger an election
+      track_script {
+        chk_script
+      }
+    
+      # Shell script to be executed during transition to master state
+      # notify_master: <script_name> <hostname>
+      # In the example below, R2 is the hostname of the backup network node
+      notify_master "/etc/vpp-agent/master.sh R2"
+    
+      # Shell script to be executed during transition to backup state
+      # notify_backup: <script_name> <hostname>
+      notify_backup "/etc/vpp-agent/backup.sh R2"
+    }
+  vpp-ifplugin.conf: |
+    stopwatch: true
+    status-publishers: [etcd, redis]
+  vpp-upfplugin.conf: |
+    # VPP agent allows to send context data back to ETCD/Redis.
+    # To allow it, add desired status publishers. Currently supported
+    # for [etcd] and [redis] (both options can be chosen together)
+    publishers:
+      - redis
+    instanceid: "upfconfig-123"
+    grpcserver: "mp.default.svc.cluster.local:8081"
