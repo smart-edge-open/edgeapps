@@ -26,7 +26,7 @@ n4_ip=$CONFIG_N4_IP_ADDR
 # Gateway IP address
 n6_gw_ip=$CONFIG_N6_GW_IP_ADDR
 
-upf_path=/home/upf
+upf_path=/home/nruser/upf
 
 uio_drv=$CONFIG_UIO_DRIVER       
 
@@ -433,7 +433,7 @@ echo 2 > /proc/sys/fs/suid_dumpable
 #$upf_path/install-vpp-native/vpp/bin/vpp -c $upf_vpp_config
 
 export LD_LIBRARY_PATH=$upf_path/install-vpp-native/vpp/lib:$LD_LIBRARY_PATH
-echo "=========== Start =========" > /home/upf/run.log
+echo "=========== Start =========" > /home/nruser/upf/run.log
 
 echo "$LD_LIBRARY_PATH" >> $upf_path/run.log
 echo "at step-1" >> $upf_path/run.log

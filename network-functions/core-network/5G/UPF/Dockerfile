@@ -13,11 +13,11 @@ RUN apt-get update && \
     apt-get -y install python-pip libcap-ng-dev gawk pciutils kmod && \
     apt-get -y install libc6 pciutils python3 lsb-base libnuma-dev iproute2 findutils apt-utils  libtool fakeroot libmbedtls-dev libhyperscan4 sudo vim
 RUN groupadd vpp
-RUN useradd -r -u 1000 nruser
+RUN useradd -r -m -u 1000 nruser
 RUN usermod -a -G vpp,sudo nruser
 RUN echo "nruser   ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
 USER nruser
-WORKDIR /home/
+WORKDIR /home/nruser
 
 COPY --chown=nruser $binaries_path ./upf
 COPY --chown=nruser run_upf.sh ./run_upf.sh
