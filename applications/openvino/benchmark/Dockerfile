@@ -68,8 +68,8 @@ USER openvino
 
 #Download OpenVINO pre-trained models
 
-RUN pip3 install pyyaml requests
 WORKDIR /opt/intel/openvino_$YEAR/deployment_tools/open_model_zoo/tools/downloader
+RUN pip3 install pyyaml requests
 RUN ./downloader.py  --name face-detection-retail-0004
 RUN ./downloader.py  --name squeezenet1.1
 RUN ./downloader.py  --name semantic-segmentation-adas-0001
