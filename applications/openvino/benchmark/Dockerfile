@@ -25,10 +25,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libboost-thread1.71 \
     libboost-program-options1.71 \
     lsb-release \
-    libjson-c-dev
+    libjson-c-dev \
+    build-essential \
+    virtualenv \
+    cmake \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libglib2.0-dev \
+    libgtk2.0-dev \
+    libswscale-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libgstreamer1.0-0 \
+    gstreamer1.0-plugins-base \
+    libpng-dev
 
 
-WORKDIR $TEMP_DIR 
+WORKDIR $TEMP_DIR
+COPY l_openvino_toolkit_p_2021.1.110.tgz ./l_openvino_toolkit_p_2021.1.110.tgz
 RUN wget $OPENVINO_LINK && \
         tar xf l_openvino_toolkit*.tgz && \
         cd l_openvino_toolkit* && \
@@ -37,15 +51,20 @@ RUN wget $OPENVINO_LINK && \
         ./install.sh -s silent.cfg && \
         rm -rf /tmp/l_openvino_toolkit*
 
-
-# build Inference Engine samples
-RUN mkdir $INSTALL_DIR/deployment_tools/inference_engine/samples/cpp/build 
-WORKDIR $INSTALL_DIR/deployment_tools/inference_engine/samples/cpp/build
-RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && cmake .. && make -j1"
 RUN pip3 install networkx==2.3
-
 WORKDIR /opt/intel/openvino_$YEAR/deployment_tools/demo
 RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./demo_squeezenet_download_convert_run.sh"
+WORKDIR /root/inference_engine_samples_build
+RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && make"
+
+# Creating user openvino and adding it to groups "video" and "users" to use GPU and VPU
+RUN useradd -ms /bin/bash -G video,users openvino && \
+    chown -R openvino /home/openvino
+RUN mv /root/inference_engine_samples_build /home/openvino/
+
+RUN chown -R openvino:openvino $INSTALL_DIR/
+RUN chown -R openvino:openvino /home/openvino/
+USER openvino
 
 #Download OpenVINO pre-trained models
 
@@ -59,7 +78,12 @@ RUN ./downloader.py  --name ssd512
 RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./converter.py --name ssd300"
 RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./converter.py --name ssd512"
 
-WORKDIR /root/inference_engine_samples_build
-RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && make"
+RUN chown -R openvino:openvino /home/openvino/
 
-COPY do_benchmark.sh /
+# build Inference Engine samples
+RUN mkdir $INSTALL_DIR/deployment_tools/inference_engine/samples/cpp/build
+WORKDIR $INSTALL_DIR/deployment_tools/inference_engine/samples/cpp/build
+RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && cmake .. && make -j1"
+
+WORKDIR /home/openvino
+COPY do_benchmark.sh /home/openvino
