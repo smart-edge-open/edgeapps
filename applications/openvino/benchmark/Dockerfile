@@ -42,7 +42,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 WORKDIR $TEMP_DIR
-COPY l_openvino_toolkit_p_2021.1.110.tgz ./l_openvino_toolkit_p_2021.1.110.tgz
 RUN wget $OPENVINO_LINK && \
         tar xf l_openvino_toolkit*.tgz && \
         cd l_openvino_toolkit* && \
