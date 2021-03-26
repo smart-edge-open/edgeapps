@@ -35,7 +35,8 @@ RUN wget $OPENVINO_LINK && \
         sed -i 's/decline/accept/g' silent.cfg && \
         ./install_openvino_dependencies.sh && \
         ./install.sh -s silent.cfg && \
-        rm -rf /tmp/l_openvino_toolkit*
+        rm -rf /tmp/l_openvino_toolkit* && \
+        ln --symbolic /opt/intel/openvino_"$YEAR"/ /opt/intel/openvino
 
 
 # build Inference Engine samples
