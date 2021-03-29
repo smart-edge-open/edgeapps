@@ -25,6 +25,11 @@ cat /proc/cmdline > ${BENCHMARK_PATH}/kernel.cmdline
 cat /proc/cpuinfo > ${BENCHMARK_PATH}/proc.cpuinfo
 cat /proc/meminfo > ${BENCHMARK_PATH}/proc.meminfo
 
+# HDDL information
+lspci | grep USB | tee ${BENCHMARK_PATH}/HDDL_Card.info
+yum install usbutils -y
+lsusb | grep "Myriad VPU" | tee ${BENCHMARK_PATH}/HDDL_VPU.info
+
 # openvino version
 OPENVINO_TOOLKIT=$(grep "ARG DOWNLOAD_LINK=" edgeapps/applications/openvino/benchmark/Dockerfile)
 echo "${OPENVINO_TOOLKIT##*=}" > "${BENCHMARK_PATH}"/openvino.version
