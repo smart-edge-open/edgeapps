@@ -1,0 +1,53 @@
+api:
+  service:
+    type: NodePort
+    nodePort: 32288
+  Image:
+    Name: kuberlab/audience
+    Tag: latest
+  db:
+    user: postgres
+    password: postgres
+  dns:
+    - audience.kibernetika.io
+  authKey: random-auth-key
+  authAllowPublic: false
+  baseUrl: https://audience.kibernetika.io
+  dealer:
+    enabled: false
+    host: dev.kibernetika.io
+    apiPath: /api/v0.2
+    inferenceWorkspace: infws
+    inferenceName: infname
+    inferenceVersion: infversion
+    servingWorkspace: srvws
+    servingName: srvname
+    servingToken: ZZZ
+    storageEndpoint: https://storage.googleapis.com
+    storageId: XXX
+    storageSecret: YYY
+    storageRegion: us-west-2
+    storageBucket: kibernetika-audience
+
+ui:
+  Image:
+    Name: kuberlab/audience-ui
+    Tag: latest
+
+persistence:
+  apiUpload:
+    #storageClass: nfs
+    size: 10G
+  db:
+    #storageClass: nfs
+    size: 10G
+  images:
+    #storageClass: nfs
+    size: 10G
+
+ingress:
+  tls:
+    enabled: false
+
+openness:
+  enabled: true

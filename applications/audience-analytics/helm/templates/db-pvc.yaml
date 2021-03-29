@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: audience-db
+spec:
+  {{- if .Values.persistence.db.storageClass }}
+  storageClassName: {{ .Values.persistence.db.storageClass | quote }}
+  {{- end }}
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: {{ .Values.persistence.db.size }}

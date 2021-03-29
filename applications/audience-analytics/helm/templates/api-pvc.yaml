@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: audience-api-upload
+spec:
+  {{- if .Values.persistence.apiUpload.storageClass }}
+  storageClassName: {{ .Values.persistence.apiUpload.storageClass | quote }}
+  {{- end }}
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: {{ .Values.persistence.apiUpload.size }}

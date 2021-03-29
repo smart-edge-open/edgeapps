@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: audience
+    component: audience-api
+  name: audience-api
+spec:
+  type: {{ .Values.api.service.type }}
+  ports:
+    - name: http
+      port: 80
+      {{- if eq .Values.api.service.type "NodePort" }}
+        {{- if .Values.api.service.nodePort }}
+      nodePort: {{ .api.service.nodePort }}
+      {{- end }}
+      {{- end }}
+      protocol: TCP
+      targetPort: 8088
+  selector:
+    app: audience
+    component: audience-api

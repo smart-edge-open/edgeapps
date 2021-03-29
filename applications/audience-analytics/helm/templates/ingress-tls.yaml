@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: audience-tls
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    certmanager.k8s.io/cluster-issuer: kibernetika-cert-issuer
+    nginx.ingress.kubernetes.io/proxy-body-size: 16m
+spec:
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      {{- range $i, $dns := .Values.api.dns }}
+      - "{{ $dns }}"
+      {{- end }}
+      secretName: audience-tls
+  {{- end }}
+  rules:
+  {{- range $i, $dns := .Values.api.dns }}
+  - host: {{ $dns }}
+    http:
+      paths:
+        - path: /swagger
+          backend:
+            serviceName: audience-api
+            servicePort: 8088
+        - path: /api
+          backend:
+            serviceName: audience-api
+            servicePort: 8088
+        - path: /images
+          backend:
+            serviceName: audience-api
+            servicePort: 8088
+        - path: /
+          backend:
+            serviceName: audience-ui
+            servicePort: 80
+    {{- end }}

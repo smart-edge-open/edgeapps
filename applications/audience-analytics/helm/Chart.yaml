@@ -1,0 +1,12 @@
+Description: Audience exploring system
+Engine: gotpl
+Home: https://kibernetika.ai
+Keywords:
+- Artificial Intelligence
+- Audience
+- Kibernetika
+Maintainers:
+- Email: vgrishin@kibernetika.ai
+  Name: Vadim Grishin
+Name: audience
+Version: 1.0.0

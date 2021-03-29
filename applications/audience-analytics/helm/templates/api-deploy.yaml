@@ -1,0 +1,174 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audience-api
+spec:
+  selector:
+    matchLabels:
+      app: audience
+      component: audience-api
+  template:
+    metadata:
+      labels:
+        app: audience
+        component: audience-api
+    spec:
+      {{- if .Values.openness.enabled }}
+      serviceAccountName: heatmap-consumer
+      initContainers:
+      - name: certrequester
+        image: certrequester:1.0
+        args: [ "--cfg", "/home/certrequester/config/certrequest.json" ]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "0.1"
+          limits:
+            cpu: "0.1"
+            memory: "128Mi"
+        volumeMounts:
+        - name: config
+          mountPath: /home/certrequester/config/
+        - name: certs
+          mountPath: /home/certrequester/certs/
+      - name: alpine
+        image: alpine:3.12.0
+        command: [ "/bin/sh" ]
+        args: [ "-c", "cp /root/ca-certrequester/cert.pem /root/certs/root.pem" ]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "0.1"
+          limits:
+            cpu: "0.1"
+            memory: "128Mi"
+        volumeMounts:
+        - name: ca-certrequester
+          mountPath: /root/ca-certrequester
+        - name: certs
+          mountPath: /root/certs
+      {{- end }}
+      containers:
+        - name:  audience-api
+          image: "{{ printf "%s:%s" .Values.api.Image.Name .Values.api.Image.Tag}}"
+          readinessProbe:
+            httpGet:
+              path: /probe
+              port: 8088
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: PG_HOST
+              value: audience-db
+            - name: PG_USER
+              value: {{ .Values.api.db.user }}
+            - name: PG_PWD
+              value: {{ .Values.api.db.password }}
+            - name: BASE_URL
+              value: {{ .Values.api.baseUrl }}
+            {{- if .Values.openness.enabled }}
+            - name: OPENNESS_ENABLED
+              value: "true"
+            {{- end }}
+            {{- if .Values.api.authKey }}
+            - name: AUTH_KEY
+              value: {{ .Values.api.authKey }}
+            {{- end }}
+            {{- if .Values.api.authAllowPublic }}
+            - name: AUTH_ALLOW_PUBLIC
+              value: "{{ .Values.api.authAllowPublic }}"
+            {{- end }}
+            {{- if .Values.api.dealer.enabled }}
+            - name: DEALER_ENABLED
+              value: "{{ .Values.api.dealer.enabled }}"
+            {{- end }}
+            {{- if .Values.api.dealer.host }}
+            - name: DEALER_HOST
+              value: {{ .Values.api.dealer.host }}
+            {{- end }}
+            {{- if .Values.api.dealer.apiPath }}
+            - name: DEALER_API_PATH
+              value: {{ .Values.api.dealer.apiPath }}
+            {{- end }}
+            {{- if .Values.api.dealer.disableHttps }}
+            - name: DEALER_DISABLE_HTTPS
+              value: {{ .Values.api.dealer.disableHttps }}
+            {{- end }}
+            {{- if .Values.api.dealer.inferenceWorkspace }}
+            - name: INFERENCE_WORKSPACE
+              value: {{ .Values.api.dealer.inferenceWorkspace }}
+            {{- end }}
+            {{- if .Values.api.dealer.inferenceName }}
+            - name: INFERENCE_NAME
+              value: {{ .Values.api.dealer.inferenceName }}
+            {{- end }}
+            {{- if .Values.api.dealer.inferenceVersion }}
+            - name: INFERENCE_VERSION
+              value: {{ .Values.api.dealer.inferenceVersion }}
+            {{- end }}
+            {{- if .Values.api.dealer.servingWorkspace }}
+            - name: SERVING_WORKSPACE
+              value: {{ .Values.api.dealer.servingWorkspace }}
+            {{- end }}
+            {{- if .Values.api.dealer.servingName }}
+            - name: SERVING_NAME
+              value: {{ .Values.api.dealer.servingName }}
+            {{- end }}
+            {{- if .Values.api.dealer.servingToken }}
+            - name: SERVING_TOKEN
+              value: {{ .Values.api.dealer.servingToken }}
+            {{- end }}
+            {{- if .Values.api.dealer.storageEndpoint }}
+            - name: STORAGE_ENDPOINT
+              value: {{ .Values.api.dealer.storageEndpoint }}
+            {{- end }}
+            {{- if .Values.api.dealer.storageId }}
+            - name: STORAGE_ID
+              value: {{ .Values.api.dealer.storageId }}
+            {{- end }}
+            {{- if .Values.api.dealer.storageSecret }}
+            - name: STORAGE_SECRET
+              value: {{ .Values.api.dealer.storageSecret }}
+            {{- end }}
+            {{- if .Values.api.dealer.storageRegion }}
+            - name: STORAGE_REGION
+              value: {{ .Values.api.dealer.storageRegion }}
+            {{- end }}
+            {{- if .Values.api.dealer.storageBucket }}
+            - name: STORAGE_BUCKET
+              value: {{ .Values.api.dealer.storageBucket }}
+            {{- end }}
+          ports:
+            - containerPort: 8088
+              name: http
+          volumeMounts:
+            - name: images
+              mountPath: /images
+              subPath: audience-images
+            - name: api-upload
+              mountPath: /upload
+              subPath: audience-api-upload
+            {{- if .Values.openness.enabled }}
+            - name: certs
+              mountPath: /root/certs/
+            {{- end }}
+      volumes:
+        - name: images
+          persistentVolumeClaim:
+            claimName: audience-images
+        - name: api-upload
+          persistentVolumeClaim:
+            claimName: audience-api-upload
+        {{- if .Values.openness.enabled }}
+        - name: certs
+          emptyDir: {}
+        - name: ca-certrequester
+          secret:
+            secretName: ca-certrequester
+        - name: config
+          configMap:
+            name: heatmap-consumer-csr-config
+        {{- end }}

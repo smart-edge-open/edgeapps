@@ -1,0 +1,75 @@
+Image:
+  Name: kuberlab/realtimeheatmap
+  Tag: 1.0.4
+
+service:
+  type: NodePort
+  http:
+    port: 8000
+  rtmp:
+    port: 1935
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+  - host: heatmap.local
+    paths: ["/"]
+  tls: []
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128M"
+    hddl: "8"
+  limits:
+    cpu: "8"
+    memory: "16G"
+
+# The parameters of the application is below.
+# Please do not delete any of these.
+env:
+  # The number of initial streams named as <streamN>.
+  - name: STREAM_COUNT
+    value: 16
+  # The flag which means either track heatmap or not.
+  - name: TRACKHEATMAP
+    value: "no"
+  # The flag which means either analyze each frame in video (without skipping) or not.
+  - name: RUNTIME_HEATMAP
+    value: "yes"
+  # The number of scale-crop-redetect person bodies in frames. Generally value 1 is sufficient and
+  # greater values will increase accuracy of detection of small bodies as well as the number of inference per frame.
+  - name: MULTIDETECT
+    value: 1
+  # The output spec for all initial streams (can be 'hls', 'mjpg' or 'null' for now)
+  - name: OUTPUT
+    value: "mjpg"
+  # RTMP server to use. Only 'srs' supported for now.
+  - name: RTMP_BACKEND
+    value: srs
+# ---
+# Audience-related settings
+# ---
+  # Serving key for channel
+  - name: KTOKEN
+    value: ''
+  # The host for audience in form scheme://host[:port], e.g. https://audience.host
+  - name: KHOST
+    value: ''
+  # Serving ID
+  - name: KSERVING
+    value: ''
+  # Leave as is
+  - name: KWORKSPACE
+    value: srvws
+
+openness:
+  enabled: true
+  heatmapId: 'runtime-heatmap'
+# Load and run model on HDDL device (or not)
+useHDDL: false
+# Use Intel GPU for decoding or not
+useIntelGPU: false
+# Runs workload strictly on VCA card (node).
+runOnVCANode: false

@@ -1,0 +1,122 @@
+apiVersion: v1
+data:
+  "streams.json": |
+    {
+      "keys": [
+        {
+          "key": "stream1",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream1",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream2",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream2",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream3",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream3",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream4",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream4",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream5",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream5",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream6",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream6",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream7",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream7",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream8",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream8",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream9",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream9",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream10",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream10",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream11",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream11",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream12",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream12",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream13",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream13",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream14",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream14",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream15",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream15",
+          "description": null,
+          "params": {}
+        },
+        {
+          "key": "stream16",
+          "output": "mjpg",
+          "input": "rtmp://127.0.0.1/live/stream16",
+          "description": null,
+          "params": {}
+        }
+      ]
+    }
+kind: ConfigMap
+metadata:
+  name: streams

@@ -1,0 +1,46 @@
+{{- if .Values.openness.enabled }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: heatmap-consumer
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: heatmap-consumer-csr-requester
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: csr-requester
+subjects:
+  - kind: ServiceAccount
+    name: heatmap-consumer
+    namespace: {{ .Release.Namespace }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: heatmap-consumer-csr-config
+data:
+  certrequest.json: |
+    {
+        "CSR": {
+            "Name": "heatmap-consumer",
+            "Subject": {
+                "CommonName": "heatmap:consumer",
+                "Organization": ["Kibernetika Inc."]
+            },
+            "DNSSANs": [],
+            "IPSANs": [],
+            "KeyUsages": [
+                "digital signature", "key encipherment", "client auth"
+            ]
+        },
+        "Signer": "openness.org/certsigner",
+        "WaitTimeout": "5m"
+    }
+{{- end }}
