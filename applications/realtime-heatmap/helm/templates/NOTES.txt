@@ -1,3 +1,6 @@
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+
 Thank you for installing {{ .Chart.Name }}.
 
 Your release is named {{ .Release.Name }}.
