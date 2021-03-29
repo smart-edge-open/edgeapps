@@ -1,38 +1,54 @@
---- main.cpp	2019-09-19 18:11:55.607355860 +0100
-+++ main.cpp_changed	2019-09-19 18:11:46.981355924 +0100
-@@ -79,6 +79,10 @@
-         const size_t width  = (size_t) cap.get(cv::CAP_PROP_FRAME_WIDTH);
-         const size_t height = (size_t) cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+--- object_detection_demo_ssd_async.py	2021-01-18 17:50:43.247224340 +0800
++++ object_detection_demo_ssd_async_changed.py	2021-01-18 17:56:16.007239382 +0800
+@@ -34,6 +34,8 @@
+ sys.path.append(osp.join(osp.dirname(osp.dirname(osp.abspath(__file__))), 'common'))
+ import monitors
  
-+        cv::Size outputFrameSize(width, height);
-+        cv::VideoWriter video;
-+        video.open("vidfifo.mjpeg", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 24, outputFrameSize, true);
++import os
++os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "protocol_whitelist;file,rtp,udp,rtmp,tcp"
+ 
+ logging.basicConfig(format='[ %(levelname)s ] %(message)s', level=logging.INFO, stream=sys.stdout)
+ log = logging.getLogger()
+@@ -451,6 +453,32 @@
+     except ValueError:
+         input_stream = args.input
+     cap = cv2.VideoCapture(input_stream)
++    if not cap.isOpened():
++        log.error('OpenCV: Failed to open capture: ' + str(input_stream))
++        sys.exit(1)
 +
-         // read input (video) frame
-         cv::Mat curr_frame;  cap >> curr_frame;
-         cv::Mat next_frame;
-@@ -232,7 +236,7 @@
-         slog::info << "Start inference " << slog::endl;
++    ret, frame = cap.read()
++    height, width, ch = frame.shape
++    dimension = '{}x{}'.format(width, height)
++    fps = str(cap.get(cv2.CAP_PROP_FPS))
++    command = ['ffmpeg',
++    '-y',
++    '-f', 'rawvideo',
++    '-use_wallclock_as_timestamps', '1',
++    '-vcodec','rawvideo',
++    '-s', dimension,
++    '-pix_fmt', 'bgr24',
++    '-r', fps,
++    '-i', 'pipe:0',
++    '-c:v', 'libx264',
++    '-pix_fmt', 'yuv420p',
++    '-preset', 'ultrafast',
++    '-f', 'flv',
++    'rtmp://127.0.0.1:5000/live/out.flv']
++
++    import subprocess as sp
++    proc = sp.Popen(command, stdin=sp.PIPE, shell=False)
++
+     wait_key_time = 1
  
-         bool isLastFrame = false;
--        bool isAsyncMode = false;  // execution is always started using SYNC mode
-+        bool isAsyncMode = true;  // execution is always started using SYNC mode
-         bool isModeChanged = false;  // set to TRUE when execution mode is changed (SYNC<->ASYNC)
+     next_frame_id = 0
+@@ -523,7 +551,8 @@
+                 put_highlighted_text(frame, latency_message, (15, 50), cv2.FONT_HERSHEY_COMPLEX, 0.75, (200, 10, 10), 2)
  
-         typedef std::chrono::duration<double, std::ratio<1, 1000>> ms;
-@@ -345,7 +349,7 @@
-                     }
-                 }
-             }
--            cv::imshow("Detection results", curr_frame);
-+            video.write(curr_frame);
+             if not args.no_show:
+-                cv2.imshow('Detection Results', frame)
++                #cv2.imshow('Detection Results', frame)
++                proc.stdin.write(frame.tobytes())
+                 key = cv2.waitKey(wait_key_time)
  
-             t1 = std::chrono::high_resolution_clock::now();
-             ocv_render_time = std::chrono::duration_cast<ms>(t1 - t0).count();
-@@ -395,4 +399,4 @@
- 
-     slog::info << "Execution successful" << slog::endl;
-     return 0;
--}
-\ No newline at end of file
-+}
+                 ESC_KEY = 27

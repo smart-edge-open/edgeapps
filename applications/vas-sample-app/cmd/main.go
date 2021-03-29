@@ -7,11 +7,14 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Connectivity constants
@@ -41,6 +44,16 @@ func createEncryptedClient() (*http.Client, error) {
 	cert, err := tls.LoadX509KeyPair(CertPath, KeyPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to load client certificate")
+	}
+
+	sz, err := getFileSize(RootCAPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Load config failed")
+	}
+	// file can't be larger than 1MB
+	if sz > 1024*1024 {
+		return nil, errors.New("File size can not be greater than 1MB! " +
+			RootCAPath)
 	}
 
 	certPool := x509.NewCertPool()
@@ -115,6 +128,13 @@ func discoverServices(client *http.Client) (ServiceList, error) {
 
 	return servList, nil
 }
+func getFileSize(path string) (int64, error) {
+	fInfo, err := os.Stat(filepath.Clean(path))
+	if err != nil {
+		return 0, err
+	}
+	return fInfo.Size(), nil
+}
 
 func main() {
 	log.Println("Video-analytics-service Consumer Started")
@@ -149,10 +169,10 @@ func main() {
 			return
 		}
 		log.Println("Discovered service:")
-		log.Println("    URN.ID:       ", s.URN.ID)
-		log.Println("    URN.Namespace:", s.URN.Namespace)
-		log.Println("    Description:  ", s.Description)
-		log.Println("    EndpointURI:  ", s.EndpointURI)
+		log.Println(" -> URN.ID:       ", s.URN.ID)
+		log.Println(" -> URN.Namespace:", s.URN.Namespace)
+		log.Println(" -> Description:  ", s.Description)
+		log.Println(" -> EndpointURI:  ", s.EndpointURI)
 		// Subscribe to all services related to my Namespace
 		if myURN.Namespace == s.URN.Namespace {
 			// Service Request to VA-Serving
@@ -160,7 +180,13 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
-			postVAServingRequest(s.EndpointURI, vasInfo.Pipelines[0])
+
+			for _, p := range vasInfo.Pipelines {
+				if (p == "emotion_recognition/1") || (p == "object_detection/1") {
+					log.Println("Sending request for pipeline", p)
+					postVAServingRequest(s.EndpointURI, p)
+				}
+			}
 		} else {
 			log.Println("Namespace mismatch, myURN namespace:", myURN.Namespace)
 		}

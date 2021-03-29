@@ -7,11 +7,14 @@
 ---
 docker_registry_port: 30003
 docker_registry_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] }}"
-docker_registry_address: "{{ docker_registry_ip }}:{{ docker_registry_port }}/intel"
+docker_registry_address: "{{ docker_registry_ip }}:{{ docker_registry_port }}/intel/"
 docker_registry_dir: "/opt/docker-registry/"
 
 web_visualizer_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] }}"
 web_visualizer_port: 5050
+device_type: "CPU"
+host_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] }}"
+etcd_ip: "{{ hostvars[groups['controller_group'][0]]['ansible_host'] }}"
 
 eis_version: "{{ lookup('env', 'EIS_VERSION') }}"
 etcd_version: "{{ lookup('env', 'ETCD_VERSION') }}"

@@ -7,4 +7,4 @@ version: emco/v2
 resourceContext:
   anchor: projects
 metadata:
-  name: "{{ .ProjectName }}"
+  name: {{ .ProjectName }}

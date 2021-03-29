@@ -1,0 +1,126 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+# Creating smart city composite app entry
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps
+metadata:
+  name: {{ .CompositeApp }}
+spec:
+  version: v1
+
+# Create default logical cloud with admin permissions
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/logical-clouds
+metadata:
+  name: {{ .AdminCloud }}
+spec:
+  level: "0"
+
+# Add edge cluster reference to logical cloud
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/cluster-references
+metadata:
+  name: {{ .ClusterEdgeRef }}
+spec:
+  cluster-provider: {{ .ClusterProvider }}
+  cluster-name: {{ .ClusterEdge }}
+  loadbalancer-ip: "0.0.0.0"
+
+# Add cloud cluster reference to logical cloud
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/cluster-references
+metadata:
+  name: {{ .ClusterCloudRef }}
+spec:
+  cluster-provider: {{ .ClusterProvider }}
+  cluster-name: {{ .ClusterCloud }}
+  loadbalancer-ip: "0.0.0.0"
+
+# Create the deployment intent group
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups
+metadata:
+  name: {{ .DeploymentIntent }}
+  description: smtc deployment intent group
+  userData1: test1
+  userData2: test2
+spec:
+  profile: {{ .CompositeProfile }}
+  version: r1
+  logical-cloud: {{ .AdminCloud }}
+  override-values: []
+
+# Creating controller entries - rsync
+---
+version: emco/v2
+resourceContext:
+  anchor: controllers
+metadata:
+  name: rsync
+spec:
+  host: {{ .RsyncIP }}
+  port: {{ .RsyncPort }}
+
+# Creating controller entries - gac
+---
+version: emco/v2
+resourceContext:
+  anchor: controllers
+metadata:
+  name: gac
+spec:
+  host: {{ .GacIP }}
+  port: {{ .GacPort }}
+  type: action
+  priority: 1
+
+# Creating cluster provider
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers
+metadata:
+  name: {{ .ClusterProvider }}
+
+# Create edge cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers/{{ .ClusterProvider }}/clusters
+metadata:
+  name: {{ .ClusterEdge }}
+file: {{ .KubeConfigEdge }}
+
+# Add label to the edge cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers/{{ .ClusterProvider }}/clusters/{{ .ClusterEdge }}/labels
+label-name: {{ .EdgeClusterLabel }}
+ 
+# Create cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers/{{ .ClusterProvider }}/clusters
+metadata:
+  name: {{ .ClusterCloud }}
+file: {{ .KubeConfigCloud }}
+
+# Add label to the cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: cluster-providers/{{ .ClusterProvider }}/clusters/{{ .ClusterCloud }}/labels
+label-name: {{ .CloudClusterLabel }}

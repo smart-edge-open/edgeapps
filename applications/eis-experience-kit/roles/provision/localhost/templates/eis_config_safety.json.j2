@@ -1,0 +1,475 @@
+{
+    "/EtcdUI/config": {},
+    "/EtcdUI/interfaces": {},
+    "/GVASafetyGearIngestion/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "ingestor": {
+            "pipeline": "multifilesrc loop=TRUE stop-index=0 location=./test_videos/Safety_Full_Hat_and_Vest.avi ! h264parse ! decodebin ! videoconvert ! video/x-raw,format=BGR ! gvadetect model=models/ref/frozen_inference_graph.xml ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/GVASafetyGearIngestion/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "Topics": [
+                    "gva_safety_gear_stream_results"
+                ],
+                "Type": "zmq_ipc"
+            }
+        ],
+        "Servers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:66020",
+                "Name": "gva_safety_gear",
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/GlobalEnv/": {
+        "C_LOG_LEVEL": "INFO",
+        "ETCD_KEEPER_PORT": "7070",
+        "GO_LOG_LEVEL": "INFO",
+        "GO_VERBOSE": "0",
+        "PY_LOG_LEVEL": "INFO"
+    },
+    "/NativeSafetyGearAnalytics/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "max_workers": 4,
+        "queue_size": 10,
+        "udfs": [
+            {
+                "device": "CPU",
+                "model_bin": "./safety_gear_demo/ref/frozen_inference_graph.bin",
+                "model_xml": "./safety_gear_demo/ref/frozen_inference_graph.xml",
+                "name": "safety_gear_demo",
+                "type": "native"
+            }
+        ]
+    },
+    "/NativeSafetyGearAnalytics/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:67017",
+                "Name": "default",
+                "Topics": [
+                    "native_safety_gear_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Subscribers": [
+            {
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "PublisherAppName": "NativeSafetyGearIngestion",
+                "Topics": [
+                    "native_safety_gear_stream"
+                ],
+                "Type": "zmq_ipc",
+                "zmq_recv_hwm": 50
+            }
+        ]
+    },
+    "/NativeSafetyGearIngestion/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "ingestor": {
+            "loop_video": true,
+            "pipeline": "./test_videos/Safety_Full_Hat_and_Vest.avi",
+            "poll_interval": 0.2,
+            "queue_size": 10,
+            "type": "opencv"
+        },
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        },
+        "udfs": [
+            {
+                "name": "dummy",
+                "type": "native"
+            }
+        ]
+    },
+    "/NativeSafetyGearIngestion/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "Topics": [
+                    "native_safety_gear_stream"
+                ],
+                "Type": "zmq_ipc"
+            }
+        ],
+        "Servers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:66017",
+                "Name": "native_safety_gear",
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/PyMultiClassificationIngestion/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "ingestor": {
+            "loop_video": true,
+            "pipeline": "./test_videos/classification_vid.avi",
+            "poll_interval": 0.2,
+            "queue_size": 10,
+            "type": "opencv"
+        },
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        },
+        "udfs": [
+            {
+                "device": "CPU",
+                "labels_file_path": "./sample_classification/ref/squeezenet1.1.labels",
+                "model_bin": "./sample_classification/ref/squeezenet1.1_FP32.bin",
+                "model_xml": "./sample_classification/ref/squeezenet1.1_FP32.xml",
+                "name": "sample_classification.multi_class_classifier",
+                "type": "python"
+            }
+        ]
+    },
+    "/PyMultiClassificationIngestion/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "Topics": [
+                    "py_multi_calssification_results_stream"
+                ],
+                "Type": "zmq_ipc"
+            }
+        ],
+        "Servers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:66018",
+                "Name": "py_multi_calssification",
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/PySafetyGearAnalytics/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "max_workers": 4,
+        "queue_size": 10,
+        "udfs": [
+            {
+                "device": "CPU",
+                "model_bin": "./safety_gear/ref/frozen_inference_graph.bin",
+                "model_xml": "./safety_gear/ref/frozen_inference_graph.xml",
+                "name": "safety_gear.safety_classifier",
+                "type": "python"
+            }
+        ]
+    },
+    "/PySafetyGearAnalytics/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:67019",
+                "Name": "default",
+                "Topics": [
+                    "py_safety_gear_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Subscribers": [
+            {
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "PublisherAppName": "PySafetyGearIngestion",
+                "Topics": [
+                    "py_safety_gear_stream"
+                ],
+                "Type": "zmq_ipc",
+                "zmq_recv_hwm": 50
+            }
+        ]
+    },
+    "/PySafetyGearIngestion/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "ingestor": {
+            "loop_video": true,
+            "pipeline": "rtspsrc location=\"rtsp://{{ rtsp_camera_stream_ip }}:{{ rtsp_camera_stream_port }}/\" latency=100 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink max_buffers=100 drop=true",
+            "poll_interval": 0.2,
+            "queue_size": 10,
+            "type": "opencv"
+        },
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        },
+        "udfs": [
+            {
+                "name": "dummy",
+                "type": "python"
+            }
+        ]
+    },
+    "/PySafetyGearIngestion/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "Topics": [
+                    "py_safety_gear_stream"
+                ],
+                "Type": "zmq_ipc"
+            }
+        ],
+        "Servers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:66019",
+                "Name": "py_safety_gear",
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/VideoAnalytics/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "max_workers": 4,
+        "queue_size": 10,
+        "udfs": [
+            {
+                "device": "CPU",
+                "model_bin": "common/video/udfs/python/pcb/ref/model_2.bin",
+                "model_xml": "common/video/udfs/python/pcb/ref/model_2.xml",
+                "name": "pcb.pcb_classifier",
+                "ref_config_roi": "common/video/udfs/python/pcb/ref/roi_2.json",
+                "ref_img": "common/video/udfs/python/pcb/ref/ref.png",
+                "type": "python"
+            }
+        ]
+    },
+    "/VideoAnalytics/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Subscribers": [
+            {
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "PublisherAppName": "VideoIngestion",
+                "Topics": [
+                    "camera1_stream"
+                ],
+                "Type": "zmq_ipc",
+                "zmq_recv_hwm": 50
+            }
+        ]
+    },
+    "/VideoIngestion/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "ingestor": {
+            "loop_video": true,
+            "pipeline": "./test_videos/pcb_d2000.avi",
+            "poll_interval": 0.2,
+            "queue_size": 10,
+            "type": "opencv"
+        },
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        },
+        "udfs": [
+            {
+                "n_left_px": 1000,
+                "n_right_px": 1000,
+                "n_total_px": 300000,
+                "name": "pcb.pcb_filter",
+                "scale_ratio": 4,
+                "training_mode": "false",
+                "type": "python"
+            }
+        ]
+    },
+    "/VideoIngestion/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "VideoAnalytics",
+                    "Visualizer",
+                    "WebVisualizer",
+                    "TLSRemoteAgent",
+                    "RestDataExport"
+                ],
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "Topics": [
+                    "camera1_stream"
+                ],
+                "Type": "zmq_ipc"
+            }
+        ],
+        "Servers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:66013",
+                "Name": "default",
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/Visualizer/config": {
+        "draw_results": "true",
+        "labels": {
+            "camera1_stream_results": {
+                "0": "MISSING",
+                "1": "SHORT"
+            },
+            "gva_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            },
+            "native_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            },
+            "py_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            }
+        },
+        "save_image": "false"
+    },
+    "/Visualizer/interfaces": {
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/WebVisualizer/config": {
+        "dev_port": 5001,
+        "draw_results": "true",
+        "labels": {
+            "camera1_stream_results": {
+                "0": "MISSING",
+                "1": "SHORT"
+            },
+            "gva_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            },
+            "native_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            },
+            "py_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            }
+        },
+        "password": "admin@123",
+        "port": 5000,
+        "username": "admin"
+    },
+    "/WebVisualizer/interfaces": {
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:67019",
+                "Name": "default",
+                "PublisherAppName": "PySafetyGearAnalytics",
+                "Topics": [
+                    "py_safety_gear_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    }
+}

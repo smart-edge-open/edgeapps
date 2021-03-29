@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: delete etcd pod
+  command: kubectl -n eis delete pod ia-etcd
+  changed_when: true
+  ignore_errors: yes
+
+- name: delete namespace
+  command: kubectl delete namespace eis
+  changed_when: true
+  ignore_errors: yes
+
+- name: delete ia_etcd docker image
+  command: docker rmi ia_etcd:{{ eis_version }}
+  changed_when: true
+  ignore_errors: yes
+
+- name: delete ia_etcd_provision docker image
+  command: docker rmi ia_etcd_provision:{{ eis_version }}
+  changed_when: true
+  ignore_errors: yes
+

@@ -443,6 +443,10 @@ def main():
     logging.info("host: %s Started testverification script: master.py from XRAN path %s"
                  , host_name, xran_path)
 
+    if not sys.argv:
+        print("No parameters added!") #pylint: disable=superfluous-parens
+        return -1
+
     if len(sys.argv[1:]) > 1024*1024:
         print("Program parameters string is too long!") #pylint: disable=superfluous-parens
         return -1

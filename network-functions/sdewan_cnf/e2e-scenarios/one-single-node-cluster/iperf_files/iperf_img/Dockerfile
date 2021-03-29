@@ -8,7 +8,7 @@ ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy
 
-RUN apk update && apk add --no-cache bash iperf3 net-tools ethtool iproute2
+RUN apk update && apk add --no-cache bash iperf3 net-tools ethtool iproute2 sudo
 
 RUN addgroup -S iperfgroup && adduser -S client -G iperfgroup
 RUN echo '%iperfgroup ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers

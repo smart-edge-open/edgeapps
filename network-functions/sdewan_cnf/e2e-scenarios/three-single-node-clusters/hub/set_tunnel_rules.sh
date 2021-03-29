@@ -5,5 +5,5 @@
 
 # setup rules for cnf on hub
 
-CNFPOD=$(kubectl get pod -l sdewanPurpose=sdewan-cnf -o name)
-kubectl exec -it "$CNFPOD" -- ip route
+CNFPOD=$(kubectl get pod -l -n "$NS" sdewanPurpose=sdewan-cnf -o name)
+kubectl exec -it "$CNFPOD" -n "$NS" -- ip route

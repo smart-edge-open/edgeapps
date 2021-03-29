@@ -25,9 +25,15 @@
   - enable and start docker service
 
 - name: install docker-compose
-  pip:
-    name: "{{ docker_compose_package }}"
-    state: present
+  get_url:
+    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+  changed_when: true
+
+- name: docker-compose chmod
+  file:
+    path: /usr/local/bin/docker-compose
+    mode: '0755'
 
 - name: set up proxy
   include_tasks: proxy.yml

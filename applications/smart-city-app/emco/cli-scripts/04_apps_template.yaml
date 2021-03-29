@@ -5,9 +5,9 @@
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps"
+  anchor: projects/{{ .ProjectName }}/composite-apps
 metadata:
-  name: "{{ .CompositeApp }}"
+  name: {{ .CompositeApp }}
 spec:
   version: v1
 
@@ -15,87 +15,87 @@ spec:
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/apps"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/apps
 metadata:
-  name: "{{ .AppEdge }}"
-file: "{{ .HelmEdgeApp }}"
+  name: {{ .AppEdge }}
+file: {{ .HelmEdgeApp }}
 
 # Adding cloud app to the composite app
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/apps"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/apps
 metadata:
-  name: "{{ .AppCloud }}"
-file: "{{ .HelmCloudApp }}"
+  name: {{ .AppCloud }}
+file: {{ .HelmCloudApp }}
 
 # creating smtc composite profile entry
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles
 metadata:
-  name: "{{ .CompositeProfile }}"
+  name: {{ .CompositeProfile }}
 
 # Adding smtc edge app profiles to the composite profile
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles/{{ .CompositeProfile }}/profiles"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles/{{ .CompositeProfile }}/profiles
 metadata:
-  name: "{{ .ProfileEdgeAppName }}"
+  name: {{ .ProfileEdgeAppName }}
 spec:
-  app-name: "{{ .AppEdge }}"
-file: "{{ .ProfileEdgeApp }}"
+  app-name: {{ .AppEdge }}
+file: {{ .ProfileEdgeApp }}
 
 # Adding smtc cloud app profiles to the composite profile
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles/{{ .CompositeProfile }}/profiles"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/composite-profiles/{{ .CompositeProfile }}/profiles
 metadata:
-  name: "{{ .ProfileCloudAppName }}"
+  name: {{ .ProfileCloudAppName }}
 spec:
-  app-name: "{{ .AppCloud }}"
-file: "{{ .ProfileCloudApp }}"
+  app-name: {{ .AppCloud }}
+file: {{ .ProfileCloudApp }}
 
 # Create the deployment intent group
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups
 metadata:
-  name: "{{ .DeploymentIntent }}"
-  description: "smtc deployment intent group"
+  name: {{ .DeploymentIntent }}
+  description: smtc deployment intent group
   userData1: test1
   userData2: test2
 spec:
-  profile: "{{ .CompositeProfile }}"
+  profile: {{ .CompositeProfile }}
   version: r1
-  logical-cloud: "{{ .AdminCloud }}"
+  logical-cloud: {{ .AdminCloud }}
   override-values: []
 
 # Create the intent in  deployment intent group
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/intents"
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/intents
 metadata:
-  name: "{{ .DeploymentIntent }}"
+  name: {{ .DeploymentIntent }}
   description: "smtc deployment intent"
   userData1: test1
   userData2: test2
 spec:
   intent:
-    genericPlacementIntent: "{{ .GenericPlacementIntent }}"
-    gac: "{{ .GenericK8sIntent }}"
+    genericPlacementIntent: {{ .GenericPlacementIntent }}
+    gac: {{ .GenericK8sIntent }}
 # Create the generic placement intent
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents
 metadata:
-  name: "{{ .GenericPlacementIntent }}"
+  name: {{ .GenericPlacementIntent }}
   description: "smtc generic placement intent"
   userData1: test1
   userData2: test2
@@ -104,77 +104,77 @@ metadata:
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents/{{ .GenericPlacementIntent }}/app-intents"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents/{{ .GenericPlacementIntent }}/app-intents
 metadata:
-  name: "{{ .AppEdgePlacementIntent }}"
+  name: {{ .AppEdgePlacementIntent }}
   description: "smtc edge app placement intent"
   userData1: test1
   userData2: test2
 spec:
-  app-name: "{{ .AppEdge }}"
+  app-name: {{ .AppEdge }}
   intent:
     allOf:
-      - provider-name: "{{ .ClusterProvider }}"
-        cluster-label-name: "{{ .EdgeClusterLabel }}"
+      - provider-name: {{ .ClusterProvider }}
+        cluster-label-name: {{ .EdgeClusterLabel }}
 
 # Add cloud app placement intent
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents/{{ .GenericPlacementIntent }}/app-intents"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/generic-placement-intents/{{ .GenericPlacementIntent }}/app-intents
 metadata:
-  name: "{{ .AppCloudPlacementIntent }}"
+  name: {{ .AppCloudPlacementIntent }}
   description: "smtc cloud app placement intent"
   userData1: test1
   userData2: test2
 spec:
-  app-name: "{{ .AppCloud }}"
+  app-name: {{ .AppCloud }}
   intent:
     allOf:
-      - provider-name: "{{ .ClusterProvider }}"
-        cluster-label-name: "{{ .CloudClusterLabel }}"
+      - provider-name: {{ .ClusterProvider }}
+        cluster-label-name: {{ .CloudClusterLabel }}
 
 # Add the smtc-k8s-intent to generic-k8s-intents
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents"
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents
 metadata:
-  name: "{{ .GenericK8sIntent }}"
+  name: {{ .GenericK8sIntent }}
 
 # Add sensor.json to edge cluster
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources"
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
 metadata:
-  name: "{{ .SmtcEdgeResources }}"
+  name: {{ .SmtcEdgeResources }}
 spec:
-  appName: "{{ .AppEdge }}"
+  appName: {{ .AppEdge }}
   newObject: "true"
   resourceGVK:
     apiVersion: v1
     kind: configMap
-    name: "{{ .ResourceName }}"
+    name: {{ .ResourceName }}
 file:
-  "{{ .HelmEdgeApp }}" # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+  {{ .HelmEdgeApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcEdgeResources }}/customizations"
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcEdgeResources }}/customizations
 metadata:
-  name: "{{ .SmtcEdgeCustomizations }}"
+  name: {{ .SmtcEdgeCustomizations }}
 spec:
   # bug here, must be false right now.
   clusterSpecific: "false"
   clusterInfo:
     scope: labelResourceFileName
-    clusterProvider: "{{ .ClusterProvider }}"
-    clusterName: "{{ .ClusterEdge }}"
-    clusterLabel: "{{ .EdgeClusterLabel }}"
+    clusterProvider: {{ .ClusterProvider }}
+    clusterName: {{ .ClusterEdge }}
+    clusterLabel: {{ .EdgeClusterLabel }}
     mode: allow
 files:
-  - "{{ .ConfigMapFile }}"
+  - {{ .ConfigMapFile }}
 
 # Add sensor.json to cloud cluster
 ---
@@ -182,45 +182,153 @@ version: emco/v2
 resourceContext:
   anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
 metadata:
-  name: "{{ .SmtcCloudResources }}"
+  name: {{ .SmtcCloudResources }}
 spec:
-  appName: "{{ .AppCloud }}"
+  appName: {{ .AppCloud }}
   newObject: "true"
   resourceGVK:
     apiVersion: v1
     kind: configMap
-    name: "{{ .ResourceName }}"
+    name: {{ .ResourceName }}
 file:
   {{ .HelmCloudApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
 
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcCloudResources }}/customizations"
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcCloudResources }}/customizations
 metadata:
-  name: "{{ .SmtcCloudCustomizations }}"
+  name: {{ .SmtcCloudCustomizations }}
 spec:
   # bug here, must be false right now.
   clusterSpecific: "false"
   clusterInfo:
     scope: label
-    clusterProvider: "{{ .ClusterProvider }}"
-    clusterName: "{{ .ClusterCloud }}"
-    clusterLabel: "{{ .CloudClusterLabel }}"
+    clusterProvider: {{ .ClusterProvider }}
+    clusterName: {{ .ClusterCloud }}
+    clusterLabel: {{ .CloudClusterLabel }}
     mode: allow
 files:
-  - "{{ .ConfigMapFile }}"
+  - {{ .ConfigMapFile }}
+
+# Add secret to edge cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
+metadata:
+  name: {{ .SmtcEdgeSecretResources }}
+spec:
+  appName: {{ .AppEdge }}
+  newObject: "true"
+  resourceGVK:
+    apiVersion: v1
+    kind: Secret
+    name: {{ .SecretName1 }}
+file:
+  {{ .HelmEdgeApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcEdgeSecretResources }}/customizations
+metadata:
+  name: {{ .SmtcEdgeSecretCustomizations }}
+spec:
+  # bug here, must be false right now.
+  clusterSpecific: "false"
+  clusterInfo:
+    scope: labelResourceFileName
+    clusterProvider: {{ .ClusterProvider }}
+    clusterName: {{ .ClusterEdge }}
+    clusterLabel: {{ .EdgeClusterLabel }}
+    mode: allow
+files:
+    - {{ .SecretKeyFile1 }}
+    - {{ .SecretKeyFile2 }}
+    - {{ .SecretSSHFile }}
+
+#Add tunnel secret to cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
+metadata:
+  name: {{ .SmtcCloudSecretResources }}
+spec:
+  appName: {{ .AppCloud }}
+  newObject: "true"
+  resourceGVK:
+    apiVersion: v1
+    kind: Secret
+    name: {{ .SecretName1 }}
+file:
+  {{ .HelmEdgeApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcCloudSecretResources }}/customizations
+metadata:
+  name: {{ .SmtcCloudSecretCustomizations }}
+spec:
+  # bug here, must be false right now.
+  clusterSpecific: "false"
+  clusterInfo:
+    scope: label
+    clusterProvider: {{ .ClusterProvider }}
+    clusterName: {{ .ClusterCloud }}
+    clusterLabel: {{ .CloudClusterLabel }}
+    mode: allow
+files:
+    - {{ .SecretKeyFile1 }}
+    - {{ .SecretKeyFile2 }}
+    - {{ .SecretSSHFile }}
+
+#Add certificate to cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
+metadata:
+  name: {{ .SmtcCloudCertResources }}
+spec:
+  appName: {{ .AppCloud }}
+  newObject: "true"
+  resourceGVK:
+    apiVersion: v1
+    kind: Secret
+    name: {{ .SecretName2 }}
+file:
+  {{ .HelmEdgeApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcCloudCertResources }}/customizations
+metadata:
+  name: {{ .SmtcCloudCertCustomizations }}
+spec:
+  # bug here, must be false right now.
+  clusterSpecific: "false"
+  clusterInfo:
+    scope: label
+    clusterProvider: {{ .ClusterProvider }}
+    clusterName: {{ .ClusterCloud }}
+    clusterLabel: {{ .CloudClusterLabel }}
+    mode: allow
+files:
+    - {{ .SecretCerFile1 }}
+    - {{ .SecretCerFile2 }}
 
 # Approve
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/approve"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/approve
 
 # Instantiate
 ---
 version: emco/v2
 resourceContext:
-  anchor: "projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/instantiate"
+  anchor: projects/{{ .ProjectName }}/composite-apps/{{ .CompositeApp }}/v1/deployment-intent-groups/{{ .DeploymentIntent }}/instantiate
   
   

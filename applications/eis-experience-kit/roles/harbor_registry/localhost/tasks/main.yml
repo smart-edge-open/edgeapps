@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: create directory for copying certificate
+  file:
+    path: /etc/docker/certs.d/{{ docker_registry_ip }}:{{ docker_registry_port }}
+    state: directory
+    mode: '0755'
+
+- name: get ca.crt from registry
+  get_url:
+    url: https://{{ docker_registry_ip }}:{{ docker_registry_port }}/api/v2.0/systeminfo/getcert
+    dest: /etc/docker/certs.d/{{ docker_registry_ip }}:{{ docker_registry_port }}/harbor.crt
+    use_proxy: no
+    validate_certs: no
+    force: yes
+  retries: 10
+  delay: 10
+  register: result
+  until: result is succeeded
+
+- name: login harbor registry firstly
+  command: docker login "{{ docker_registry_ip }}:{{ docker_registry_port }}" -uadmin -p Harbor12345
+  register: result
+  until: result is succeeded
+  retries: 60
+  delay: 10
+  ignore_errors: yes
+  changed_when: false

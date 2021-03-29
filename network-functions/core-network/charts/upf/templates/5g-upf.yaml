@@ -31,7 +31,7 @@ spec:
 {{ end }}
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
-        - name: CONFIG_VF_IF_NAME
+        - name: CONFIG_VFIF_NAME
           value: {{ .Values.upf.vf_if_name }}
         - name: CONFIG_PCI_BUS_ADDR
           value: {{ .Values.upf.pci_bus_addr }}
@@ -76,9 +76,6 @@ spec:
         - name: class
           mountPath: /sys/devices
           readOnly: false
-        - name: upf-vol
-          mountPath: /root/upf
-          readOnly: false
         - name: sysfs
           mountPath: /sys
           readOnly: false
@@ -106,9 +103,6 @@ spec:
   - name: sysfs
     hostPath:
         path: /sys
-  - name: upf-vol
-    hostPath:
-      path: {{ .Values.node.path }}
   - name: host-proc
     hostPath:
         path: /proc

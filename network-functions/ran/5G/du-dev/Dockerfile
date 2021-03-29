@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2020 Intel Corporation
 
-FROM centos:7.8.2003
+FROM centos:7.9.2009
 
 ENV ftp_proxy=$ftp_proxy
 ENV http_proxy=$http_proxy
@@ -13,7 +13,7 @@ RUN yum update -y && yum install -y hugepages libhugetlbfs-utils numactl-devel
 WORKDIR /root/flexran/docker
 
 COPY bin ./bin
-COPY dpdk-19.11 ./dpdk-19.11
+COPY dpdk-20.11 ./dpdk-20.11
 COPY icc_libs ./icc_libs
 COPY libs ./libs
 COPY sdk ./sdk
@@ -22,7 +22,7 @@ COPY wls_mod ./wls_mod
 
 ENV localPath=/root/flexran/docker
 ENV flexranPath=$localPath
-ENV RTE_SDK=$localPath/dpdk-19.11
+ENV RTE_SDK=$localPath/dpdk-20.11
 ENV RTE_TARGET=x86_64-native-linuxapp-icc
 ENV WIRELESS_SDK_TARGET_ISA=avx512
 ENV RPE_DIR=${flexranPath}/libs/ferrybridge

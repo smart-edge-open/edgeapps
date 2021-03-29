@@ -29,6 +29,7 @@
   - /root/.docker
   - /etc/systemd/system/docker.service.d
   - /etc/docker
+  - /usr/local/bin/docker-compose
 
 - name: remove repository
   yum_repository:

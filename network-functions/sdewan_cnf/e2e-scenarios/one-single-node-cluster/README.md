@@ -8,13 +8,13 @@ Copyright (c) 2020 Intel Corporation
 Reference architecture E2E network topoloy based SDEWAN
 
 - [Introduction](#introduction)
-- [Nework Topology](#network-topology)
-- [Deployment](#deloyment)
+- [Network Topology](#network-topology)
+- [Deployment](#deployment)
   - [Configure UE](#configure-ue)
   - [Deploy OpenNESS](#deploy-openness)
   - [Create OVN networks](#create-ovn-networks)
   - [Install SDEWAN](#install-sdewan)
-  - [Bring up Iperf-client pod](#bring-up-iperf-client-pod)
+  - [Bring up Iperf client pod](#bring-up-iperf-client-pod)
 - [Iperf Test](#iperf-test)
 
 ## Introduction
@@ -42,7 +42,7 @@ Configure the interface that is connected to Edge Node Server
 
 ### Deploy OpenNESS
 
-Clone OpenNESS Experience Kit from github, and follow this [guide](https://openness.atlassian.net/wiki/spaces/CERA/pages/119177504/OpenNESS+Experience+Kit) to prepare the node.
+Clone Converged Edge Experience Kits from github, and follow this [guide](https://github.com/otcshare/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md) to prepare the node.
 
 
 Deploy OpenNESS:
@@ -59,7 +59,7 @@ In node_config provide the name of the Node's interface that is connected to UE 
   source node_config.sh
   ./create_ovn4nfv_networks.sh
   kubectl apply -f ovn4nfv_networks.yml
-  
+
   ```
 ### Install SDEWAN
 
@@ -127,20 +127,23 @@ Confirm sdewan-cnf pod is running, observe the pod’s name:
   ```
   kubectl get pods --all-namespaces | grep  cnf
 
-  
+
   default         sdewan-cnf-bc6d67d49-p2svh          1/2     Running    0          11h
 
   ```
 
-Add SNAT rule to cnf to enable connection from UE to Iperf-client pod
+Enter the CNF pod and add SNAT rule to cnf to enable connection from UE to Iperf-client pod
 
   ```
-  kubectl exec -it  sdewan-cnf-bc6d67d49-p2svh -- iptables -t nat -A POSTROUTING -s 172.16.30.15 -j SNAT --to-source 192.168.2.3
+  kubectl exec -it  sdewan-cnf-bc6d67d49-p2svh -- /bin/bash
+  sudo iptables -t nat -A POSTROUTING -s 172.16.30.15 -j SNAT --to-source 192.168.2.3
   ```
 
 ### Bring up Iperf client pod
 
-Buid iperf-client docker image and build the pod:
+Verify that server_ip and client_ip in iperf_client.sh are set up corectly.
+
+Build iperf-client docker image and build the pod:
 
   ```
   cd  iperf_files/iperf_img
@@ -153,7 +156,8 @@ Buid iperf-client docker image and build the pod:
 Configure default gateway on the Iperf-client pod:
 
   ```
-   kubectl exec -it   iperf-client-846f5f69f9-49vdm -- route add default gw 172.16.30.10 net0
+  kubectl exec -it   iperf-client-846f5f69f9-49vdm -- /bin/bash
+  sudo route add default gw 172.16.30.10 net0
   ```
 ## Iperf Test
 
@@ -165,7 +169,8 @@ Start Iperf server on the UE
 Start Iperf client on the pod:
 
   ```
-  kubectl exec -it   iperf-client-846f5f69f9-49vdm -- /root/client_iperf.sh
+  kubectl exec -it   iperf-client-846f5f69f9-49vdm -- /bin/bash
+  sudo /iperf_client.sh
   ```
 
 Observe Iperf Server on UE. The output should be similar to:
