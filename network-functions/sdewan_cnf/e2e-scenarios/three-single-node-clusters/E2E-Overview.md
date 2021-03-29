@@ -9,7 +9,7 @@ Reference architecture E2E network topology based SDEWAN.
 - [Introduction](#introduction)
   - [SDEWAN](#SDEWAN)
   - [ovn4nfv-k8s-plugin](#ovn4nfv-k8s-plugin)
-- [Full Path Trafic Flow](#full-path-trafic-flow)
+- [Full Path Traffic Flow](#full-path-traffic-flow)
 - [Deployment](#deployment)
   - [UE1](#ue1)
   - [UE2](#ue2)
@@ -50,7 +50,7 @@ ovn4nfv-k8s-plugin is a CNI plugin based on ovn. It can work together with Multu
 
 > Figure 1 - Network Topology
 
-## Full Path Trafic Flow
+## Full Path Traffic Flow
 
 The above picture shows one of sdewan scenarios in OpenNESS. In the scenario, there are 2 UEs connected to two separate edges which are connected to one common hub. It shows the traffic flow from one UE to the other UE via hub. Currently it is just a basic connectivity function without SFC.
 
