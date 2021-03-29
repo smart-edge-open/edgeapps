@@ -443,7 +443,7 @@ def main():
     logging.info("host: %s Started testverification script: master.py from XRAN path %s"
                  , host_name, xran_path)
 
-    if len(sys.argv) == 0:
+    if not sys.argv:
         print("No parameters added!") #pylint: disable=superfluous-parens
         return -1
 
