@@ -57,8 +57,8 @@ spec:
         image: "{{ .Values.upf.image.repository }}:{{ .Values.upf.image.tag }}"
         imagePullPolicy: {{ .Values.upf.image.pullPolicy }}
         command: [ "/bin/sh", "-c" ]
-        args: [ "bash /etc/vpp/generate.sh; /usr/bin/vpp -c /etc/vpp/startup.conf" ]
-        #args: [ "bash /etc/vpp/generate.sh; while true; do sleep 300000; done;" ]
+        args: [ "sudo bash /etc/vpp/generate.sh; sudo /usr/bin/vpp -c /etc/vpp/startup.conf" ]
+        #args: [ "sudo bash +x /etc/vpp/generate.sh; while true; do sleep 300000; done;" ]
         volumeMounts:
         - mountPath: /hugepages
           name: hugepage
@@ -82,7 +82,9 @@ spec:
         - name: tmp
           mountPath: /tmp
         securityContext:
-          privileged: true
+          runAsUser: 1000
+          privileged: true 
+          allowPrivilegeEscalation: true 
         resources:
           {{- toYaml .Values.upf.resources | nindent 12 }}
       - name: upf-agent

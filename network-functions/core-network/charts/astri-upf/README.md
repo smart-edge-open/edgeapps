@@ -11,7 +11,7 @@ ASTRI’s UPF delivers high network throughput with low packet latency. ASTRI’
 
 **Prerequisites**
 
-The UPF and UPF agent container require at least 4 CPU core, 8Gi memory for optimized performance. There should be 1024Mb hugepage memory on the host system. It is recommended to have ubuntu 18.04 LTS as the host system.
+The UPF and UPF agent container require at least 4 CPU core, 8Gi memory for optimized performance. There should be 1024Mb hugepage memory on the host system.
 
 Pre-deploy container images for ASTRI’s UPF on upf node:
 
