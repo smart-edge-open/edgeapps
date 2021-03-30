@@ -26,7 +26,7 @@ n4_ip=$CONFIG_N4_IP_ADDR
 # Gateway IP address
 n6_gw_ip=$CONFIG_N6_GW_IP_ADDR
 
-upf_path=/root/upf
+upf_path=/home/nruser/upf
 
 uio_drv=$CONFIG_UIO_DRIVER       
 
@@ -51,8 +51,8 @@ uio_drv=$CONFIG_UIO_DRIVER
 # NOTE1: End
 ###########################################
 
-
-upf_config=/tmp/upf.conf
+mkdir $upf_path/tmp
+upf_config=$upf_path/tmp/upf.conf
 rm -f $upf_config
 #default edgeapp config:
 if [ -z "$CONFIG_N3_IF_NAME" ] && [ -z "$CONFIG_N4_IF_NAME" ]
@@ -159,7 +159,7 @@ comment {session enable}
 EOF
 
 
-upf_vpp_config=/tmp/upf_vpp.conf
+upf_vpp_config=$upf_path/tmp/upf_vpp.conf
 
 rm -f $upf_vpp_config
 cat <<EOF > $upf_vpp_config
@@ -376,7 +376,7 @@ plugins {
 	#plugin dpdk_plugin.so { disable }
 	#plugin upf_plugin.so { enable }
 	plugin  ioam_plugin.so           { disable }
-    plugin  crypto_ipsecmb_plugin.so { disable }
+    	plugin  crypto_ipsecmb_plugin.so { disable }
 	plugin  nsh_plugin.so            { disable }
 	plugin  avf_plugin.so            { disable }
 	plugin  pppoe_plugin.so          { disable }
@@ -433,7 +433,7 @@ echo 2 > /proc/sys/fs/suid_dumpable
 #$upf_path/install-vpp-native/vpp/bin/vpp -c $upf_vpp_config
 
 export LD_LIBRARY_PATH=$upf_path/install-vpp-native/vpp/lib:$LD_LIBRARY_PATH
-echo "=========== Start =========" > /root/upf/run.log
+echo "=========== Start =========" > /home/nruser/upf/run.log
 
 echo "$LD_LIBRARY_PATH" >> $upf_path/run.log
 echo "at step-1" >> $upf_path/run.log
