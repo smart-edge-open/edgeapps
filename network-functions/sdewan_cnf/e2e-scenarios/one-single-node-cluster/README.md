@@ -42,7 +42,7 @@ Configure the interface that is connected to Edge Node Server
 
 ### Deploy OpenNESS
 
-Clone Converged Edge Experience Kits from github, and follow this [guide](https://github.com/otcshare/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md) to prepare the node.
+Clone Converged Edge Experience Kits from github, and follow this [guide](https://github.com/otcshare/specs/blob/master/doc/getting-started/openness-cluster-setup.md) to prepare the node.
 
 
 Deploy OpenNESS:

@@ -71,9 +71,9 @@ This mode provide an easy and quick start with executing the application in the 
 
 Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card comprising of Intel Core i3-7100U Processor with Intel HD Graphics 620 and 12 Movidius VPUs. Provisioning the network edge with VCAC-A acceleration through Converged Edge Experience Kits enables dense and performant Smart City video analytics and transcoding pipelines.
 
-1. Deploy the OpenNESS [Media Analytics Flavor with VCAC-A](https://github.com/otcshare/specs/blob/master/doc/flavors.md#media-analytics-flavor-with-vcac-a) and place the OpenNESS edge node hostname, that has the VCAC-A card(s) plugged-in, in `[edgenode_vca_group]` group in `inventory.ini` file of the openness-experience-kit.
+1. Deploy the OpenNESS [Media Analytics Flavor with VCAC-A](https://github.com/otcshare/specs/blob/master/doc/flavors.md#media-analytics-flavor-with-vcac-a) and place the OpenNESS edge node hostname, that has the VCAC-A card(s) plugged-in, in `edgenode_vca_group:` group in `inventory.yml` file of the converged-edge-experience-kits.
 
-2. Configure openness-experience-kit to deploy "Weave Net" CNI by editing `group_vars/all/10-default.yml`
+2. Configure converged-edge-experience-kits to deploy "Weave Net" CNI by editing `group_vars/all/10-default.yml`
 
     ```yaml
     kubernetes_cnis:
