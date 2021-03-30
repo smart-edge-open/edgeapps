@@ -22,7 +22,7 @@ spec:
       args:
 {{- if eq .Values.upf_autostart true }}
         - |
-          sudo {{ .Values.node.path }}/run_upf.sh; while true ; do
+          sudo -E {{ .Values.node.path }}/run_upf.sh; while true ; do
             sleep 90000000
           done
 {{ else }}

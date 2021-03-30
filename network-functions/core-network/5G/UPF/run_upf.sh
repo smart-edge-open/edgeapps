@@ -51,8 +51,8 @@ uio_drv=$CONFIG_UIO_DRIVER
 # NOTE1: End
 ###########################################
 
-
-upf_config=/tmp/upf.conf
+mkdir $upf_path/tmp
+upf_config=$upf_path/tmp/upf.conf
 rm -f $upf_config
 #default edgeapp config:
 if [ -z "$CONFIG_N3_IF_NAME" ] && [ -z "$CONFIG_N4_IF_NAME" ]
@@ -159,7 +159,7 @@ comment {session enable}
 EOF
 
 
-upf_vpp_config=/tmp/upf_vpp.conf
+upf_vpp_config=$upf_path/tmp/upf_vpp.conf
 
 rm -f $upf_vpp_config
 cat <<EOF > $upf_vpp_config
@@ -376,7 +376,7 @@ plugins {
 	#plugin dpdk_plugin.so { disable }
 	#plugin upf_plugin.so { enable }
 	plugin  ioam_plugin.so           { disable }
-    plugin  crypto_ipsecmb_plugin.so { disable }
+    	plugin  crypto_ipsecmb_plugin.so { disable }
 	plugin  nsh_plugin.so            { disable }
 	plugin  avf_plugin.so            { disable }
 	plugin  pppoe_plugin.so          { disable }
