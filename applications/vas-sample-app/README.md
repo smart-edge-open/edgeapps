@@ -82,6 +82,8 @@ vas-cons-app    6m41s   openness.org/certsigner   system:serviceaccount:default:
     vas-cons-app-7b8c9f87d8-79vnq          1/1     Running   0          39s
     ```
 
+> **NOTE** Sample application is performing actions and is closing when done. K8s restarts the sample application. After few restarts K8s marks sample application state as CrashLoopBackOff. It is caused by limited lifetime of sample application.
+
 2. Check the pod's logs, results should look similar to the following:
     ```shell
     $ kubectl logs -f vas-cons-app-7b8c9f87d8-79vnq
