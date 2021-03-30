@@ -11,8 +11,8 @@ data:
     NIREQ=32
     # target_device:  CPU, GPU, FPGA, HDDL or MYRIAD are acceptable
     TARGET_DEVICE=HDDL
-    IMAGE=/opt/intel/openvino/deployment_tools/demo/car.png
-    MODEL=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/public/ssd512/FP16/ssd512.xml
+    IMAGE=/opt/intel/openvino_2021/deployment_tools/demo/car.png
+    MODEL=/opt/intel/openvino_2021/deployment_tools/open_model_zoo/tools/downloader/public/ssd512/FP16/ssd512.xml
     # API: sync/async
     API=async
     BATCH_SIZE=1
@@ -36,7 +36,7 @@ spec:
           image: docker
           imagePullPolicy: IfNotPresent
           command: [ "/bin/sh" ]
-          args: ["-c", "/usr/local/bin/docker run --rm --device-cgroup-rule='c 10:* rmw' --device-cgroup-rule='c 89:* rmw' --device-cgroup-rule='c 189:* rmw' --device-cgroup-rule='c 180:* rmw' -v /dev:/dev -v /var/tmp:/var/tmp --env-file /dockerenv/env.txt openvino-benchmark:1.0 /do_benchmark.sh"]
+          args: ["-c", "/usr/local/bin/docker run --rm --device-cgroup-rule='c 10:* rmw' --device-cgroup-rule='c 89:* rmw' --device-cgroup-rule='c 189:* rmw' --device-cgroup-rule='c 180:* rmw' -v /dev:/dev -v /var/tmp:/var/tmp --env-file /dockerenv/env.txt openvino-benchmark:1.0 /home/openvino/do_benchmark.sh"]
           securityContext:
             readOnlyRootFilesystem: false
             privileged: true

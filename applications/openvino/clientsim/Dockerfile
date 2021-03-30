@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2019 Intel Corporation
 
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy,openvino.openness
+ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /root
 

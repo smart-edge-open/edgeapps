@@ -25,6 +25,6 @@ EOL
     OPTIONS=("--volume=$DIR:/home/$USER:rw")
     echo "$IMAGE" >/dev/null
     echo "${OPTIONS[@]}" >/dev/null
-    . "/opt/smart_secret/shell.sh" /home/$USER/self-sign.sh "$(hostname -f)" 
+    . "/opt/openness/smart_secret/shell.sh" /home/$USER/self-sign.sh "$(hostname -f)" 
     ;;
 esac

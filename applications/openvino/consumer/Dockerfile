@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2019 Intel Corporation
 
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
 ENV no_proxy=$no_proxy,eaa.openness,analytics.openness
+ENV DEBIAN_FRONTEND=noninteractive
 
 ##  OnPrem NTS uses CPU 0,2 and 3.
 ##  So OpenVINO user needs to configure the value according the setup
@@ -30,9 +31,8 @@ RUN apt-get update && \
 	apt-get -y install python3-pip && \
 	apt-get -y install nginx libnginx-mod-rtmp libjson-c-dev && \
 	apt-get -y install util-linux && \
-	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.65-dev libboost-thread1.65 libboost-filesystem1.65
+	apt-get -y install libusb-1.0-0-dev libudev-dev libssl-dev libboost-program-options1.71-dev libboost-thread1.71 libboost-filesystem1.71
 
-ENV DEBIAN_FRONTEND=noninteractive
 # OpenVino installation
 RUN cd /tmp && \
 	wget $OPENVINO_LINK && \

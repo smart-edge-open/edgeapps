@@ -15,6 +15,7 @@ pay_attention () {
     sleep 5
 }
 
+# package helm chart
 package_helmchart () {
     if ! tar -zcvf smtc_edge_helmchart.tar.gz smtc_edge; then
         log "package edge helm chart ... failed."
@@ -27,6 +28,7 @@ package_helmchart () {
     fi
 }
 
+# package override
 package_override () {
     if ! tar -zcvf smtc_edge_profile.tar.gz -C smtc_edge_profile .; then
         log "package profile ... failed."
@@ -39,18 +41,19 @@ package_override () {
     fi
 }
 
+#create_clusterconfig
 create_clusterconfig () {
-    if [ -d /opt/clusters_config ]; then
-        rm -rf /opt/clusters_config
+    if [ -d /opt/openness/clusters_config ]; then
+        rm -rf /opt/openness/clusters_config
     fi
-    mkdir -p /opt/clusters_config/
+    mkdir -p /opt/openness/clusters_config/
 
-    if ! scp root@"${EDGE_HOST}":/root/.kube/config /opt/clusters_config/edgecluster_config; then
-        log "scp /opt/clusters_config/edgecluster_config ... failed."
+    if ! scp "${USER}"@"${EDGE_HOST}":~/.kube/config /opt/openness/clusters_config/edgecluster_config; then
+        log "scp /opt/openness/clusters_config/edgecluster_config ... failed."
         exit 1
     fi
 
-    if ! scp root@"${CLOUD_HOST}":/root/.kube/config /opt/clusters_config/cloudcluster_config; then
+    if ! scp "${USER}"@"${CLOUD_HOST}":~/.kube/config /opt/openness/clusters_config/cloudcluster_config; then
         log "scp /opt/clusters_config/cloudcluster_config ... failed."
         exit 1
     fi
@@ -74,42 +77,51 @@ pull_from_docker() {
     cur_dir="$(dirname "$(pwd)")"
     docker pull smartcity/smtc_web_cloud_tunnelled:latest
     docker pull smartcity/smtc_certificate:latest
-
+   
+    # Adapt to different versions of docker containerd 
+    sed -i "15s/\"\$(env/\$(env/g" "$cur_dir"/generic-k8s-resource/shell.sh
+    sed -i '15s/)\"/)/g' "$cur_dir"/generic-k8s-resource/shell.sh  
+  
     YAMLVALUE=values.yaml
     sed -i -e "s/RsyncIP:.*/RsyncIP: ${REGISTRY_IP}/g" -e "s/GacIP:.*/GacIP: ${REGISTRY_IP}/g" ${YAMLVALUE}
 	
-    if [ -d /opt/smart_secret ]; then
-        rm -rf /opt/smart_secret
+    if [ -d /opt/openness/smart_secret ]; then
+       rm -rf /opt/openness/smart_secret
     fi	
-    mkdir /opt/smart_secret
-    cp "$cur_dir"/generic-k8s-resource/create-key.sh "$cur_dir"/generic-k8s-resource/shell.sh "$cur_dir"/generic-k8s-resource/self-sign.sh /opt/smart_secret
-    sh /opt/smart_secret/create-key.sh "root@${CLOUD_HOST}"
-    sh /opt/smart_secret/self-sign.sh "${REGISTRY}"
+    mkdir /opt/openness/smart_secret
+    cp "$cur_dir"/generic-k8s-resource/create-key.sh "$cur_dir"/generic-k8s-resource/shell.sh "$cur_dir"/generic-k8s-resource/self-sign.sh /opt/openness/smart_secret
+    sh /opt/openness/smart_secret/create-key.sh "${USER}@${CLOUD_HOST}"
+    sh /opt/openness/smart_secret/self-sign.sh "${REGISTRY}"
 	
-    sed -i -e "s/    cloudHost:.*/    cloudHost: \"root@${CLOUD_HOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUD_HOST}\"/g" "$cur_dir"/smtc_cloud/values.yaml
-    sed -i -e "s/    cloudHost:.*/    cloudHost: \"root@${CLOUD_HOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUD_HOST}\"/g" "$cur_dir"/smtc_edge/values.yaml
+    sed -i -e "s/    cloudHost:.*/    cloudHost: \"${USER}@${CLOUD_HOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUD_HOST}\"/g" "$cur_dir"/smtc_cloud/values.yaml
+    sed -i -e "s/    cloudHost:.*/    cloudHost: \"${USER}@${CLOUD_HOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUD_HOST}\"/g" "$cur_dir"/smtc_edge/values.yaml
 	
     #echo "[starting] packing helm chart ..."
     cd "$cur_dir"
     package_helmchart
-    mv -f smtc_edge_helmchart.tar.gz smtc_cloud_helmchart.tar.gz /opt
+    mv -f smtc_edge_helmchart.tar.gz smtc_cloud_helmchart.tar.gz /opt/openness
 
     echo "[starting] packing override ..."
     cd "$cur_dir"/override-profile
     package_override
-    mv -f smtc_edge_profile.tar.gz smtc_cloud_profile.tar.gz /opt
+    mv -f smtc_edge_profile.tar.gz smtc_cloud_profile.tar.gz /opt/openness
 	
     cd "$cur_dir"/cli-scripts
     echo "[starting] uploading clusters kubeconfig ..."
     create_clusterconfig
 
     echo "[starting] preparing json for configmap ..."
-    cp "$cur_dir"/generic-k8s-resource/sensor-info.json /opt/
+    cp "$cur_dir"/generic-k8s-resource/sensor-info.json /opt/openness
+    
+    sudo chown -R "${USER}":"${USER}" /opt/openness/smart_secret/.ssh
+    sudo chown -R "${USER}":"${USER}" /opt/openness/smart_secret/.key
+    sudo chown -R "${USER}":"${USER}" /opt/openness/smart_secret/self.key
+    sudo chown -R "${USER}":"${USER}" /opt/openness/smart_secret/self.crt
 
     echo "[starting] prepare edge cluster environment ..."
     # clean up network policy on cloud and edge
-    kubectl --kubeconfig=/opt/clusters_config/edgecluster_config delete netpol block-all-ingress >/dev/null 2>&1
-    kubectl --kubeconfig=/opt/clusters_config/cloudcluster_config delete netpol block-all-ingress >/dev/null 2>&1
+    kubectl --kubeconfig=/opt/openness/clusters_config/edgecluster_config delete netpol block-all-ingress >/dev/null 2>&1
+    kubectl --kubeconfig=/opt/openness/clusters_config/cloudcluster_config delete netpol block-all-ingress >/dev/null 2>&1
 
     log "Env Setup Successfully."
     exit 0
@@ -130,7 +142,7 @@ pull_from_harbor() {
 
     echo "[starting] building smtc images and push to registry..."
     # Yum package install
-    if ! yum install cmake m4 -y; then
+    if ! sudo yum install cmake m4 -y; then
         log "yum install cmake ... failed."
         exit 1
     fi
@@ -175,8 +187,8 @@ pull_from_harbor() {
     rm -rf images.txt
     images_n=$(cat < images_list.txt |wc -l)
     if [ "$images_n" -lt 16 ]; then
-        make
-        make tunnels
+        sudo make
+        sudo make tunnels
         cd ..
     else
         #sed -i '0,/^\(registryPrefix: *\).*/s//\1"${REGISTRY_HOST}"/' $cur_dir/cli-scripts/Smart-City-Sample/deployment/kubernetes/helm/smtc/values.yaml
@@ -192,7 +204,7 @@ pull_from_harbor() {
     EDGESMTC=../helm-chart/smtc_edge
     CLOUDSMTC=../helm-chart/smtc_cloud
     VALUESYAML=${SMTC}/values.yaml
-    sed -i -e "s/    cloudHost:.*/    cloudHost: \"root@${CLOUDHOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUDHOST}\"/g" ${VALUESYAML}
+    sed -i -e "s/    cloudHost:.*/    cloudHost: \"${USER}@${CLOUDHOST}\"/g" -e "s/cloudWebExternalIP:.*/cloudWebExternalIP: \"${CLOUDHOST}\"/g" ${VALUESYAML}
 
     # Set helm-chart api version
     CHARTYAML=${SMTC}/Chart.yaml
@@ -216,31 +228,31 @@ pull_from_harbor() {
     echo "[starting] packing helm chart ..."
     cd ../helm-chart/
     package_helmchart
-    mv -f smtc_edge_helmchart.tar.gz smtc_cloud_helmchart.tar.gz /opt
+    mv -f smtc_edge_helmchart.tar.gz smtc_cloud_helmchart.tar.gz /opt/openness
 
     echo "[starting] packing override ..."
     cd ../override-profile/
     package_override
-    mv -f smtc_edge_profile.tar.gz smtc_cloud_profile.tar.gz /opt
+    mv -f smtc_edge_profile.tar.gz smtc_cloud_profile.tar.gz /opt/openness
  	
     echo "[starting] preparing json for configmap ..."
     cd ../generic-k8s-resource/
-    cp sensor-info.json /opt/
+    cp sensor-info.json /opt/openness
 
     echo "[starting] uploading clusters kubeconfig ..."
     create_clusterconfig
 
     echo "[starting] creating secret ..."
     cd ../cli-scripts/Smart-City-Sample/deployment/tunnel
-    if ! ./create-key.sh "root@${CLOUD_HOST}"; then
+    if ! ./create-key.sh "${USER}@${CLOUD_HOST}"; then
         log "creating secret ... failed."
         exit 1
     fi
-    if [ -d /opt/smart_secret ]; then
-        rm -rf /opt/smart_secret
+    if [ -d /opt/openness/smart_secret ]; then
+        rm -rf /opt/openness/smart_secret
     fi
-    mkdir /opt/smart_secret
-    mv -f .key .ssh /opt/smart_secret
+    mkdir /opt/openness/smart_secret
+    sudo mv -f .key .ssh /opt/openness/smart_secret
 
     echo "[starting] creating certificate ..."
     cd ../certificate
@@ -248,12 +260,17 @@ pull_from_harbor() {
         log "create certificate ... failed."
         exit 1
     fi
-    mv -f self.crt self.key /opt/smart_secret
+    sudo mv -f self.crt self.key /opt/openness/smart_secret
+
+    sudo chown -R "${USER}":"${USER}" /opt/openness/smart_secret/.ssh
+    sudo chown -R "${USER}":"${USER}" /opt/openness/smart_secret/.key
+    sudo chown -R "${USER}":"${USER}" /opt/openness/smart_secret/self.key
+    sudo chown -R "${USER}":"${USER}" /opt/openness/smart_secret/self.crt
 
     echo "[starting] prepare edge cluster environment ..."
     # clean up network policy on cloud and edge
-    kubectl --kubeconfig=/opt/clusters_config/edgecluster_config delete netpol block-all-ingress cdi-upload-proxy-policy >/dev/null 2>&1
-    kubectl --kubeconfig=/opt/clusters_config/cloudcluster_config delete netpol block-all-ingress cdi-upload-proxy-policy >/dev/null 2>&1
+    kubectl --kubeconfig=/opt/openness/clusters_config/edgecluster_config delete netpol block-all-ingress cdi-upload-proxy-policy >/dev/null 2>&1
+    kubectl --kubeconfig=/opt/openness/clusters_config/cloudcluster_config delete netpol block-all-ingress cdi-upload-proxy-policy >/dev/null 2>&1
 
     log "Env Setup Successfully."
     exit 0
@@ -268,7 +285,6 @@ func() {
     echo "EDGE_IP: edge cluster ip."
     echo "EDGE_IP: cloud cluster ip."
     echo "-r: rebuild SmartCity images from SmartCity source code(It will take about two hours)"
-    echo "-n: pull SmartCity images from docker registry(the Cluster should configured with docker registry)"
     exit -1
 }
 while getopts 'e:c:d:rnh' OPT; do
@@ -277,7 +293,6 @@ while getopts 'e:c:d:rnh' OPT; do
         d) edge_ip="$OPTARG";;
         c) cloud_ip="$OPTARG";;
         r) pull_from_harbor "$emco_ip" "$edge_ip" "$cloud_ip";;
-        n) pull_from_docker "$emco_ip" "$edge_ip" "$cloud_ip";;
         h) func;;
     esac
 done
