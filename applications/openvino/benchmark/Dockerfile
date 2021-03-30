@@ -61,6 +61,7 @@ RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && make"
 RUN useradd -ms /bin/bash -G video,users openvino && \
     chown -R openvino /home/openvino
 RUN mv /root/inference_engine_samples_build /home/openvino/
+RUN mv /root/openvino_models /home/openvino/
 
 RUN chown -R openvino:openvino $INSTALL_DIR/
 RUN chown -R openvino:openvino /home/openvino/
