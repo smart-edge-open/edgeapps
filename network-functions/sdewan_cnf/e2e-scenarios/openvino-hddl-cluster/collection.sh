@@ -29,6 +29,7 @@ cat /proc/meminfo > ${BENCHMARK_PATH}/proc.meminfo
 lspci | grep USB | tee ${BENCHMARK_PATH}/HDDL_Card.info
 yum install usbutils -y
 lsusb | grep "Myriad VPU" | tee ${BENCHMARK_PATH}/HDDL_VPU.info
+find /dev -name "myriad*" | tee ${BENCHMARK_PATH}/myriad_dev.info
 
 # openvino version
 OPENVINO_TOOLKIT=$(grep "ARG DOWNLOAD_LINK=" edgeapps/applications/openvino/benchmark/Dockerfile)
