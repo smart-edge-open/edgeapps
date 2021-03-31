@@ -26,12 +26,8 @@ spec:
                   - key: vcac-pool
                     operator: Exists
       {{- end }}
-      volumes:
-      - configMap:
-          defaultMode: 420
-          name: streams
-        name: kstreams
       {{- if .Values.openness.enabled }}
+      volumes:
       - name: certs
         emptyDir: {}
       - name: ca-certrequester
@@ -76,11 +72,8 @@ spec:
       {{- end }}
       containers:
         - name:  edge
-          volumeMounts:
-          - mountPath: /data.json
-            name: kstreams
-            subPath: streams.json
           {{- if .Values.openness.enabled }}
+          volumeMounts:
           - name: certs
             mountPath: /root/certs/
           {{- end }}
