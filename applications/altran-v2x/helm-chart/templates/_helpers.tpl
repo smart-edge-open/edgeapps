@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Altran Technology
 {{/*
 Expand the name of the chart.
 */}}
