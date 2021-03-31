@@ -17,4 +17,5 @@
     - role: machine_setup/k8s_master
     - role: provision/controlplane
     - role: camera_stream/deploy
+      when: camera_stream_pod | default(True)
     - role: deploy

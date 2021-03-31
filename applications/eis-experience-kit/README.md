@@ -67,6 +67,7 @@ After release package download follow this link for getting EII release package 
 ```
 **Note**:
 - Run above download command on  `Ubuntu 18.04.LTS` HOST or VM.
+- After download success copy EII release package `Edge_Insights_for_Industrial_2.4` on ansible Host machine.
 
 ### Build Stage
 Overview on `eis-experience-kit` architecture:
