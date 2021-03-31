@@ -9,8 +9,7 @@ Reference architecture E2E network topology based SDEWAN.
 - [Introduction](#introduction)
   - [SDEWAN](#SDEWAN)
   - [ovn4nfv-k8s-plugin](#ovn4nfv-k8s-plugin)
-- [Full Path Trafic Flow](#full-path-trafic-flow)
-- [Full Path Trafic Flow](#full-path-trafic-flow)
+- [Full Path Traffic Flow](#full-path-traffic-flow)
 - [Deployment](#deployment)
   - [UE1](#ue1)
   - [UE2](#ue2)
@@ -51,7 +50,7 @@ ovn4nfv-k8s-plugin is a CNI plugin based on ovn. It can work together with Multu
 
 > Figure 1 - Network Topology
 
-## Full Path Trafic Flow
+## Full Path Traffic Flow
 
 The above picture shows one of sdewan scenarios in OpenNESS. In the scenario, there are 2 UEs connected to two separate edges which are connected to one common hub. It shows the traffic flow from one UE to the other UE via hub. Currently it is just a basic connectivity function without SFC.
 
@@ -63,14 +62,14 @@ On edge1 we also setup an OpenVINO app, currently, it only does local benchmark.
 
 ## Deployment
 
-Currently, there's automation script(for example ansible to setup all these 5 servers. But there are some scripts to facilitate the deployment process.
+Currently, there's automation script(for example ansible to setup all these 5 servers). But there are some scripts to facilitate the deployment process.
 
 We can deploy in this order, first 2 UEs, then hub at last 2 edges.
 On all the three servers we should download the edgeapp repository and setup the global network topology variables.
 
    ```
    GIT_HTTP_PROXY=http://proxy-mu.intel.com:911
-   GIT_USER=YouGitName
+   GIT_USER=YourGitName
    git clone https://github.com/open-ness/edgeapps.git \
    --config "http.proxy=$GIT_HTTP_PROXY" \
    --config "credential.username=$GIT_USER"
@@ -156,6 +155,7 @@ Make sure "edgeapps" is your current directory.
    ```
    http_proxy=$GIT_HTTP_PROXY ./edgeapps/applications/sdewan_ctrl/pre-install.sh
    cd ./edgeapps/applications/
+   while [ $(kubectl get deploy -n cert-manager | grep 0/1 | wc -l) -gt 0 ]; do   sleep 2; done
    helm install sdewan-ctrl ./sdewan_ctrl/chart/sdewan-crd-ctrl/
    cd -
    ```
@@ -219,6 +219,7 @@ Make sure "edgeapps" is your current directory.
    ```
    http_proxy=$GIT_HTTP_PROXY ./edgeapps/applications/sdewan_ctrl/pre-install.sh
    cd ./edgeapps/applications/
+   while [ $(kubectl get deploy -n cert-manager | grep 0/1 | wc -l) -gt 0 ]; do   sleep 2; done
    helm install sdewan-ctrl ./sdewan_ctrl/chart/sdewan-crd-ctrl/
    cd -
    ```
@@ -266,7 +267,7 @@ In CNF setting:
 By CR
 
    ```
-   sh $APP_PATH/dge1/crd_tunnel_rules.sh
+   sh $APP_PATH/edge1/crd_tunnel_rules.sh
    ```
 
 ### EDGE2
@@ -297,6 +298,7 @@ Make sure "edgeapps" is your current directory.
    ```
    http_proxy=$GIT_HTTP_PROXY ./edgeapps/applications/sdewan_ctrl/pre-install.sh
    cd ./edgeapps/applications/
+   while [ $(kubectl get deploy -n cert-manager | grep 0/1 | wc -l) -gt 0 ]; do   sleep 2; done
    helm install sdewan-ctrl ./sdewan_ctrl/chart/sdewan-crd-ctrl/
    cd -
    ```
@@ -344,7 +346,7 @@ In CNF setting:
 By CR
 
    ```
-   sh $APP_PATH/dge2/crd_tunnel_rules.sh
+   sh $APP_PATH/edge2/crd_tunnel_rules.sh
    ```
 
 ## Testing
@@ -366,7 +368,8 @@ Get memory and CPU consumption
 Login EDGE1 to get the tunnel overlay IP, it is a floating ip that maps iperf3 server ip.
 
    ```
-   IPNET=`kubectl exec -it  $CNFPOD -- ip a | grep ${O_UE2_IP%.*} | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}'`
+   CNFPOD=$(kubectl get pod -l sdewanPurpose=sdewan-cnf -n $NS -o name)
+   IPNET=`kubectl exec -it  $CNFPOD -n $NS -- ip a | grep ${O_TUNNEL1_NET%.*} | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}'`
    IPERF_SERVER=${IPNET%%/*}
    echo $IPERF_SERVER
    ```
@@ -381,6 +384,6 @@ Login UE1 and start iperf3 server.
 Login UE2 and start iperf3 client.
 
    ```
-   IPERF_SERVER=xx.xx.xx.x  # IPERF_SERVER get from EDGE1
+   export IPERF_SERVER=xx.xx.xx.x  # IPERF_SERVER get from EDGE1
    sh $APP_PATH/ue2/iperf_client.sh
    ```

@@ -1,0 +1,496 @@
+{
+    "/EISZmqBroker/config": {},
+    "/EISZmqBroker/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:60515",
+                "Name": "backend",
+                "Topics": [
+                    "*"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Subscribers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:60514",
+                "Name": "frontend",
+                "PublisherAppName": "*",
+                "Topics": [
+                    "*"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/EtcdUI/config": {},
+    "/EtcdUI/interfaces": {},
+    "/FactoryControlApp/config": {
+        "green_bit_register": 19,
+        "io_module_ip": "localhost",
+        "io_module_port": 502,
+        "red_bit_register": 20
+    },
+    "/FactoryControlApp/interfaces": {
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/GlobalEnv/": {
+        "C_LOG_LEVEL": "DEBUG",
+        "ETCD_KEEPER_PORT": "7070",
+        "GO_LOG_LEVEL": "DEBUG",
+        "GO_VERBOSE": "0",
+        "PY_LOG_LEVEL": "DEBUG"
+    },
+    "/ImageStore/config": {
+        "minio": {
+            "accessKey": "admin",
+            "retentionPollInterval": "60s",
+            "retentionTime": "1h",
+            "secretKey": "password",
+            "ssl": "false"
+        }
+    },
+    "/ImageStore/interfaces": {
+        "Servers": [
+            {
+                "AllowedClients": [
+                    "Visualizer",
+                    "RestDataExport"
+                ],
+                "EndPoint": "127.0.0.1:5669",
+                "Name": "ImageStore",
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/InfluxDBConnector/config": {
+        "blacklist_query": [
+            "CREATE",
+            "DROP",
+            "DELETE",
+            "ALTER",
+            "<script>"
+        ],
+        "ignore_keys": [
+            "defects"
+        ],
+        "influxdb": {
+            "dbname": "datain",
+            "password": "admin123",
+            "port": "8086",
+            "retention": "1h30m5s",
+            "ssl": "True",
+            "username": "admin",
+            "verifySsl": "False"
+        },
+        "pub_workers": "5",
+        "sub_workers": "5",
+        "tag_keys": []
+    },
+    "/InfluxDBConnector/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:65033",
+                "Name": "PointData",
+                "Topics": [
+                    "point_data"
+                ],
+                "Type": "zmq_tcp"
+            },
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:65034",
+                "Name": "PointClassifierResults",
+                "Topics": [
+                    "point_classifier_results"
+                ],
+                "Type": "zmq_tcp"
+            },
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:65030",
+                "Name": "HumidityClassifierResults",
+                "Topics": [
+                    "humidity_classifier_results"
+                ],
+                "Type": "zmq_tcp"
+            },
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:65031",
+                "Name": "TSData",
+                "Topics": [
+                    "ts_data"
+                ],
+                "Type": "zmq_tcp"
+            },
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:65032",
+                "Name": "RFCResults",
+                "Topics": [
+                    "rfc_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Servers": [
+            {
+                "AllowedClients": [
+                    "Visualizer",
+                    "DiscoveryCreek",
+                    "OpcuaExport",
+                    "RestDataExport"
+                ],
+                "EndPoint": "127.0.0.1:65145",
+                "Name": "InfluxDBConnector",
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "video",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            },
+            {
+                "EndPoint": "127.0.0.1:65035",
+                "Name": "dc",
+                "PublisherAppName": "DiscoveryCreek",
+                "Topics": [
+                    "dc_point_data_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/OpcuaExport/config": {
+        "OpcuaDatabusTopics": [
+            "opcua_cam_serial1_results",
+            "opcua_cam_serial2_results",
+            "opcua_point_classifier_results"
+        ],
+        "OpcuaExportCfg": "opcua,localhost:65003"
+    },
+    "/OpcuaExport/interfaces": {
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "defaultVA",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            },
+            {
+                "EndPoint": "127.0.0.1:65016",
+                "Name": "defaultInflux",
+                "PublisherAppName": "InfluxDBConnector",
+                "Topics": [
+                    "point_classifier_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/RestDataExport/config": {
+        "camera1_stream_results": "http://localhost:8082",
+        "http_server_ca": "/opt/intel/eis/cert.pem",
+        "point_classifier_results": "http://localhost:8082",
+        "rest_export_server_host": "localhost",
+        "rest_export_server_port": "8087"
+    },
+    "/RestDataExport/interfaces": {
+        "Clients": [
+            {
+                "EndPoint": "127.0.0.1:5669",
+                "Name": "ImageStore",
+                "ServerAppName": "ImageStore",
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            },
+            {
+                "EndPoint": "127.0.0.1:65016",
+                "Name": "influxSub",
+                "PublisherAppName": "InfluxDBConnector",
+                "Topics": [
+                    "point_classifier_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/TLSRemoteAgent/config": {
+        "passwd": "password",
+        "tls_host": "localhost",
+        "user_labels": [
+            {
+                "VideoAnalytics": {
+                    "0": "D_MISSING",
+                    "1": "D_SHORT"
+                },
+                "VideoAnalytics2": {
+                    "1": "safety_helmet",
+                    "2": "safety_jacket",
+                    "3": "Safe",
+                    "4": "Violation"
+                }
+            }
+        ],
+        "username": "user"
+    },
+    "/TLSRemoteAgent/interfaces": {
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/VideoAnalytics/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "max_workers": 4,
+        "queue_size": 10,
+        "udfs": [
+            {
+                "device": "CPU",
+                "model_bin": "common/video/udfs/python/pcb/ref/model_2.bin",
+                "model_xml": "common/video/udfs/python/pcb/ref/model_2.xml",
+                "name": "pcb.pcb_classifier",
+                "ref_config_roi": "common/video/udfs/python/pcb/ref/roi_2.json",
+                "ref_img": "common/video/udfs/python/pcb/ref/ref.png",
+                "type": "python"
+            }
+        ]
+    },
+    "/VideoAnalytics/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ],
+        "Subscribers": [
+            {
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "PublisherAppName": "VideoIngestion",
+                "Topics": [
+                    "camera1_stream"
+                ],
+                "Type": "zmq_ipc",
+                "zmq_recv_hwm": 50
+            }
+        ]
+    },
+    "/VideoIngestion/config": {
+        "encoding": {
+            "level": 95,
+            "type": "jpeg"
+        },
+        "ingestor": {
+            "loop_video": true,
+            "pipeline": "rtspsrc location=\"rtsp://{{ rtsp_camera_stream_ip }}:{{ rtsp_camera_stream_port }}/\" latency=100 ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! appsink max_buffers=100 drop=true",
+            "poll_interval": 0.2,
+            "queue_size": 10,
+            "type": "opencv"
+        },
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        },
+        "udfs": [
+            {
+                "n_left_px": 1000,
+                "n_right_px": 1000,
+                "n_total_px": 300000,
+                "name": "pcb.pcb_filter",
+                "scale_ratio": 4,
+                "training_mode": "false",
+                "type": "python"
+            }
+        ]
+    },
+    "/VideoIngestion/interfaces": {
+        "Publishers": [
+            {
+                "AllowedClients": [
+                    "VideoAnalytics",
+                    "Visualizer",
+                    "WebVisualizer",
+                    "TLSRemoteAgent",
+                    "RestDataExport"
+                ],
+                "EndPoint": "/EIS/sockets",
+                "Name": "default",
+                "Topics": [
+                    "camera1_stream"
+                ],
+                "Type": "zmq_ipc"
+            }
+        ],
+        "Servers": [
+            {
+                "AllowedClients": [
+                    "*"
+                ],
+                "EndPoint": "127.0.0.1:66013",
+                "Name": "default",
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/Visualizer/config": {
+        "draw_results": "true",
+        "labels": {
+            "camera1_stream_results": {
+                "0": "MISSING",
+                "1": "SHORT"
+            },
+            "gva_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            },
+            "native_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            },
+            "py_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            }
+        },
+        "save_image": "{{ save_image }}"
+    },
+    "/Visualizer/interfaces": {
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    },
+    "/WebVisualizer/config": {
+        "dev_port": 5001,
+        "draw_results": "true",
+        "labels": {
+            "camera1_stream_results": {
+                "0": "MISSING",
+                "1": "SHORT"
+            },
+            "gva_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            },
+            "native_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            },
+            "py_safety_gear_stream_results": {
+                "1": "safety_helmet",
+                "2": "safety_jacket",
+                "3": "Safe",
+                "4": "Violation"
+            }
+        },
+        "password": "admin@123",
+        "port": 5000,
+        "username": "admin"
+    },
+    "/WebVisualizer/interfaces": {
+        "Subscribers": [
+            {
+                "EndPoint": "127.0.0.1:65013",
+                "Name": "default",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "Type": "zmq_tcp"
+            }
+        ]
+    }
+}

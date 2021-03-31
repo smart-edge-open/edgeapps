@@ -1,0 +1,232 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+{{- range $scenarioIdx, $scenarioName := $.Values.scenario }}
+{{- $args := dict "scenarioName" $scenarioName "Values" $.Values }}
+{{- range $officeIdx := until ( int ( include "smtc.noffices" $args ) ) }}
+{{- $officeName := printf "%s-office%d" $scenarioName (add $officeIdx 1) }}
+{{- if contains $.Values.buildScope $officeName }}
+{{- $officeIdx2 := add (mul $officeIdx (len $.Values.scenario)) $scenarioIdx }}
+
+{{- if eq (int $.Values.noffices) 1 }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $officeName }}-db-service
+  labels:
+    app: {{ $officeName }}-db
+spec:
+  ports:
+  - port: 9200
+    protocol: TCP
+    name: dsl
+  - port: 9300
+    protocol: TCP
+    name: transport
+  selector:
+    app: {{ $officeName }}-db
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $officeName }}-db
+  labels:
+     app: {{ $officeName }}-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $officeName }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ $officeName }}-db
+        database: "yes"
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: {{ $officeName }}-db
+{{- if (len $.Values.connector.cloudHost) }}
+          image: {{ $.Values.registryPrefix }}smtc_database_tunnelled:latest
+{{- else }}
+          image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.1
+{{- end }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          env:
+            - name: "cluster.name"
+              value: "db-cluster"
+            - name: "node.name"
+              value: "{{ $officeName }}"
+            - name: "node.master"
+              value: "false"
+            - name: "node.data"
+              value: "true"
+            - name: "node.attr.zone"
+              value: "{{ $officeName }}"
+{{- if (len $.Values.connector.cloudHost) }}
+            - name: "transport.port"
+              value: "9300"
+            - name: "transport.publish_host"
+              value: "localhost"
+            - name: "transport.publish_port"
+              value: "{{ add $.Values.connector.officeTransportPort $officeIdx2 }}"
+            - name: "REVERSE_TUNNEL1"
+              value: "{{ $.Values.connector.cloudHost }}:{{ add $.Values.connector.officeTransportPort $officeIdx2 }} localhost:9300"
+            - name: "FORWARD_TUNNEL_CLOUD_TRANSPORT"
+              value: "{{ $.Values.connector.cloudHost }}:{{ $.Values.connector.cloudTransportPort }} localhost:{{ $.Values.connector.cloudTransportPort }}"
+            {{- range $tmpsidx, $tmpsname := $.Values.scenario }}
+            {{- $args := dict "scenarioName" $tmpsname "Values" $.Values }}
+            {{- range $tmpoidx := until ( int ( include "smtc.noffices" $args ) ) }}
+            {{- $tmpoidx2 := add (mul $tmpoidx (len $.Values.scenario)) $tmpsidx }}
+            - name: "FORWARD_TUNNEL_OFFICE_TRANSPORT{{ $tmpoidx2 }}"
+              value: "{{ $.Values.connector.cloudHost }}:{{ add $.Values.connector.officeTransportPort $tmpoidx2 }} localhost:{{ add $.Values.connector.officeTransportPort $tmpoidx2 }}"
+            {{- end }}
+            {{- end }}
+{{- end }}
+            - name: "discovery.zen.minimum_master_nodes"
+              value: "1"
+            - name: "discovery.zen.ping.unicast.hosts"
+{{- if (len $.Values.connector.cloudHost) }}
+              value: "localhost:{{ $.Values.connector.cloudTransportPort }}"
+{{- else }}
+              value: "cloud-db-service"
+{{- end }}
+            - name: "action.auto_create_index"
+              value: "0"
+            - name: "ES_JAVA_OPTS"
+              value: "-Xms2048m -Xmx2048m"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+{{- if (len $.Values.connector.cloudHost) }}
+            - mountPath: /etc/hostkey
+              name: hostkey
+              readOnly: true
+{{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                {{- $args := dict "scenarioName" $scenarioName "Values" $.Values "officeIdx" $officeIdx }}
+                command: ["/usr/bin/curl","-X","DELETE",{{ regexReplaceAllLiteral "\\.?0*$" (regexReplaceAllLiteral "\\.?0*," (printf "http://%s/offices/_doc/%s" (include "smtc.connector.dbhost" $) (include "smtc.env.office" $args)) ",") "" | replace "," "$" | quote }}]
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      initContainers:
+        - name: init-volume-sysctl
+          image: busybox:latest
+          command: ["sh","-c","sysctl -w vm.max_map_count=262144 && ulimit -n 65535 && ulimit -u 4096"]
+          securityContext:
+            privileged: true
+      volumes:
+          - name: timezone
+            hostPath:
+                path: /etc/localtime
+                type: File
+{{- if (len $.Values.connector.cloudHost) }}
+          - name: hostkey
+            secret:
+                secretName: tunnel-secret
+                defaultMode: 0440
+{{- end }}
+      {{ include "smtc.platform.node-selector" $ }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: database
+                  operator: In
+                  values:
+                  - "yes"
+              topologyKey: "kubernetes.io/hostname"
+
+---
+{{- end }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $officeName }}-db-init
+  labels:
+      app: {{ $officeName }}-db-init
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $officeName }}-db-init
+  template:
+    metadata:
+      labels:
+        app: {{ $officeName }}-db-init
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: {{ $officeName }}-db-init
+          image: {{ $.Values.registryPrefix }}smtc_db_init:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OFFICE
+              {{- $args := dict "scenarioName" $scenarioName "Values" $.Values "officeIdx" $officeIdx }}
+              value: {{ include "smtc.env.office" $args | quote }}
+            - name: DBHOST
+              {{- $args := dict "officeName" $officeName "Values" $.Values }}
+              value: {{ include "smtc.env.dbhost" $args | quote }}
+            - name: PROXYHOST
+{{- if (len $.Values.connector.cloudHost) }}
+              value: "http://127.0.0.1:{{ add $.Values.connector.officeStoragePort $officeIdx }}"
+{{- else }}
+              value: "http://{{ $officeName }}-storage-service.default.svc.cluster.local:8080"
+{{- end }}
+            - name: SCENARIO
+              value: {{ $scenarioName | quote }}
+            - name: "ZONE"
+              value: "{{ $officeName }}"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+            - mountPath: /var/run/secrets
+              name: sensor-info
+              readOnly: true
+      volumes:
+          - name: timezone
+            hostPath:
+                path: /etc/localtime
+                type: File
+          - name: sensor-info
+            configMap:
+                name: sensor-info
+      {{ include "smtc.platform.node-selector" $ }}
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ if gt (int $.Values.noffices) 1 }}db{{ else }}{{ $officeName }}-db{{ end }}
+            topologyKey: "kubernetes.io/hostname"
+
+{{- end }}
+---
+
+{{- end }}
+{{- end }}

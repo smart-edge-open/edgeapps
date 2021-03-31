@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2019 Intel Corporation
 
-FROM centos:7.8.2003 AS builder
+FROM centos:7.9.2009 AS builder
 
 ENV http_proxy=$http_proxy
 ENV https_proxy=$https_proxy
@@ -16,8 +16,8 @@ RUN wget $DPDK_LINK
 RUN tar -xf $DPDK_FILENAME 
 
 # RT repo
-RUN wget http://linuxsoft.cern.ch/cern/centos/7/rt/CentOS-RT.repo -O /etc/yum.repos.d/CentOS-RT.repo
-RUN wget http://linuxsoft.cern.ch/cern/centos/7/os/x86_64/RPM-GPG-KEY-cern -O /etc/pki/rpm-gpg/RPM-GPG-KEY-cern
+RUN wget http://linuxsoft.cern.ch/cern/centos/7.9.2009/rt/CentOS-RT.repo -O /etc/yum.repos.d/CentOS-RT.repo
+RUN wget http://linuxsoft.cern.ch/cern/centos/7.9.2009/os/x86_64/RPM-GPG-KEY-cern -O /etc/pki/rpm-gpg/RPM-GPG-KEY-cern
 
 # install kernel sources to compile DPDK
 RUN export isRT=$(uname -r | grep rt -c) && if [ $isRT = "1" ] ; then yum install -y "kernel-rt-devel-uname-r == $(uname -r)"; else yum install -y "kernel-devel-uname-r == $(uname -r)"; fi
@@ -26,7 +26,7 @@ RUN ln -s /usr/src/kernels/$(uname -r) /lib/modules/$(uname -r)/build
 
 RUN cd $RTE_SDK && meson build && cd build && ninja
 
-FROM centos:7.8.2003
+FROM centos:7.9.2009
 
 ENV RTE_SDK=/root/dpdk-20.11/
 

@@ -11,16 +11,28 @@ metadata:
 spec:
   level: "0"
 
-# Add cluster reference to logical cloud
+# Add edge cluster reference to logical cloud
 ---
 version: emco/v2
 resourceContext:
   anchor: projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/cluster-references
 metadata:
-  name: {{ .ClusterLogicEdge }}
+  name: {{ .ClusterEdgeRef }}
 spec:
   cluster-provider: {{ .ClusterProvider }}
   cluster-name: {{ .ClusterEdge }}
+  loadbalancer-ip: "0.0.0.0"
+
+# Add cloud cluster reference to logical cloud
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{ .ProjectName }}/logical-clouds/{{ .AdminCloud }}/cluster-references
+metadata:
+  name: {{ .ClusterCloudRef }}
+spec:
+  cluster-provider: {{ .ClusterProvider }}
+  cluster-name: {{ .ClusterCloud }}
   loadbalancer-ip: "0.0.0.0"
 
 # Instantiate logical cloud

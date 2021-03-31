@@ -17,7 +17,7 @@ mkdir -p sdk
 cp -rf "${DIR_WIRELESS_SDK}" sdk/
 
 # Copy DPDK
-cp -rf "${RTE_SDK}" dpdk-19.11
+cp -rf "${RTE_SDK}" dpdk-20.11
 
 # Copy ICC libs
 mkdir -p icc_libs
@@ -37,4 +37,4 @@ cp -rf "${DIR_WIRELESS_TEST_5G}"/fd tests/
 # Copy WLS Module
 cp -rf "${FLEXRAN_DIR}"/wls_mod .
 
-DOCKER_BUILDKIT=1 docker build . --network host -t flexran5g:3.10.0-1127.19.1.rt56
+DOCKER_BUILDKIT=1 docker build . --network host -t flexran5g:3.10.0-1160.11.1.rt56

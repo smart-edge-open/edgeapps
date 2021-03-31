@@ -29,7 +29,20 @@ spec:
                  add: ["NET_ADMIN"]
           command: ["/bin/bash", "-c", "--"]
           args:
-{{- if eq .Values.amf_smf_autostart true }}
+{{ if eq .Values.amf_smf_cera true }}
+
+          - |
+            cd /root/amf-smf/;
+            ./run-smf-smf.sh \
+            -c {{ .Values.amf_smf_configs.pfd_config_file_path }} \
+            -p {{ .Values.amf_smf_configs.sm_policy_config_file_path }} \
+            -s {{ .Values.amf_smf_configs.local_dn_subnet }} \
+            -i {{ .Values.amf_smf_configs.routed_app_id }};
+            while true ; do
+              sleep 90000000
+            done
+{{ else if eq .Values.amf_smf_autostart true }}
+
           - |
             cd /root/amf-smf/;./cp_config.sh;sleep 10;./cp_restart.sh;
             while true ; do
@@ -45,7 +58,11 @@ spec:
 
           volumeMounts:
             - name: amf-smf-vol
+{{ if eq .Values.amf_smf_cera true }}
+              mountPath: /root/amf-smf/update_amf_smf_configs.py
+{{ else }}
               mountPath: /root/amf-smf
+{{ end }}
               readOnly: false
           resources:
             limits:
@@ -55,4 +72,9 @@ spec:
       volumes:
       - name: amf-smf-vol
         hostPath:
+{{ if eq .Values.amf_smf_cera true }}
+          path: {{ .Values.node.path }}/update_amf_smf_configs.py
+          type: File
+{{ else }}
           path: {{ .Values.node.path }}
+{{ end }}

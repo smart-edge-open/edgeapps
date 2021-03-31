@@ -7,8 +7,10 @@
 
 PNET1=${NET1?"Error: not set"}
 PNET2=${NET3?"Error: not set"}
-PNET1_IF=$(ip route |grep "$PNET1" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
-PNET2_IF=$(ip route |grep "$PNET2" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
+pNET1=${EDGE1_P1?"Error: not set"}
+pNET2=${EDGE1_P2?"Error: not set"}
+PNET1_IF=$(ip route |grep "$pNET1" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
+PNET2_IF=$(ip route |grep "$pNET2" | awk '{match($0, /.+dev\s([^ ]*)/, a);print a[1];exit}')
 echo "$PNET1_IF"
 echo "$PNET2_IF"
 
