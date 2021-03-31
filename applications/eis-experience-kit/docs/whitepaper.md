@@ -112,7 +112,7 @@ The EII application can be deployed through the OpenNESS architecture which requ
 - **Camera**: A set of cameras connected through the wireless network.
 
 
-EII installation and deployment on the OpenNESS Network Edge environment is available at [eis-experience-kit](https://github.com/otcshare/edgeapps/blob/master/applications/eis-experience-kit/README.md)
+EII installation and deployment on the OpenNESS Network Edge environment is available at [eis-experience-kit](https://github.com/open-ness/edgeapps/blob/master/applications/eis-experience-kit/README.md)
 
 *NOTE: `In the above diagram, the RTSP Camera Stream pod is used for sending the RTSP stream. But in LTE/5G Network real-time deployment, the camera stream will come from real IP camera as per below diagram`*
 
