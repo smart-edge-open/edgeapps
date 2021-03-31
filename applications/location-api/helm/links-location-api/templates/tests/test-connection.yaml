@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 LINKS Foundation
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "links-location-api.fullname" . }}-test-connection"
+  labels:
+    {{- include "links-location-api.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "links-location-api.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

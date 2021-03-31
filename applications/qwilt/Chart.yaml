@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Qwilt Corporation
+
+apiVersion: v2
+appVersion: 1.0.0
+description: kubevirt VM Qwilt based CDN
+keywords:
+- storage
+- local
+name: qwiltcdn
+version: 1.0.0

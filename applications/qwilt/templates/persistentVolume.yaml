@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Qwilt Corporation
+
+{{- $release_name := include "cdn.fullname" . }}
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ template "cdn.fullname" . }}-rootfs-pv0
+  labels:
+        type: local
+spec:
+  capacity:
+        storage: {{ required "Rootfs Volume Size required. Missing" .Values.PersistentVolume.rootfs.size }}
+  accessModes:
+        - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  hostPath:
+        path: {{ required "Rootfs Volume0: Local Path Missing" .Values.PersistentVolume.rootfs.path }}
+{{- if .Values.PersistentVolume.rootfs.scratch }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ template "cdn.fullname" . }}-scratch-pv0
+  labels:
+        type: local
+spec:
+  capacity:
+        storage: {{ required "Rootfs Volume Size required. Missing" .Values.PersistentVolume.rootfs.size }}
+  accessModes:
+        - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  hostPath:
+        path: {{ .Values.PersistentVolume.rootfs.scratch }}
+{{- end }}
+{{- range $cacheDisk, $val := .Values.PersistentVolume.cacheDisks }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $release_name }}-{{ $cacheDisk }}-pv
+  labels:
+        type: local
+spec:
+  capacity:
+        storage: {{ $val.size }}
+  accessModes:
+        - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  hostPath:
+        path: {{ $val.path }}
+{{- end }}

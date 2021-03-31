@@ -1,0 +1,73 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 LINKS Foundation
+replicaCount: 1
+
+imageTag: location-api:v2.1.1
+pullPolicy: Never
+labels:
+    locationService: active
+    run: location-api
+
+imagePullSecrets: []
+nameOverride: "location-api"
+fullnameOverride: "location-api"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: location-api-service
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080 
+
+simulatorService: 
+  enabled: true
+  name: simulator-service
+  type: NodePort
+  ports: 
+    - name: simulator-gui
+      targetPort: 8888
+      port: 8888
+      nodePort: 30555
+    - name: simulation-server
+      targetPort: 8081
+      port: 8081
+      nodePort: 30556
+  selector: 
+    run: location-api
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: location-api.local
+      paths: []
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# USED IN NETWORK POLICY
+podSelector:
+   matchLabels:
+     locationService: active
+
+selectorLabels: 
+  run: location-api
+
+env:
+  - name: NODE_IP
+    value: "10.10.20.28"
+  - name: NODE_PORT_SIMULATOR
+    value: "30556"
