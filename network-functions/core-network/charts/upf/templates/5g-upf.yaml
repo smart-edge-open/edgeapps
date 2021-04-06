@@ -9,6 +9,8 @@ metadata:
   annotations:
     k8s.v1.cni.cncf.io/networks: sriov-openness
 spec:
+  securityContext:
+    runAsUser: 1000
   nodeName: {{ .Values.node.name }}
   containers:
     - name: {{ .Release.Name }}
@@ -20,7 +22,7 @@ spec:
       args:
 {{- if eq .Values.upf_autostart true }}
         - |
-          /root/run_upf.sh; while true ; do
+          sudo -E {{ .Values.node.path }}/run_upf.sh; while true ; do
             sleep 90000000
           done
 {{ else }}
@@ -31,7 +33,7 @@ spec:
 {{ end }}
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
-        - name: CONFIG_VF_IF_NAME
+        - name: CONFIG_VFIF_NAME
           value: {{ .Values.upf.vf_if_name }}
         - name: CONFIG_PCI_BUS_ADDR
           value: {{ .Values.upf.pci_bus_addr }}
@@ -76,9 +78,6 @@ spec:
         - name: class
           mountPath: /sys/devices
           readOnly: false
-        - name: upf-vol
-          mountPath: /root/upf
-          readOnly: false
         - name: sysfs
           mountPath: /sys
           readOnly: false
@@ -106,9 +105,6 @@ spec:
   - name: sysfs
     hostPath:
         path: /sys
-  - name: upf-vol
-    hostPath:
-      path: {{ .Values.node.path }}
   - name: host-proc
     hostPath:
         path: /proc

@@ -9,4 +9,4 @@ sudo docker run --rm --name client-sim \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v /root/.Xauthority:/root/.Xauthority \
     --cpuset-cpus="1,2" \
-    -t client-sim:1.0
+    -ti client-sim:1.0

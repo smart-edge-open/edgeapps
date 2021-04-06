@@ -5,7 +5,7 @@ Copyright (c) 2020 Intel Corporation
 
 # OpenVINO Benchmark Performance Test
 
-> Notes: The following all steps assumes that OpenNESS were installed through [OpenNESS playbooks](https://github.com/open-ness/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md).
+> Notes: The following all steps assumes that OpenNESS were installed through [OpenNESS playbooks](https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md).
 
 - [Precondition](#precondition)
 - [Build benchamrk image](#build-benchamrk-image)
@@ -19,7 +19,7 @@ Copyright (c) 2020 Intel Corporation
    edit `benchmark_job.yaml` file and modify the `data` field in `configMap` section. All the following environment variables is used by `benchmark_app` command.
 
    ```yaml
-   ... ...    
+   ... ...
        NIREQ=32
        NITER=50000
        # target_device:  CPU, GPU, FPGA, HDDL or MYRIAD are acceptable
@@ -44,7 +44,7 @@ Copyright (c) 2020 Intel Corporation
 
 3.  change `parallelism: 1` to pod number in `benchmark_job.yaml` file on controller machine.
 
-### Deploy 
+### Deploy
 
 1. Query which jobs are currently running.
 
@@ -55,16 +55,16 @@ Copyright (c) 2020 Intel Corporation
    If a job named `openvino-benchmark-job` in k8s cluster is exist, delete it.
 
    ```
-   kubectl delete jobs openvino-benchmark-job 
+   kubectl delete jobs openvino-benchmark-job
    ```
 
-2.  On controller machine execute following command to start the job and get logs of each pod 
+2.  On controller machine execute following command to start the job and get logs of each pod
 
    ```
    kubectl apply -f  benchmark_job.yaml
    ```
 
-3.  After `openvino-benchmark-job` job launched in step 2 is completed, on node `docker ps`  and `docker logs` to get all deamon log 
+3.  After `openvino-benchmark-job` job launched in step 2 is completed, on node `docker ps`  and `docker logs` to get all deamon log
 
 ### Troubleshooting
 
@@ -81,9 +81,9 @@ The command '/bin/sh -c apt-get update && apt-get install -y --no-install-recomm
    ```
 
    Invalid time causes the server to be unable to use  Ubuntu’s packaging system apt .
-   
+
    >  **The solution is to synchronize your clock manually or use a service (the better way)!**
-   
+
    **Reference:**
-   
-    https://ahelpme.com/linux/ubuntu/ubuntu-apt-inrelease-is-not-valid-yet-invalid-for-another-151d-18h-5min-59s/ 
+
+    https://ahelpme.com/linux/ubuntu/ubuntu-apt-inrelease-is-not-valid-yet-invalid-for-another-151d-18h-5min-59s/

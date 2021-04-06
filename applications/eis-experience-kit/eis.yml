@@ -2,30 +2,20 @@
 # Copyright (c) 2020 Intel Corporation
 
 ---
-
 - hosts: localhost
   roles:
     - role: machine_setup/localhost
     - role: docker
-    - role: docker_registry/localhost
+    - role: harbor_registry/localhost
+    - role: provision/localhost
     - role: common/build
-      when: build_eis_base_images | default(True)
+    - role: build
     - role: camera_stream/build
-    - role: etcd/build
-    - role: video_ingestion/build
-    - role: video_analytics/build
-    - role: visualizer/build
-    - role: web_visualizer/build
 
 - hosts: controller_group
   roles:
     - role: machine_setup/k8s_master
-    - role: common/deploy
+    - role: provision/controlplane
     - role: camera_stream/deploy
       when: camera_stream_pod | default(True)
-    - role: etcd/deploy
-    - role: video_analytics/deploy
-    - role: visualizer/deploy
-      when: display_visualizer_host | default(False)
-    - role: web_visualizer/deploy
-    - role: video_ingestion/deploy
+    - role: deploy

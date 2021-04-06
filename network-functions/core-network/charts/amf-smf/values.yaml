@@ -13,6 +13,7 @@ image:
 
 isPrivileged: false          # Pod privilege level, possible values: true false
 amf_smf_autostart: false
+amf_smf_cera: false
 #node information
 node:
   path: /opt/flexcore-5g-rel/        # Path on the node where the upf binary is stored

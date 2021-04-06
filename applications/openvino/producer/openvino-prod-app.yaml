@@ -64,7 +64,9 @@ spec:
         - name: alpine
           image: alpine:3.12.0
           command: ["/bin/sh"]
-          args: ["-c", "cp /root/ca-certrequester/cert.pem /root/certs/root.pem"]
+          args:
+            - "-c"
+            - "cp /root/ca-certrequester/cert.pem /root/certs/root.pem && chmod 0777 /root/certs/root.pem"
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -90,9 +92,9 @@ spec:
               memory: "128Mi"
           volumeMounts:
             - name: config
-              mountPath: /home/certrequester/config/
+              mountPath: /home/certrequester/config
             - name: certs
-              mountPath: /home/certrequester/certs/
+              mountPath: /home/certrequester/certs
       containers:
         - name: openvino-prod-app
           image: openvino-prod-app:1.0
@@ -103,7 +105,10 @@ spec:
             - name: tmp
               mountPath: /tmp
             - name: certs
-              mountPath: /root/certs/
+              mountPath: /var/user/certs
+          env:
+            - name: OPENVINO_ACCL
+              value: "CPU"
       volumes:
         - name: tmp
           hostPath:
