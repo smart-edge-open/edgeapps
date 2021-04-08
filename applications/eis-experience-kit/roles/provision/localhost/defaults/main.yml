@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+save_image: 'false'
+edtc_client_port: '8379'
+edtc_peer_port: '8380'

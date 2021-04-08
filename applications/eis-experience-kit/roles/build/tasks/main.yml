@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+
+- name: Build eis docker image
+  shell: source {{ eis_sources_dir }}/build/.env ;docker-compose build ia_video_ingestion ia_video_analytics ia_visualizer ia_web_visualizer
+  args:
+    chdir: "{{ eis_sources_dir }}/build"
+  changed_when: true
+
+- name: Build safety docker images
+  shell: source {{ eis_sources_dir }}/build/.env; docker-compose build python_safety_gear_analytics python_safety_gear_ingestion
+  args:
+    chdir: "{{ eis_sources_dir }}/build"
+  when: demo_type == 'safety'
+
+- name: Push image to Docker Registry
+  command : "docker push {{ docker_registry_address }}{{ item }}:{{ eis_version }}"
+  with_items:
+    - ia_video_ingestion
+    - ia_video_analytics
+    - ia_visualizer
+    - ia_web_visualizer
+  changed_when: true
+
+- name: Push safety image to Docker Registry
+  command : "docker push {{ docker_registry_address }}{{ item }}:{{ eis_version }}"
+  with_items:
+    - python_safety_gear_analytics
+    - python_safety_gear_ingestion
+  when: demo_type == 'safety'
+  changed_when: true

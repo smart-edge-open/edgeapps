@@ -8,20 +8,20 @@
 
 ### Proxy settings
 # Setup proxy on the machine - required if the Internet is accessible via proxy
-proxy_os_enable: true
+proxy_os_enable: false
 # Clear previous proxy settings
-proxy_os_remove_old: true
+proxy_os_remove_old: false
 # Proxy URLs to be used for HTTP, HTTPS and FTP
 proxy_os_http: "http://proxy.example.org:3129"
 proxy_os_https: "http://proxy.example.org:3128"
 proxy_os_ftp: "http://proxy.example.org:3128"
 proxy_os_noproxy: ""
 # Proxy to be used by YUM (/etc/yum.conf)
-proxy_yum_url: "http://proxy.example.org:3128"
+proxy_yum_url: ""
 
 ### EIS repository configuration
-eis_source: "gitclone"      # set string  as "gitclone" or "release" 
-release_package_path: ""    # provide release package archive path when eis_source set to "release"
+eis_source: "release"
+release_package_path: "/root/Edge_Insights_for_Industrial_2.4/IEdgeInsights/"    # provide release package till IEdgeInsights/ folder"
 
 eis_env_file: "{{ eis_sources_dir }}/build/.env"
 

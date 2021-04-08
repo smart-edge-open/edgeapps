@@ -6,7 +6,7 @@ LINK=$(readlink -f "$0")
 DIR=$(dirname "$LINK")
 
 # delete pvs and scs
-for yaml in ${DIR}/CDN-Transcode-Sample/deployment/kubernetes/*-pv.yaml; do
+for yaml in "${DIR}"/CDN-Transcode-Sample/deployment/kubernetes/*-pv.yaml; do
     kubectl delete --wait=false -f "$yaml" --ignore-not-found=true 2>/dev/null
 done
 

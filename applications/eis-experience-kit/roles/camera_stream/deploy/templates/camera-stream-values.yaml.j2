@@ -3,6 +3,6 @@
 
 ---
 
-image: "{{ docker_registry_address }}/{{ docker_name }}:{{ eis_version }}"
+image: "{{ docker_registry_address }}{{ docker_name }}:{{ eis_version }}"
 cameraStreamPort: {{ rtsp_camera_stream_port }}
 demoType: "{{ demo_type }}"

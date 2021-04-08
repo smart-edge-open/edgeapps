@@ -80,12 +80,12 @@ type URN struct {
 // is used, with any newlines indicated with `\n` characters. Most languages
 // provide encoders that correctly marshal this out. For more information,
 // see the RFC here: https://tools.ietf.org/html/rfc7468
-type AuthCredentials struct {
-	ID          string   `json:"id,omitempty"`
-	Certificate string   `json:"certificate,omitempty"`
-	CaChain     []string `json:"ca_chain,omitempty"`
-	CaPool      []string `json:"ca_pool,omitempty"`
-}
+// type AuthCredentials struct {
+// 	ID          string   `json:"id,omitempty"`
+// 	Certificate string   `json:"certificate,omitempty"`
+// 	CaChain     []string `json:"ca_chain,omitempty"`
+// 	CaPool      []string `json:"ca_pool,omitempty"`
+// }
 
 // AuthIdentity defines a request to obtain authentication credentials. These
 // credentials would be used to further communicate with endpoint(s) that are
@@ -95,6 +95,6 @@ type AuthCredentials struct {
 // is used, with any newlines indicated with `\n` characters. Most languages
 // provide encoders that correctly marshal this out. For more information,
 // see the RFC here: https://tools.ietf.org/html/rfc7468
-type AuthIdentity struct {
-	Csr string `json:"csr,omitempty"`
-}
+// type AuthIdentity struct {
+// 	Csr string `json:"csr,omitempty"`
+// }

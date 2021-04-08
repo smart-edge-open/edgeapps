@@ -30,7 +30,8 @@ EOF
 kubectl apply -f firewall_zone_1.yaml
 kubectl get firewallzone "$ZONEANME" -n "${NS:-default}" -o=custom-columns='NAME:metadata.name,MESSAGE:status.message,STATUS:status.state'
 
-IPNET=$(kubectl exec -it  "$CNFPOD" -- ip a | grep "${O_TUNNEL1_NET%.*}" | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}')
+CNFPOD=$(kubectl get pod -l sdewanPurpose=sdewan-cnf -n "$NS" -o name)
+IPNET=$(kubectl exec -it -n "${NS:-default}" "$CNFPOD" -- ip a | grep "${O_TUNNEL1_NET%.*}" | awk '{match($0, /.+inet\s([^ ]*)/, a);print a[1];exit}')
 FROM_ADDR=${IPNET%%/*}
 TO_ADDR=${UE1_P1?"Error: not set"}
 # SOURCE='""'

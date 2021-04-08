@@ -211,6 +211,114 @@ spec:
 files:
   - {{ .ConfigMapFile }}
 
+# Add secret to edge cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
+metadata:
+  name: {{ .SmtcEdgeSecretResources }}
+spec:
+  appName: {{ .AppEdge }}
+  newObject: "true"
+  resourceGVK:
+    apiVersion: v1
+    kind: Secret
+    name: {{ .SecretName1 }}
+file:
+  {{ .HelmEdgeApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcEdgeSecretResources }}/customizations
+metadata:
+  name: {{ .SmtcEdgeSecretCustomizations }}
+spec:
+  # bug here, must be false right now.
+  clusterSpecific: "false"
+  clusterInfo:
+    scope: labelResourceFileName
+    clusterProvider: {{ .ClusterProvider }}
+    clusterName: {{ .ClusterEdge }}
+    clusterLabel: {{ .EdgeClusterLabel }}
+    mode: allow
+files:
+    - {{ .SecretKeyFile1 }}
+    - {{ .SecretKeyFile2 }}
+    - {{ .SecretSSHFile }}
+
+#Add tunnel secret to cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
+metadata:
+  name: {{ .SmtcCloudSecretResources }}
+spec:
+  appName: {{ .AppCloud }}
+  newObject: "true"
+  resourceGVK:
+    apiVersion: v1
+    kind: Secret
+    name: {{ .SecretName1 }}
+file:
+  {{ .HelmEdgeApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcCloudSecretResources }}/customizations
+metadata:
+  name: {{ .SmtcCloudSecretCustomizations }}
+spec:
+  # bug here, must be false right now.
+  clusterSpecific: "false"
+  clusterInfo:
+    scope: label
+    clusterProvider: {{ .ClusterProvider }}
+    clusterName: {{ .ClusterCloud }}
+    clusterLabel: {{ .CloudClusterLabel }}
+    mode: allow
+files:
+    - {{ .SecretKeyFile1 }}
+    - {{ .SecretKeyFile2 }}
+    - {{ .SecretSSHFile }}
+
+#Add certificate to cloud cluster
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources
+metadata:
+  name: {{ .SmtcCloudCertResources }}
+spec:
+  appName: {{ .AppCloud }}
+  newObject: "true"
+  resourceGVK:
+    apiVersion: v1
+    kind: Secret
+    name: {{ .SecretName2 }}
+file:
+  {{ .HelmEdgeApp }} # This file is Ignored the file, this is required to make Post multiform (emcoctl bug)
+
+---
+version: emco/v2
+resourceContext:
+  anchor: projects/{{.ProjectName}}/composite-apps/{{.CompositeApp}}/v1/deployment-intent-groups/{{.DeploymentIntent}}/generic-k8s-intents/{{ .GenericK8sIntent }}/resources/{{ .SmtcCloudCertResources }}/customizations
+metadata:
+  name: {{ .SmtcCloudCertCustomizations }}
+spec:
+  # bug here, must be false right now.
+  clusterSpecific: "false"
+  clusterInfo:
+    scope: label
+    clusterProvider: {{ .ClusterProvider }}
+    clusterName: {{ .ClusterCloud }}
+    clusterLabel: {{ .CloudClusterLabel }}
+    mode: allow
+files:
+    - {{ .SecretCerFile1 }}
+    - {{ .SecretCerFile2 }}
+
 # Approve
 ---
 version: emco/v2
