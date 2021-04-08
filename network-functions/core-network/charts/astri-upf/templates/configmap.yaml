@@ -1,9 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2021 Astri Corporation
 
-# https://fdio-vpp.readthedocs.io/en/latest/gettingstarted/users/configuring/startup.html
-
-
 kind: ConfigMap
 metadata:
   name: vpp-conf

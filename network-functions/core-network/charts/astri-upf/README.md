@@ -1,7 +1,8 @@
 
-`SPDX-License-Identifier: Apache-2.0`
-
-`Copyright (c) 2021 Astri Corporation`
+```text
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2021 Astri Corporation
+```
 
 **Overview**
 
@@ -15,8 +16,8 @@ The UPF and UPF agent container require at least 4 CPU core, 8Gi memory for opti
 
 Pre-deploy container images for ASTRI’s UPF on upf node:
 
-•       upf-v20.12-rc5.tar.gz
-•       upf-agent-v20.12-rc1.tar.gz
+* upf-v20.12-rc5.tar.gz
+* upf-agent-v20.12-rc1.tar.gz
 
 UPF and UPF agent image could be loaded into docker image by using following commands:
 
@@ -39,12 +40,14 @@ helm install upf upf/
 
 **Test Output**
 
+```
 NAME: upf
 LAST DEPLOYED: Fri Mar 19 15:13:46 2021
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
+```
 
 **Uninstall Chart**
 
@@ -54,7 +57,9 @@ helm delete  upf
 
 **Test Output**
 
+```
 release "upf" uninstalled
+```
 Additional Information
 
 Learn more about ASTRI UPF at https://www.astri.org/IMPACT/smart-city/revolutionary-5g-core-performance.html
