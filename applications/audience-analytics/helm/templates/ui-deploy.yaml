@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audience-ui
+spec:
+  selector:
+    matchLabels:
+      app: audience
+      component: audience-ui
+  template:
+    metadata:
+      labels:
+        app: audience
+        component: audience-ui
+    spec:
+      containers:
+        - name:  audience-ui
+          image: "{{ printf "%s:%s" .Values.ui.Image.Name .Values.ui.Image.Tag}}"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          ports:
+            - containerPort: 80
+              name: http

@@ -1,0 +1,31 @@
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To forward RTMP port to the service, please use
+
+nodeport_rtmp=$(kubectl -n {{ .Release.Namespace }} get svc trackheatmap  -o template  --template '{{ "{{" }} (index .spec.ports 1).nodePort }}')
+nodeport_http=$(kubectl -n {{ .Release.Namespace }} get svc trackheatmap  -o template  --template '{{ "{{" }} (index .spec.ports 0).nodePort }}')
+
+Then, forward rtmp port:
+
+ssh -NL 1935:kube-master-ip:$nodeport_rtmp
+
+To stream the video in the channel:
+
+ffmpeg -re -i <video.mp4> -acodec aac -vcodec libx264 -f flv rtmp://localhost/live/stream1
+
+If a video already encoded using H.264 (libx264) and AAC, then it could save the CPU resources:
+
+ffmpeg -re -i <video.mp4> -acodec copy -vcodec copy -f flv rtmp://localhost/live/stream1
+
+To view the resulting video, first forward http port:
+
+ssh -NL 8000:kube-master-ip:$nodeport_http
+
+Then open browser:
+
+http://localhost:8000
