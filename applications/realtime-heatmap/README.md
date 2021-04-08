@@ -40,7 +40,7 @@ Pre Requisites
 ---
 The application has been tested on the following software, which is also required:
 
-* [OpenNESS](https://github.com/open-ness/specs) Network Edge v20.12
+* [OpenNESS](https://github.com/open-ness/specs) Network Edge v20.12.02
 * Kubernetes v1.18.4
 * Helm v3.1.2
 
