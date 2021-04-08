@@ -1,5 +1,7 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2020 Altran Technology
+```
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2021 Altran Technology
+```
 
 Overview of Altran V2X Apps:
 =============================
@@ -10,13 +12,13 @@ V2X Application Description:
 ==============================
 Following Vehicle To Infrastructure (V2I) applications are supported:
 
-Roadside Alert (RSA): RSU periodically broadcast advisory messages about the road hazards (Slippery Road, Animal On the Road etc.)
+* Roadside Alert (RSA): RSU periodically broadcast advisory messages about the road hazards (Slippery Road, Animal On the Road etc.)
 
-Electric Vehicle Charging Station (EVCSN): RSU periodically broadcast presence and occupancy status of nearby Electric changing station Information
+* Electric Vehicle Charging Station (EVCSN): RSU periodically broadcast presence and occupancy status of nearby Electric changing station Information
 
-Vulnerable Road User (VRU): RSU detect vulnerable road user and broadcast the same information to near-by vehicles
+* Vulnerable Road User (VRU): RSU detect vulnerable road user and broadcast the same information to near-by vehicles
 
-Time To Green (TTG) / Green Light Signal (GLOSA): RSU broadcast the traffic signals state and time information to near-by vehicles in an intersection
+* Time To Green (TTG) / Green Light Signal (GLOSA): RSU broadcast the traffic signals state and time information to near-by vehicles in an intersection
 
 Separate container images are provided for OBU / RSU apps which can be onboarded (as pods) and communicate over UDP/IP interface. A Human Machine Interface (HMI) app is provided for visualization and demo purpose. In real deployment scenario the UDP/IP interface could be replaced by C-V2X PC5 or C-V2X Uu air interface
 
