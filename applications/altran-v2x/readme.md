@@ -4,12 +4,11 @@ Copyright (c) 2021 Altran Technology
 ```
 
 Overview of Altran V2X Apps
-############################
 
 Altran V2X solution enables safety & non-safety applications for V2V,V2I,V2P and V2N scenarios for Road Side Units (RSU), On Board Units (OBU) and Smart Pedestrian Devices . The solution comes with application and underlying stack conformant to regional standards - WAVE / ETSI and China.
 
-V2X Application Description    
-############################
+V2X Application Description
+
 Following Vehicle To Infrastructure (V2I) applications are supported:
 
 * Roadside Alert (RSA) RSU periodically broadcast advisory messages about the road hazards (Slippery Road, Animal On the Road etc.)
@@ -29,7 +28,6 @@ Containers Contact Altran Sales
 Helm Charts: https://gurftp03.aricent.com/webclient/Login.xhtml
 
 Pre-Requisite
-##############
 
 Cluster with minimum 1 Master and 1 Slave. (Recommended 2-Slaves and 1-Master)
 Altran provided container images for V2X RSU/OBU Apps
@@ -37,8 +35,8 @@ Note: Air interface integration requires third party radio integration for C-V2X
 
 
 
-Deploy service:
-################
+Deploy service
+
 From the Controller Node, go to helm chart folder of the repository:
 
 $ helm install altran <helm-chart location> --set service.type=NodePort
@@ -53,11 +51,11 @@ Execute each binary
 
 
 Test Output
-##############
+
 Follow the docs on website.
 
 Uninstall chart
-#################
+
 helm uninstall v2xstack
 
 
@@ -68,7 +66,7 @@ Many more V2X apps can be supported based on request
 ................................................................
 
 Where to Purchase 
-####################
+
 The Altran V2X application is available in the Altran provided shareable repository upon request. Please contact Altran sales for details.
 Contact Altran Sales Support:
 Email : marketing@altran.com
