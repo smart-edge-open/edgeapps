@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+Description: Realtime person heatmap
+Engine: gotpl
+Home: http://kuberlab.com
+Icon: https://storage.googleapis.com/kuberlab/static/favicon.ico
+Keywords:
+- kubernetes
+- Artificial Intelligence
+- tensorflow
+- kibernetika
+- pytorch
+- kserving
+- ml-serving
+Maintainers:
+- Email: nmahotkin@kibernetika.ai
+  Name: Mahotkin Nikolay
+Name: realtime-heatmap
+Version: 1.0.0

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: audience
+    component: audience-db
+  name: audience-db
+spec:
+  ports:
+    - name: psql
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+  selector:
+    app: audience
+    component: audience-db

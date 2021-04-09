@@ -14,7 +14,7 @@ env:
     - GOROOT=/usr/local/go
 
 before_install:
-  - rm -rf /usr/local/go 
+  - rm -rf /usr/local/go
   - rm -rf /home/travis/.gimme/versions/go1.11.1.linux.amd64
   - rm -rf /usr/local/go/bin/go
   - wget https://golang.org/dl/go1.15.5.linux-amd64.tar.gz
@@ -23,5 +23,5 @@ before_install:
   - sudo apt-get install -y shellcheck
   - sudo apt-get install -y pylint
 
-#script:
-#  - ./run_ci_build.sh
+script:
+  - ./run_ci_build.sh
