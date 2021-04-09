@@ -33,6 +33,10 @@ Cluster with minimum 1 Master and 1 Slave. (Recommended 2-Slaves and 1-Master)
 Altran provided container images for V2X RSU/OBU Apps
 Note: Air interface integration requires third party radio integration for C-V2X PC5 interface and MNO application server for C-V2X Uu interface
 
+1.	OpenNESS Version: 20.09.01
+2.	Distribution: IDO
+3.	Flavor: Minimal flavor with kubevirt enabled
+
 
 
 Deploy service
