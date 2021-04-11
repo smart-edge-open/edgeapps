@@ -87,3 +87,72 @@ In order to check application logs, you can see directly the pod logs at:
 pod_name=$(kubectl get po -l app=runtime-heatmap --no-headers | awk '{print $1}')
 kubectl logs -f $pod_name
 ```
+
+### How to implement your own heatmap consumer app
+
+#### General flow
+
+Please refer to the OpenNESS sample application (e.g. openvino app) to see how
+is the general flow is performed. The flow should be the following:
+
+- Assume having needed TLS files as described in OpenNESS auth section: `root.pem`, `cert.pem` and `key.pem`
+- Connecting to the Edge Application agent (eaa.openness:443) using cert files, sample Python code:
+
+```python
+import requests
+
+eaa_server_name = "eaa.openness"
+eaa_server_port = "443"
+cert_path = "/root/certs/cert.pem"
+root_ca_path = "/root/certs/root.pem"
+key_path = "/root/certs/key.pem"
+
+
+client = requests.Session()
+base_url = f'https://{eaa_server_name}:{eaa_server_port}'
+client.cert = (cert_path, key_path)
+client.verify = root_ca_path
+```
+
+- Subscribe to notifications, connect using websocket to `wss://eaa.openness:443/notifications`
+- Looking up services with `heatmap` namespace
+- Subscribe to all that services: `POST https://eaa.openness:443/subscriptions/heatmap <notification-data...>`
+- Perform the loop receiving messages from the websocket
+
+#### Message format
+
+General OpenNESS notification format JSON:
+
+```json
+{
+  "name": "<notification-name>",
+  "version": "1.0.0",
+  "urn": {
+    "id": "runtime-heatmap",
+    "namespace": "heatmap"
+  },
+  "payload": {}
+}
+```
+
+Where the payload format for the heatmap application is
+
+```json
+{
+  "stream_id": "stream_id",
+  "serving_id": "serving_id",
+  "data": "<base64-string-encoded-binary-data>"
+}
+```
+
+**stream_id** - Stream key of serving
+**serving_id** - Serving ID (each serving refers to a container and can contain many streams)
+**data** - binary data encoded using base64, and the actual data depends on the notification type.
+
+Data per notification name:
+
+* "heatmap-status": Contains binary jpeg of the heatmap picture, i.e. blended source picture with heatmap colored data.
+* "heatmap-db": Contains sqlite DB file data with tables `heatmap-boxes` and `heatmap-data`. `heatmap-data`
+  contains aggregated heatmap data for a time period, by default - 60 seconds.
+* "heatmap-video": Only for trackmap. Contains video chunk data in mp4 container.
+

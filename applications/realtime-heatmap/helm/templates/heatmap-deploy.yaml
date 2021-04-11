@@ -84,6 +84,8 @@ spec:
           - |
             python /ponchik2/src/generate_streams.py $STREAM_COUNT /ponchik2/templates/data.json && /ponchik2/edge/start.sh
           env:
+          - name: HEATMAP_ID
+            value: "{{ .Values.openness.heatmapId }}"
           {{- if .Values.useHDDL }}
           - name: USE_DEVICE
             value: "HDDL"
