@@ -24,6 +24,6 @@
 
 - name: delete ia_visualizer pod
   command: kubectl -n eis delete deployment deployment-visualizer
-  when: display_visualizer_host == 'false'
+  when: display_visualizer_host == false
   ignore_errors: yes
 
