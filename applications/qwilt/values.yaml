@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Qwilt Corporation
+
+PersistentVolume:
+  rootfs:
+    size: "200Gi"
+    path: "/home/var/vd/vol0"
+    imgSrc: "xxx.img"
+  cacheDisks:
+    cache0:
+      size: "1Gi"
+      path: "/home/var/vd/vol1"
+
+cdnVM:
+  # numCores default 4
+  numCores: 16
+
+  # memory default 4096M
+  memory: 98304M
+
+cdnService:
+  nodePort: 30020
+

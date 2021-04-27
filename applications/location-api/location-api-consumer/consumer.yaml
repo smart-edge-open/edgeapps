@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 LINKS Foundation
+apiVersion: v1
+kind: Pod
+metadata: 
+    name: consumer
+    labels:
+      locationService: active
+spec: 
+    containers: 
+    - name: consumer
+      image: "location-consumer-test:latest"
+      imagePullPolicy: Never
+      ports:
+      - containerPort: 8082
+            
+        

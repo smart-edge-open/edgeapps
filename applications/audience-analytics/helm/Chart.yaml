@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+Description: Audience exploring system
+Engine: gotpl
+Home: https://kibernetika.ai
+Keywords:
+- Artificial Intelligence
+- Audience
+- Kibernetika
+Maintainers:
+- Email: nmahotkin@kibernetika.ai
+  Name: Nikolay Mahotkin
+Name: audience
+Version: 1.0.0

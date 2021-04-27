@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 LINKS Foundation
+To start a simulation go to: http://{{ (index .Values.env 0).value }}:{{ (index .Values.simulatorService.ports 0).nodePort }}
+

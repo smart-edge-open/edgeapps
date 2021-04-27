@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: audience-db
+spec:
+  {{- if .Values.persistence.db.storageClass }}
+  storageClassName: {{ .Values.persistence.db.storageClass | quote }}
+  {{- end }}
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: {{ .Values.persistence.db.size }}

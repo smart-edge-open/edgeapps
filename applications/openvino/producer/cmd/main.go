@@ -67,6 +67,7 @@ func createEncryptedClient() (*http.Client, error) {
 				RootCAs:      certPool,
 				Certificates: []tls.Certificate{cert},
 				ServerName:   EAACommonName,
+				MinVersion:   tls.VersionTLS12,
 			},
 		},
 		Timeout: 0,

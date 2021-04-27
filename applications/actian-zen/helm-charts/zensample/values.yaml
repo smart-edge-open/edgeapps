@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Actian Corporation
+
+replicaCount: 1
+image:
+  name: zensample
+  pullPolicy: IfNotPresent
+  tag: "latest"
+dbName: DEMODATA
+service:
+  type: NodePort
+  port: 5000
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

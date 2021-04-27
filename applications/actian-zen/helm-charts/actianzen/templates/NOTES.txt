@@ -1,0 +1,13 @@
+{{/*
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2020 Actian Corporation
+*/}}
+Installed {{ .Chart.Name }}.
+The release is named {{ .Release.Name }}.
+
+Get the Actian Zen Server address by running the following:
+{{- if contains "NodePort" .Values.serviceType }}
+  kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}"
+{{- else if contains "ClusterIP" .Values.serviceType }}
+  kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "actianzen.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}"
+{{- end }}
