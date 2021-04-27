@@ -1,4 +1,4 @@
-module github.com/otcshare/edgeapps/applications/vas-sample-app
+module github.com/open-ness/edgeapps/applications/vas-sample-app
 
 go 1.16
 

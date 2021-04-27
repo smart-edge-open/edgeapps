@@ -6,7 +6,7 @@ package main
 import (
 	"log"
 
-	"github.com/otcshare/edgeapps/applications/sample-app/common"
+	"github.com/open-ness/edgeapps/applications/sample-app/common"
 )
 
 // The Consumer creates a Web Socket connection to edge node. After that

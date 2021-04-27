@@ -14,7 +14,7 @@ Copyright (c) 2020 Intel Corporation
 ## Introduction
 
 This sample application demonstrates the Video Analytics Services (VAS) consumer sample application deployment and execution on the OpenNESS edge platform with VAS enabled.
-For more information on VAS itself, please see [OpenNESS Video Analytics Services](https://github.com/otcshare/specs/blob/master/doc/applications/openness_va_services.md).
+For more information on VAS itself, please see [OpenNESS Video Analytics Services](https://github.com/open-ness/specs/blob/master/doc/applications/openness_va_services.md).
 
 ## Directory Structure
 - `/cmd` : Application source files.

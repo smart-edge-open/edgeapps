@@ -5,7 +5,7 @@ Copyright (c) 2020 Intel Corporation
 
 # OpenVINO Benchmark Performance Test
 
-> Notes: The following all steps assumes that OpenNESS were installed through [OpenNESS playbooks](https://github.com/otcshare/specs/blob/master/doc/getting-started/openness-cluster-setup.md).
+> Notes: The following all steps assumes that OpenNESS were installed through [OpenNESS playbooks](https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md).
 
 - [Precondition](#precondition)
 - [Build benchamrk image](#build-benchamrk-image)

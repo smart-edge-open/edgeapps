@@ -1,4 +1,4 @@
-module github.com/otcshare/edgeapps/applications/openvino/consumer
+module github.com/open-ness/edgeapps/applications/openvino/consumer
 
 go 1.16
 
