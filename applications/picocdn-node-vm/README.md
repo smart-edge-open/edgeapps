@@ -20,7 +20,7 @@ picoCDN is a Deep Edge focused Caching and Content Delivery Network (CDN) platfo
 | Storage (System+Logs minimum) | 100  GB              | 200  GB              | 500  GB              |
 | Storage (Content recommended) | 2-5 TB SSD           | 10-15 TB SSD         | 15-30 TB SSD         |
 | Storage Performance           | 1.5 GBps  800 IOPS   | 6 GBps   1600 IOPS   | 12 GBps    3200 IOPS |
-| Host OS                       | ---------------------- picoCDN7 Custom Image --------------------- |
+| Host OS                       |<td colspan=3>picoCDN7 Custom Image</td>|
 | Network                       | ----- 1G / 10G / 25G+ via  Virtio / Direct-Attach / SR-IOV ------- |
 
 
@@ -51,7 +51,9 @@ Prior to running the helm deployment, please ensure that the IP values in templa
 
 Run the following commands to deploy through helm:
 
-`helm install picocdn ./picocdn-node-vm`
+```shell
+$ helm install picocdn ./picocdn-node-vm
+```
 
  Sample Output would look like:
 
@@ -74,8 +76,10 @@ Please contact the picoNETS support team to complete provisioning and service ac
 
 ## Uninstall picoCDN-VM application
 To uninstall application run below command:
-    
-helm uninstall picocdn
+
+```shell    
+$ helm uninstall picocdn
+```
 
 ## **Related material**
 * picoCDN Information : https://www.piconets.com/cdn
