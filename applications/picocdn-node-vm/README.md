@@ -20,8 +20,8 @@ picoCDN is a Deep Edge focused Caching and Content Delivery Network (CDN) platfo
 | Storage (System+Logs minimum) | 100  GB              | 200  GB              | 500  GB              |
 | Storage (Content recommended) | 2-5 TB SSD           | 10-15 TB SSD         | 15-30 TB SSD         |
 | Storage Performance           | 1.5 GBps  800 IOPS   | 6 GBps   1600 IOPS   | 12 GBps    3200 IOPS |
-| Host OS                       <td colspan=3>picoCDN7 Custom Image</td>
-| Network                       | ----- 1G / 10G / 25G+ via  Virtio / Direct-Attach / SR-IOV ------- |
+| Host OS                       <td colspan=3>picoCDN7 Custom Image</td></tr>
+| Network                       <td colspan=3>1G / 10G / 25G+ via  Virtio / Direct-Attach / SR-IOV</td></tr>
 
 
 ## **Where to Purchase**
