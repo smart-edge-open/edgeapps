@@ -20,13 +20,13 @@ picoCDN is a Deep Edge focused Caching and Content Delivery Network (CDN) platfo
 | Storage (System+Logs minimum) | 100  GB              | 200  GB              | 500  GB              |
 | Storage (Content recommended) | 2-5 TB SSD           | 10-15 TB SSD         | 15-30 TB SSD         |
 | Storage Performance           | 1.5 GBps  800 IOPS   | 6 GBps   1600 IOPS   | 12 GBps    3200 IOPS |
-| Host OS                       <td colspan=3>picoCDN7 Custom Image</td>|
-| Network                       <td colspan=3>1G / 10G / 25G+ via  Virtio / Direct-Attach / SR-IOV</td>|
+| Host OS                       <td colspan=3> picoCDN7 Custom Image </td></tr>
+| Network                       <td colspan=3> 1G / 10G / 25G+ via  Virtio / Direct-Attach / SR-IOV</td></tr>
 
 
 ## **Where to Purchase**
 
-the picoCDN custom image can be obtained from the picoNETS portal. For more information visit [www.piconets.com](https://www.piconets.com) or contact us via email on info@piconets.com
+The picoCDN custom image can be obtained from the picoNETS support portal. For more information visit [www.piconets.com](https://www.piconets.com) or contact us via email on info@piconets.com
 
 
 ## Pre Requisites - Installing OpenNESS
@@ -57,6 +57,7 @@ $ helm install picocdn ./picocdn-node-vm
 
  Sample Output would look like:
 
+```shell
 >  NAME: picocdn
 >  LAST DEPLOYED: Tue Apr 27 22:51:36 2021
 >  NAMESPACE: default
@@ -67,7 +68,7 @@ $ helm install picocdn ./picocdn-node-vm
 >  # SPDX-License-Identifier: Apache-2.0
 >  # Copyright (c) 2021 picoNETS
 >  picoCDN Node installed
-
+```
 Once you are succesfully deployed, you can proceed with the Testing and Activation process.
 
 ## Testing and Activation Steps
