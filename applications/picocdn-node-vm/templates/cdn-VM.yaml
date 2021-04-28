@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 picoNETS
+
+{{- if and .Values.PersistentVolume.rootfs.scratch .Values.PersistentVolume.rootfs.imgSrc }}
+{{ fail "Both rootfs scratch and imgSrc are specified... Cannot proceed..." }}
+{{- end }}
+
+{{- $release_name := include "picocdn-node-vm.fullname" . }}
+
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  name: {{ template "picocdn-node-vm.fullname" . }}-vm
+spec:
+{{- if .Values.PersistentVolume.rootfs.scratch }}
+  running: false
+{{- else }}
+  running: true
+{{- end }}
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: {{ template "picocdn-node-vm.fullname" . }}
+    spec:
+      domain:
+        cpu:
+          cores: {{ if .Values.cdnVM.numCores }} {{- .Values.cdnVM.numCores -}} {{ else }} {{- "4" -}} {{ end }}
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: rootfs
+{{- if kindIs "map" .Values.PersistentVolume.cloudInit }}
+          - disk:
+              bus: virtio
+            name: cloudinit
+{{- end }}
+{{- range $cacheDisk, $val := .Values.PersistentVolume.cacheDisks }}
+          - disk:
+              bus: virtio
+            name: {{ $cacheDisk }}
+{{- end }}
+          interfaces:
+          - name: default
+            bridge: {}
+        resources:
+          requests:
+            memory: {{ if .Values.cdnVM.memory }} {{- .Values.cdnVM.memory -}} {{ else }} {{- "4096M" -}} {{ end }}
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - name: rootfs
+{{- if .Values.PersistentVolume.rootfs.imgSrc }}
+          dataVolume:
+            name: {{ template "picocdn-node-vm.fullname" . }}-dv
+{{- else }}
+          persistentVolumeClaim:
+            claimName: {{ template "picocdn-node-vm.fullname" . }}-dv
+{{- end }}
+{{- range $cacheDisk, $val := .Values.PersistentVolume.cacheDisks }}
+        - name: {{ $cacheDisk }}
+          persistentVolumeClaim:
+            claimName: {{ $release_name }}-{{ $cacheDisk }}-pvc
+{{- end }}
+{{- if .Values.PersistentVolume.cloudInit }}
+        - name: cloudinit
+          cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+{{- range .Values.PersistentVolume.cloudInit }}
+{{ . | indent 14}}
+{{- end }}
+{{- end }}
+{{- if .Values.PersistentVolume.rootfs.imgSrc }}
+  dataVolumeTemplates:
+    - metadata:
+        name: {{ template "picocdn-node-vm.fullname" . }}-dv
+      spec:
+        source:
+          http:
+            url: {{ .Values.PersistentVolume.rootfs.imgSrc }}
+        pvc:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: {{ .Values.PersistentVolume.rootfs.size }}
+          storageClassName: local-storage
+{{- end }}
+ 

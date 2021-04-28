@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 picoNETS
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "picocdn-node-vm.fullname" . }}-service
+spec:
+  type: {{ default "NodePort" .Values.cdnService.type }}
+  selector:
+    kubevirt.io/domain: {{ template "picocdn-node-vm.fullname" . }}
+  externalIPs:
+    192.168.1.100
+
+#  ports:
+#   -  port: {{ default "80" .Values.cdnService.port }}
+#{{- if .Values.cdnService.type }}
+#{{- if eq .Values.cdnService.type "NodePort" }}
+#      nodePort: {{ default "30007" .Values.cdnService.nodePort }}
+#{{- end }}
+#{{- else }}
+#      nodePort: {{ default "30007" .Values.cdnService.nodePort }}
+#{{- end }}
+  ports:
+    - name: https
+      nodePort: 30020
+      port: 443
+      protocol: TCP
+      targetPort: 443
+     
