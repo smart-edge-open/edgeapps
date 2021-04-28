@@ -67,7 +67,7 @@ $ helm install picocdn ./picocdn-node-vm
 >  NOTES:
 >  # SPDX-License-Identifier: Apache-2.0
 >  # Copyright (c) 2021 picoNETS
->  picoCDN Node installed
+>  picoCDN Node VM deployed. Please contact picoNETS Support for configuration and activation instructions.
 ```
 Once you are succesfully deployed, you can proceed with the Testing and Activation process.
 
