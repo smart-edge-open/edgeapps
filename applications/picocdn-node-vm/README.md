@@ -33,7 +33,7 @@ The picoCDN custom image can be obtained from the picoNETS support portal. For m
 
 |**Configuration**                   |                       |
 |  ----------------------------------|-----------------------|
-| OpenNESS Version                   | 20.04                 |
+| OpenNESS Version                   | 20.06                 |
 | Flavor Used 			     | kubevirt VM           |
 | Distribution	                     | IDO       	     |
 
