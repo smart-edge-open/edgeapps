@@ -21,7 +21,7 @@ proxy_yum_url: ""
 
 ### EIS repository configuration
 eis_source: "release"
-release_package_path: "/root/Edge_Insights_for_Industrial_2.4/IEdgeInsights/"    # provide release package till IEdgeInsights/ folder"
+release_package_path: "/root/Edge_Insights_for_Industrial_2.4.1/IEdgeInsights/"    # provide release package till IEdgeInsights/ folder"
 
 eis_env_file: "{{ eis_sources_dir }}/build/.env"
 
