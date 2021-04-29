@@ -30,9 +30,9 @@ Contact nishant@deepsightlabs.com
 | OpenNESS Version                   | 20.12.02		         |
 | Flavor Used 					     | Minimal				 |
 | Distribution						 | OpenSource    	     |
-Perform this additional step: 
-Use below link and follow the instructions to fulfill the prerequisites 
 
+Perform this additional step: 
+Use below link and follow the instructions to fulfill the prerequisites:
 https://github.com/open-ness/specs/blob/openness-20.12.02/doc/getting-started/network-edge/controller-edge-node-setup.md
 Go to openness-experience-kits/ directory and comment out the grub role in the network_edge.yml yaml file as shown below: 
  - role: machine_setup/grub 
