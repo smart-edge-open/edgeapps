@@ -35,9 +35,8 @@ Perform this additional step:
 Use below link and follow the instructions to fulfill the prerequisites:
 https://github.com/open-ness/specs/blob/openness-20.12.02/doc/getting-started/network-edge/controller-edge-node-setup.md
 Go to openness-experience-kits/ directory and comment out the grub role in the network_edge.yml yaml file as shown below: 
- - role: machine_setup/grub 
-Run the deployment script as ./deploy_ne.sh 
-
+role: machine_setup/grub 
+* Run the deployment script as ./deploy_ne.sh 
 
 ## Loading Docker Images
 docker image load -i dsal_openvino_v2.tar.gz
@@ -52,7 +51,7 @@ Run the following commands to deploy  through helm:
 
 > `NAME: supersecure`
 >
-> `LAST DEPLOYED: Thu Apr 29 03:58:34 2021`
+> `LAST DEPLOYED:`
 >
 > `NAMESPACE: default`
 >
@@ -63,14 +62,20 @@ Run the following commands to deploy  through helm:
 > `TEST SUITE: None`
 >
 > `NOTES:`
-# SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2021 DeepSight AI Labs
-deepsight-supersecure was installed.
-Your release is named supersecure.
-To learn more about the release, try:
-$ helm status supersecure
-$ helm get supersecure
-
+>
+> `# SPDX-License-Identifier: Apache-2.0`
+> 
+> `# Copyright (c) 2021 DeepSight AI Labs`
+> 
+> `deepsight-supersecure was installed.`
+> 
+> `Your release is named supersecure.`
+> 
+> `To learn more about the release, try:`
+> 
+> `$ helm status supersecure`
+> 
+> `$ helm get supersecure`
 
 
 ## Uninstall SuperSecure application
