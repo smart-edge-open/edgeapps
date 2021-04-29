@@ -33,9 +33,10 @@ Contact nishant@deepsightlabs.com
 
 Perform this additional step: 
 Use below link and follow the instructions to fulfill the prerequisites:
+
 https://github.com/open-ness/specs/blob/openness-20.12.02/doc/getting-started/network-edge/controller-edge-node-setup.md
-Go to openness-experience-kits/ directory and comment out the grub role in the network_edge.yml yaml file as shown below: 
-role: machine_setup/grub 
+
+Go to openness-experience-kits/ directory and comment out the grub role (role: machine_setup/grub) in the **network_edge.yml** file 
 * Run the deployment script as ./deploy_ne.sh 
 
 ## Loading Docker Images
