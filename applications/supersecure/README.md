@@ -36,8 +36,8 @@ Follow below link to setup controller and edge-node for installing OpenNESS.
 
 https://github.com/open-ness/specs/blob/openness-20.12.02/doc/getting-started/network-edge/controller-edge-node-setup.md
 
-Go to openness-experience-kits/ directory and comment out the grub role (role: machine_setup/grub) in the **network_edge.yml** file
-Run the deployment script as ./deploy_ne.sh 
+* Go to openness-experience-kits/ directory and comment out the grub role (role: machine_setup/grub) in the **network_edge.yml** file.
+* Run the deployment script as ./deploy_ne.sh 
 
 ## Loading Docker Images
 docker image load -i dsal_openvino_v2.tar.gz
