@@ -12,7 +12,7 @@ SuperSecure is a universally compatible retrofit solution, that works with any C
 
 | **Resource Information**           |                      |
 |------------------------------------|----------------------|
-| Application Type                   | Analytics   			| 
+| Application Type                   | Video-Analytics		| 
 | Compute  (vCores)                  | 8                    |  
 | Memory (RAM)                       | 16 GB                |  
 | Storage 				             | 200  GB              |  
