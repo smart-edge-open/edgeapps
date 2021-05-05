@@ -42,7 +42,7 @@ https://github.com/open-ness/specs/blob/openness-20.12.02/doc/getting-started/ne
 ## Loading Docker Images
 docker image load -i dsal_openvino_v2.tar.gz
 
-## Installing SuperS using helm
+## Installing SuperSecure Application using helm
 
 Run the following commands to deploy  through helm:
 
@@ -82,7 +82,7 @@ Run the following commands to deploy  through helm:
 ## Uninstall SuperSecure application
 To uninstall application run below command:
     
-helm uninstall supersecure
+`helm uninstall supersecure`
 
 ## Testing Steps
 For further instructions about steps for testing, contact Nishant (nishant@deepsightlabs.com)
