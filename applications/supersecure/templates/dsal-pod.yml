@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 DeepSight AI Labs
+
+---
+apiVersion: v1
+kind: Pod
+metadata: 
+    name: {{ .Values.deepsight_supersecure.name }}
+    labels:
+      app: {{ .Values.deepsight_supersecure.name }}
+spec: 
+    containers: 
+    - name: {{ .Values.deepsight_supersecure.name }}
+      image: "{{ .Values.deepsight_supersecure.image }}:{{ .Values.deepsight_supersecure.tag }}"
+      imagePullPolicy: Never
+      ports:
+      - containerPort: {{  .Values.service.godeepGuiPort }}
+      - containerPort: {{  .Values.service.godeepSetupServerPort }}
+      command: ["/bin/sh","-c"]
+      args: ["/opt/godeep/entry.sh && tail -f /dev/null"]
+
