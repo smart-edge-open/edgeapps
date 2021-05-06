@@ -14,7 +14,7 @@ spec:
       port: 80
       {{- if eq .Values.api.service.type "NodePort" }}
         {{- if .Values.api.service.nodePort }}
-      nodePort: {{ .api.service.nodePort }}
+      nodePort: {{ .Values.api.service.nodePort }}
       {{- end }}
       {{- end }}
       protocol: TCP
