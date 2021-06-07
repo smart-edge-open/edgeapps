@@ -268,3 +268,100 @@ For Python scripts:
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) [YEAR] [CORPORATION]
 ```
+# Guidelines for writing README.md file
+
+Note: Please use sophisticated formatting for your prose and code on GitHub with simple syntax. To create a heading, add one to six # symbols before your heading text. The number of # you use will determine the size of the heading.
+
+Refer https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf for learning about markdown syntax.
+
+Comments should be provided whenever a new commit is done on the pull request after review comments from engineering team. Crisp and clear usage of words will help team review and close the pull request quickly.
+All the files inside the helm chart folder should contain licensing header on top of every file.
+
+
+README.md
+
+```text
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2021 <Company Name> Corporation
+```
+
+# **<Application Name> Overview**
+Explain here what the application is all about and what it will be offering to the customers who are going to purchase.
+
+
+## **Pre Requisites – Resources Required**
+Mention here the resource profiles used and needed for testing your solution. Information like compute, memory, storage, host-OS, and network card details can be included in this.
+| **Resource Information**           |                      |
+|------------------------------------|----------------------|
+|  Application Type                  | CDN/Analytics/AR-VR  | 
+| Compute  (vCores)                  | X                    |  
+| Memory (RAM)                       | XX GB                |  
+| Storage 				             | XXX  GB              |  
+| Host OS                            | CentOS XX            | 
+| Network                            | XX				    |	  
+
+
+## **Where to Purchase**
+Mention here where can the application image be obtained from. For more information details about company site or email address of the point of contact.
+
+## Pre Requisites - Installing OpenNESS
+Provide link from where OpenNESS was installed. If certain configurations had been changed to support your deployment on OpenNESS for Network Edge, mention those details as well.
+
+|**Configuration**                   |                       |
+|  ----------------------------------|-----------------------|
+| OpenNESS Version                   |  			         |
+| Flavor Used 					     |						 |
+| Distribution						 | OpenSource/IDO	     |
+
+## Test Configuration
+Share the lab/real-world deployment diagram with OpenNESS building blocks and other components which might have been used in the implementation.
+
+## Loading Docker Images
+In case of requirement to "pre-pull" the docker container images onto the edge nodes, the partner needs to provide information here. 
+To obtain the application image please go to
+https://xxxxxxxxxxxxxx.
+Once available and copied to the edge nodes, the application container images can be loaded using the following commands:
+
+docker load -i xxxxxxx.tar.gz
+
+## Installing <application name> using helm
+
+Run the following commands to deploy  through helm:
+
+`helm install xxxxxx`
+
+ Sample Output would look like:
+
+> `helm install xxxxxxxxxxxxx`
+>
+> `NAME: <Application Name>`
+>
+> `LAST DEPLOYED: XXXXXX`
+>
+> `NAMESPACE: default`
+>
+> `STATUS: deployed`
+>
+> `REVISION: 1`
+>
+> `NOTES:`
+>
+> `<Application Name> installed`	
+
+
+## Uninstall <application name> application
+To uninstall application run below command:
+
+helm delete xxxxxxxx
+
+## Testing Steps
+Basic sanity/working testing procedure through which successful installation of the application can be confirmed.
+For eg: Ports to access dashboards, how to view KPI’s, checking required services running etc.
+
+## Business Knowledge Model and Limitations
+
+
+## **Related material**
+Company References, Blog articles, Whitepaper (if any)
+* Link1
+* Link2

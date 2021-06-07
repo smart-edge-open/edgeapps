@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Altran Technology
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "v2xstack.fullname" . }}
+  labels:
+    {{- include "v2xstack.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "v2xstack.selectorLabels" . | nindent 4 }}

@@ -11,7 +11,7 @@ Edge Insights for Industrial (EII) is the framework for enabling smart manufactu
 More details about EII:
 [https://www.intel.com/content/www/us/en/internet-of-things/industrial-iot/edge-insights-industrial.html](https://www.intel.com/content/www/us/en/internet-of-things/industrial-iot/edge-insights-industrial.html)
 
-Currently, `eis-experience-kit` supports EII version 2.4
+Currently, `eis-experience-kit` supports EII version 2.4.1
 
 - [Pre-requisites](#pre-requisites)
 - [Installation Process](#installation-process)
@@ -51,7 +51,7 @@ The EII release package can be downloaded from here: [https://software.intel.com
 
 During download select following option.
 ```sh
-Download Version :2.4
+Download Version :2.4.1
 Target System OS :Ubuntu 18.04.LTS
 Select Use Case :Video Analytic
 ```
@@ -67,7 +67,7 @@ After release package download follow this link for getting EII release package 
 ```
 **Note**:
 - Run above download command on  `Ubuntu 18.04.LTS` HOST or VM.
-- After download success copy EII release package `Edge_Insights_for_Industrial_2.4` on ansible Host machine.
+- After download success copy EII release package `Edge_Insights_for_Industrial_2.4.1` on ansible Host machine.
 
 ### Build Stage
 Overview on `eis-experience-kit` architecture:
@@ -95,7 +95,7 @@ User can configure the installation of EII by modifying the files that contain v
 
 ```sh
 eis_source: "release"
-release_package_path: "/root/Edge_Insights_for_Industrial_2.4/IEdgeInsights/"
+release_package_path: "/root/Edge_Insights_for_Industrial_2.4.1/IEdgeInsights/"
 ```
 
 

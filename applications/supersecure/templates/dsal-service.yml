@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 DeepSight AI Labs
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.deepsight_supersecure.name }}
+  labels:
+    app: {{ .Values.deepsight_supersecure.name }}
+spec:
+  type: {{  .Values.service.type }} 
+  ports:
+    - port: {{  .Values.service.godeepGuiPort }}
+      targetPort: {{  .Values.service.godeepGuiPort }}
+      name: http1
+    - port: {{  .Values.service.godeepSetupServerPort }}
+      targetPort: {{  .Values.service.godeepSetupServerPort }}
+      name: http2
+  selector:
+    app: {{ .Values.deepsight_supersecure.name }}
+
