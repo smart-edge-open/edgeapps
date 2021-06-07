@@ -5,7 +5,7 @@ Copyright (c) 2021 NetPico LAbs Pvt Ltd.(picoNETS)
 
 
 # **picoCDN Platform Overview**
-picoCDN is a Deep Edge focused Caching and Content Delivery Network (CDN) platform. Our Deep Edge CDN platform performs better than traditional CDNs by virtue of it unique and flexible architecture. We achieve this by bringing your content closer to your users, embedding deep into Telco and ISP networks.  With our Ultra-Low Latency CDN platform, we can deliver a buffer-free experience for Full HD, 4K, AR, VR, and other bandwidth-demanding content. Every edge location of our distribution network is geared to deliver content to users who are just a couple of hops away. We also provide a pre-caching API to push your content to the edge nodes before customers requests reach the node. This version of the platform is designed to help you deploy Edge POPs in various local ISPs, malls, hotels, airports, cellsites or other 5G Multi-Access Edge Computing (MEC) locations running Intel OpenNESS.
+picoCDN is a Deep Edge focused Caching and Content Delivery Network (CDN) platform. This Deep Edge CDN platform performs better than traditional CDNs by virtue of it's unique and flexible architecture. This is acheived by bringing the content closer to the users(from a network, rather than geographical perspective), by embedding deep into Telco and ISP networks.  With this Ultra-Low Latency CDN platform, ISPs/CSPs/Telcos can deliver a buffer-free experience for Full HD, 4K, AR, VR, and other bandwidth-demanding content. Every edge location of the distribution network is geared to deliver content to users who are just a couple of hops away. picoCDN also supports a pre-caching API to push content to the edge nodes before customers requests reach the node. This version of the platform is designed to help OEMs/ODMs/ISPs/CSPs/Telcos deploy Edge POPs in various local ISPs, malls, hotels, airports, cellsites or other 5G Multi-Access Edge Computing (MEC) locations running Intel OpenNESS.
 
 
 ## **Pre Requisites – Resources Required**
@@ -37,7 +37,7 @@ The picoCDN custom image can be obtained from the picoNETS support portal. For m
 | Flavor Used 			     | kubevirt VM           |
 | Distribution	                     | IDO       	     |
 
-This document assumes that OpenNESS was installed through [OpenNESS playbooks](https://github.com/open-ness/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md). Certain configurations had been changed to support VM deployment on OpenNESS for network edge following [openness-network-edge-vm-support.md](https://github.com/open-ness/specs/blob/master/doc/applications-onboard/openness-network-edge-vm-support.md).
+This document assumes that OpenNESS 20.06 was installed through [OpenNESS playbooks](https://github.com/open-ness/specs/blob/openness-20.06/doc/getting-started/network-edge/controller-edge-node-setup.md). Certain configurations had been changed to support VM deployment on OpenNESS for network edge following [openness-network-edge-vm-support.md](https://github.com/open-ness/specs/blob/openness-20.06/doc/applications-onboard/openness-network-edge-vm-support.md).
 
 ## Downloading VM Images
 
