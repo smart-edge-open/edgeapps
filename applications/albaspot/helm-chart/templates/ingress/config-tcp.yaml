@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-tcp
+data:
+  {{- if eq .Values.casterTls false }}
+  {{ .Values.casterPort -}}:
+    default/{{- template "product.fullname" . -}}-ntrip-caster:{{- .Values.casterPort }}
+  {{- else }}
+  {{ .Values.casterPort -}}:
+    default/{{- template "product.fullname" . -}}-ntrip-caster:{{- .Values.casterPort -}}:ssl
+  {{- end }}
+

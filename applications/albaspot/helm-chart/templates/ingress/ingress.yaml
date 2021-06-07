@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "product.fullname" . -}}-ingress
+  annotations:
+    ingress.kubernetes.io/path-rewrite: /(?:collector|caster|assets|refstations)/(.*) /\1
+spec:
+  tls:
+  rules:
+  - http:
+      paths:
+      - path: /collector
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "product.fullname" . -}}-rtk-collector
+            port:
+              number: {{ int .Values.apiPort }}
+      - path: /caster
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "product.fullname" . -}}-ntrip-caster
+            port:
+              number: {{ int .Values.apiPort }}
+      - path: /assets
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "product.fullname" . -}}-asset-manager
+            port:
+              number: {{ int .Values.apiPort }}
+      - path: /refstations
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "product.fullname" . -}}-refstation-manager
+            port:
+              number: {{ int .Values.apiPort }}
+
