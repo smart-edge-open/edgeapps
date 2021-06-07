@@ -10,17 +10,8 @@ spec:
   selector:
     kubevirt.io/domain: {{ template "picocdn-node-vm.fullname" . }}
   externalIPs:
-    192.168.1.100
+    - 192.168.1.100 # Need to update this based on the deployment network configuration/IP Pools
 
-#  ports:
-#   -  port: {{ default "80" .Values.cdnService.port }}
-#{{- if .Values.cdnService.type }}
-#{{- if eq .Values.cdnService.type "NodePort" }}
-#      nodePort: {{ default "30007" .Values.cdnService.nodePort }}
-#{{- end }}
-#{{- else }}
-#      nodePort: {{ default "30007" .Values.cdnService.nodePort }}
-#{{- end }}
   ports:
     - name: https
       nodePort: 30020
