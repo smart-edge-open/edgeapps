@@ -51,7 +51,7 @@ Detailed instructions on how to setup the OpenNESS cluster can be found in the
 The `inventory.yml` file needs to be adjusted to your needs.
 The following is an example used to prepare a minimal single node
 OpenNESS deployment for AlbaSpot (change the cluster name and the IP
-addresses according to your node settings):
+addresses - xxx.xxx.xxx.xxx - according to your node settings):
 
 ```yaml
 all:
@@ -63,12 +63,12 @@ all:
 controller_group:
   hosts:
     controller:
-      ansible_host: 172.27.52.34
+      ansible_host: xxx.xxx.xxx.xxx
       ansible_user: openness
 edgenode_group:
   hosts:
     node01:
-      ansible_host: 172.27.52.34
+      ansible_host: xxx.xxx.xxx.xxx
       ansible_user: openness
 edgenode_vca_group:
   hosts:
