@@ -33,6 +33,63 @@ that provides continuous high-accuracy positioning. Its features include:
 * Fast and reliable: low latency due to optimized network design
 * Hardware agnostic: supports all third-party NTRIP/RTCM-compatible devices in the market
 
+## Pre Requisites - Installing OpenNESS
+
+AlbaSpot runs on top of OpenNESS version 21.03, which can be obtained here:
+
+* https://github.com/open-ness/converged-edge-experience-kits
+
+| ** Configuration ** |                       |
+|---------------------|-----------------------|
+| OpenNESS Version    | 21.03                 |
+| Flavor Used         | single node - minimal |
+| Distribution        | OpenSource            |
+
+Detailed instructions on how to setup the OpenNESS cluster can be found in the
+[Getting Started Guide](https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md).
+
+The `inventory.yml` file needs to be adjusted to your needs.
+The following is an example used to prepare a minimal single node
+OpenNESS deployment for AlbaSpot (change the cluster name and the IP
+addresses according to your node settings):
+
+```yaml
+all:
+  vars:
+    cluster_name: albora          # NOTE: Use `_` instead of spaces.
+    flavor: minimal               # NOTE: Flavors can be found in `flavors` directory.
+    single_node_deployment: true  # Request single node deployment (true/false).
+    limit:                        # Limit ansible deployment to certain inventory group or hosts
+controller_group:
+  hosts:
+    controller:
+      ansible_host: 172.27.52.34
+      ansible_user: openness
+edgenode_group:
+  hosts:
+    node01:
+      ansible_host: 172.27.52.34
+      ansible_user: openness
+edgenode_vca_group:
+  hosts:
+ptp_master:
+  hosts:
+ptp_slave_group:
+  hosts:
+```
+
+Traffic inside the cluster needs to be enabled, so that the different
+pods in AlbaSpot can communicate to each other. In case traffic is
+blocked, it may be necessary to remove the blocker network policy object:
+
+```
+$ kubectl get NetworkPolicy -A
+NAMESPACE   NAME                          POD-SELECTOR          AGE
+default     block-all-ingress             <none>                16d
+
+$ kubectl delete NetworkPolicy block-all-ingress
+```
+
 ## Installing the AlbaSpot Edge chart
 
 The Helm charts for deploying the AlbaSpot application on the edge node
