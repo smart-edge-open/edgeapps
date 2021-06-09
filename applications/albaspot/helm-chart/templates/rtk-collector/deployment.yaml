@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "product.fullname" . -}}-rtk-collector
+  labels:
+    io.albora.product: {{ include "product.fullname" . }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      io.albora.product: {{ include "product.fullname" . }}
+      io.albora.service: rtk-collector
+  template:
+    metadata:
+      labels:
+        io.albora.product: {{ include "product.fullname" . }}
+        io.albora.service: rtk-collector
+    spec:
+      {{- include "container.pullSecret" . }}
+      containers:
+        - name: rtk-collector
+          {{- if $image := .Values.service.rtkCollector }}
+          image: " {{- include "docker.path" . -}}
+                   {{- include "docker.image" $image -}} "
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: "api"
+              protocol: TCP
+              containerPort: {{ int .Values.apiPort }}
+          env:
+            - name: AWS_DEPLOYMENT_ENABLED
+              value: " {{- .Values.awsEnabled -}} "
+            - name: TELEMETRY_REPORTER
+              value: " {{- .Values.telemetry -}} "
+            - name: SERVICE_PORT
+              value: " {{- .Values.apiPort -}} "
+            - name: REF_STATION_MANAGER_URL
+              value: http://{{- include "product.fullname" . -}}-refstation-manager:{{- .Values.apiPort -}}
+            
+

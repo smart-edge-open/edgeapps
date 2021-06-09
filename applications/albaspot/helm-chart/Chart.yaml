@@ -1,0 +1,25 @@
+# SPDX-License-Identfier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+apiVersion: v2
+name: albaspot
+description: A Helm chart for Kubernetes-based AlbaSpot deployment
+home: https://albora.io
+type: application
+version: 0.3.1
+appVersion: "v1.0.0"
+maintainers:
+  - name: Albora Technologies Ltd.
+dependencies:
+  - name: kubernetes-ingress
+    alias: ingress
+    version: ~1.1.6
+    repository: "https://haproxytech.github.io/helm-charts"
+  - name: postgresql
+    version: ~10.3.18
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: refstationmanagerpostgresql
+  - name: postgresql
+    version: ~10.3.18
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: assetmanagerpostgresql
