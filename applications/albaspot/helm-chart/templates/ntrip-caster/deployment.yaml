@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "product.fullname" . -}}-ntrip-caster
+  labels:
+    io.albora.product: {{ include "product.fullname" . }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      io.albora.product: {{ include "product.fullname" . }}
+      io.albora.service: ntrip-caster
+  template:
+    metadata:
+      labels:
+        io.albora.product: {{ include "product.fullname" . }}
+        io.albora.service: ntrip-caster
+    spec:
+      {{- include "container.pullSecret" . }}
+      containers:
+        - name: ntrip-caster
+          {{- if $image := .Values.service.ntripCaster }}
+          image: " {{- include "docker.path" . -}}
+                   {{- include "docker.image" $image -}} "
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: "caster"
+              protocol: TCP
+              containerPort: {{ int .Values.casterPort }}
+            - name: "api"
+              protocol: TCP
+              containerPort: {{ int .Values.apiPort }}
+          env:
+            - name: AWS_DEPLOYMENT_ENABLED
+              value: " {{- .Values.awsEnabled -}} "
+            - name: NTRIP_CHANNEL_HOST
+              value: "{{- include "product.fullname" . -}}-rtk-collector"
+            - name: NTRIP_CHANNEL_PORT
+              value: " {{- .Values.apiPort -}} "
+            - name: NTRIP_PORT
+              value: " {{- .Values.casterPort -}} "
+            - name: SERVICE_PORT
+              value: " {{- .Values.apiPort -}} "
+            - name: REF_STATION_MANAGER_URL
+              value: "http://{{- include "product.fullname" . -}}-refstation-manager:{{- .Values.apiPort -}}"
+            - name: NTRIP_SOURCE_TABLE_CACHE_TTL
+              value: " {{- .Values.refstationmanager.refresh -}} "
+            - name: TELEMETRY_REPORTER
+              value: " {{- .Values.telemetry -}} "
+            {{- if .Values.casterPassword }}
+            - name: NTRIP_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "product.fullname" . -}}-secrets
+                  key: ntripCaster.password
+            {{- end }}

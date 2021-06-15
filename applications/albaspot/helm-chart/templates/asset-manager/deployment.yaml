@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "product.fullname" . -}}-asset-manager
+  labels:
+    io.albora.product: {{ include "product.fullname" . }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      io.albora.product: {{ include "product.fullname" . }}
+      io.albora.service: asset-manager
+  template:
+    metadata:
+      labels:
+        io.albora.product: {{ include "product.fullname" . }}
+        io.albora.service: asset-manager
+    spec:
+      {{- include "container.pullSecret" . }}
+      containers:
+        - name: asset-manager
+          {{- if $image := .Values.service.assetManager }}
+          image: " {{- include "docker.path" . -}}
+                   {{- include "docker.image" $image -}} "
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: "api"
+              protocol: TCP
+              containerPort: {{ int .Values.apiPort }}
+          env:
+            - name: AWS_DEPLOYMENT_ENABLED
+              value: " {{- .Values.awsEnabled -}} "
+            - name: TELEMETRY_REPORTER
+              value: " {{- .Values.telemetry -}} "
+            - name: SERVICE_PORT
+              value: " {{- .Values.apiPort -}} "
+            - name: NTRIP_CASTER_NOTIF_CHANNEL_HOST
+              value: " {{- include "product.fullname" . -}}-ntrip-caster"
+            - name: NTRIP_CASTER_NOTIF_CHANNEL_PORT
+              value: " {{- .Values.apiPort -}} "
+            - name: NTRIP_CASTER_NOTIF_CHANNEL_SECURE
+              value: "false"
+            - name: DATABASE_HOST
+              value: " {{- include "product.fullname" . -}}-assetmanagerpostgresql"
+            - name: DATABASE_USERNAME
+              value: " {{- .Values.assetmanagerpostgresql.postgresqlUser -}} "
+            - name: DATABASE_NAME
+              value: " {{- .Values.assetmanagerpostgresql.postgresqlDatabase -}} "
+            {{- if .Values.assetmanagerpostgresql.postgresqlPassword }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "product.fullname" . -}}-secrets
+                  key: assetmanagerpostgresql.password
+            {{- end }}
+      initContainers:
+      - name: ensure-db-running
+        image: postgres:13.2
+        command: ['sh', '-c', 
+          'until pg_isready -h {{ include "product.fullname" . -}}-assetmanagerpostgresql -p {{ .Values.assetmanagerpostgresql.service.port -}}; 
+          do echo waiting for database; sleep 2; done;']

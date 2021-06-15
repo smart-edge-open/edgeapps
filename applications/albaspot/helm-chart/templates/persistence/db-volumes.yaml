@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+{{- range values .Values.database}}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "product.fullname" $ -}} - {{- .instance -}} -db-pvc
+spec:
+  storageClassName: {{ tpl (include "db.storageClass" .) $ }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  {{- if and .storageHostPath (not .storageClass) }}
+  volumeName: {{ include "product.fullname" $ -}} - {{- .instance -}} -db-pv
+  {{- end }}
+
+{{- if and .storageHostPath (not .storageClass) }}
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ tpl (include "db.storageClass" .) $ }}
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "product.fullname" $ -}} - {{- .instance -}} -db-pv
+spec:
+  storageClassName: {{ tpl (include "db.storageClass" .) $ }}
+  capacity:
+    storage: 10Gi
+  persistentVolumeReclaimPolicy: Delete
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ tpl .storageHostPath $ -}} / {{- include "product.fullname" $ -}} - {{- .instance -}} -db-pv
+    type: DirectoryOrCreate
+{{- end }}
+{{- end }}

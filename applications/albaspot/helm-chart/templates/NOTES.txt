@@ -1,0 +1,74 @@
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2021 Albora Technologies Ltd.
+
+You may get the NODE IP for the cluster by executing the following commands:
+  $ export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}") 
+  $ echo ${NODE_IP}
+
+{{- with .Values.ingress.controller.service }}
+{{- if eq .enablePorts.https true }}
+
+Check the health of the services:
+* For rtk-collector
+  $ curl --insecure https://${NODE_IP}:{{- .nodePorts.https -}}/collector/healthcheck
+* For ntrip-caster
+  $ curl --insecure https://${NODE_IP}:{{- .nodePorts.https -}}/caster/healthcheck
+* For asset-manager
+  $ curl --insecure https://${NODE_IP}:{{- .nodePorts.https -}}/assets/healthcheck
+* For refstation-manager
+  $ curl --insecure https://${NODE_IP}:{{- .nodePorts.https -}}/refstations/healthcheck
+
+{{- else if eq .enablePorts.http true }}
+
+Check the health of the services:
+* For rtk-collector
+  $ curl http://${NODE_IP}:{{- .nodePorts.http -}}/collector/healthcheck
+* For ntrip-caster
+  $ curl http://${NODE_IP}:{{- .nodePorts.http -}}/caster/healthcheck
+* For asset-manager
+  $ curl http://${NODE_IP}:{{- .nodePorts.http -}}/assets/healthcheck
+* For refstation-manager
+  $ curl http://${NODE_IP}:{{- .nodePorts.http -}}/refstations/healthcheck
+
+{{- end }}
+{{- end }}
+
+Access the caster service:
+{{- if eq .Values.casterTls false }}
+* With telnet
+  $ telnet ${NODE_IP} {{ template "caster.nodePort" . }}
+* With rtklib str2str
+  $ str2str -in ntrip://user:{{- .Values.casterPassword -}}@${NODE_IP}:{{- template "caster.nodePort" . -}}/albora#rtcm3
+{{- else }}
+* With openssl client
+  $ openssl s_client ${NODE_IP}:{{- template "caster.nodePort" . }}
+* With rtklib str2str
+  $ cat > ./stunnel_ntrip.conf <<EOT
+foreground = no
+pid =
+[ntrip]
+client = yes
+accept = localhost:2101
+connect = ${NODE_IP}:{{- template "caster.nodePort" . }}
+delay = yes
+EOT
+  $ stunnel ./stunnel_ntrip.conf
+  $ str2str -in ntrip://user:{{- .Values.casterPassword -}}@localhost:2101/albora#rtcm3
+
+{{- end }}
+
+{{- with .Values.ingress.controller.service }}
+{{- if eq .enablePorts.https true }}
+
+Access the API Swagger documentation:
+  $ curl --insecure https://${NODE_IP}:{{- .nodePorts.https -}}/assets/api_docs/index.html
+  $ curl --insecure https://${NODE_IP}:{{- .nodePorts.https -}}/refstations/api_docs/index.html
+
+{{- else if eq .enablePorts.http true }}
+
+Access the API Swagger documentation:
+  $ curl http://${NODE_IP}:{{- .nodePorts.http -}}/assets/api_docs/index.html
+  $ curl http://${NODE_IP}:{{- .nodePorts.http -}}/refstations/api_docs/index.html
+
+{{- end }}
+{{- end }}

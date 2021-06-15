@@ -1,0 +1,197 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+# Default values for albaspot.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Configure the name of the product.
+## By default it uses a combination of the chart name and release
+## The `nameOverride` just changes the name of the product, while
+## `fullnameOverride`overrides the release name.
+nameOveride: ""
+fullnameOverride: ""
+
+##
+## Common service configuration
+##
+
+## Indicate if AWS services are available
+## Set to false when running outside of AWS
+awsEnabled: false
+
+## Configure the telemetry reporter
+## Set to 'none' to disable it
+telemetry: "console"
+
+## Configure the port to use for service APIs and healthcheck
+apiPort: "8088"
+
+##
+## Caster configuration
+##
+
+## Configure the password to use to connect to the password service
+casterPassword: ""
+
+## Configure the port to use for the plain caster service
+casterPort: "2101"
+
+## Enable TLS for Caster (set to false to disable)
+casterTls: true
+
+##
+## Refstation manager configuration
+##
+refstationmanager:
+  ## Time in milliseconds to force a refresh of data obtained from
+  ## the reference station manager
+  refresh: 30000
+
+##
+## Infrastructure configuration
+##
+
+## Configure the parameters to retrieve images from Albora repos
+## It defaults to Albora's dev ECR account, but it should be
+## overridden with the proper settings (e.g. stable versions repo)
+image:
+  ## Configure the pull policy (set to 'Always' to force an upgrade of the images)
+  pullPolicy: IfNotPresent
+  ## Configure the registry host to download the repositories (without the slug)
+  registry: ""
+  ## Configure the registry slug to access the docker images
+  slug: ""
+  ## Set the username to access the docker registry
+  ## Use "AWS" if you are using AWS ECR
+  username: ""
+  ## Set the password to access the docker registry
+  ## You can generate the password with the following command if you are using ECR
+  ## (note that ECR passwords expire in 12 hours):
+  ## aws --profile=albora-dev ecr get-authorization-token --output text \
+  ##     --query authorizationData[].authorizationToken | base64 -d | cut -d: -f2
+  password: ""
+  ## Configure the email associated to docker registry credentials
+  ## (Note that kubernetes requires it to be non-null, but it is not used)
+  email: ""
+
+## Configure the docker images and versions for each service
+## Avoid `latest` as version tag (use a fixed version instead)
+service:
+  assetManager:
+    image: "albaspot-rtkassetmanager-srv"
+    version: "0.11.0"
+  ntripCaster:
+    image: "albaspot-ntripcaster-srv"
+    version: "1.3.0"
+  refStationManager:
+    image: "albaspot-refstationmanager-srv"
+    version: "0.1.7"
+  rtkCollector:
+    image: "albaspot-rtkcollector-srv"
+    version: "1.1.2"
+
+## Configure the service scaling.
+## Currently, autoscaling is not yet supported in this chart
+replicaCount: 1
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+## Configure haproxy as kubernetes-ingress
+## ref: https://github.com/haproxytech/helm-charts/blob/master/kubernetes-ingress/values.yaml
+ingress:
+  controller:
+    kind: Deployment
+    replicaCount: 1
+    ## Ingress TLS secret, if it is enabled and secret is null then controller will use auto-generated secret, otherwise
+    ## secret needs to contain name of the Secret object which has been created manually
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+    ## ref: https://kubernetes.io/docs/concepts/configuration/secret/
+    defaultTLSSecret:
+      enabled: true
+      secret: null
+    ## Controller configuration
+    ## ref: https://github.com/haproxytech/kubernetes-ingress/tree/master/documentation
+    config: {}
+    ## Additional command line arguments for the controller
+    ## ref: https://github.com/haproxytech/kubernetes-ingress/blob/master/documentation/controller.md
+    extraArgs:
+      - --configmap-tcp-services=default/ingress-tcp
+    ## Controller service configuration
+    service:
+      type: NodePort
+      enablePorts:
+        http: false
+        https: true
+        stat: false
+      nodePorts:
+        http: 31080
+        https: 31443
+        stat: 31024
+      tcpPorts:
+        - name: "caster"
+          port: "2101"
+          targetPort: "caster-tcp"
+          nodePort: 32101
+  defaultBackend:
+    enabled: true
+    kind: Deployment
+    replicaCount: 1
+
+## Define storage volumes for databases.
+## The data will be persisted in the following way
+## - Using the indicated storageClass (accepts templates), if set;
+## - Using a local hostPath persistent volume, if no storageClass is set but storageHostPath
+##   contains a path or a path template;
+## - The cluster default provider, if any, in case neither storageClass or storageHostPath are set.
+## Note that the instance field must correspond to the aliases used by the postgresql databases
+database:
+  assetManager:
+    instance: assetmanagerpostgresql
+    storageClass: null
+    storageHostPath: ""
+  refstationManager:
+    instance: refstationmanagerpostgresql
+    storageClass: null
+    storageHostPath: ""
+
+## Configure Postgresql
+assetmanagerpostgresql:
+  postgresqlDatabase: rtkassetmanagerdb
+  ## Database user
+  postgresqlUser: postgres
+  ## Database password must be overridden
+  postgresqlPassword: ""
+  ## Database service port
+  service:
+    port: 5432
+  ## Set the template for the data volume claim
+  persistence:
+    existingClaim: "{{- include \"product.fullname\" . -}}-db-pvc"
+  ## Set to true to change permissions in the data directory
+  ## (needed when runAsUser or fsGroup don't work properly - e.g. minikube)
+  volumePermissions:
+    enabled: false
+
+refstationmanagerpostgresql:
+  ## Database name
+  postgresqlDatabase: refstationmanagerdb
+  ## Database user
+  postgresqlUser: postgres
+  ## Database password must be overridden
+  postgresqlPassword: ""
+  ## Database service port
+  service:
+    port: 5432
+  ## Set the template for the data volume claim
+  persistence:
+    existingClaim: "{{- include \"product.fullname\" . -}}-db-pvc"
+  ## Set to true to change permissions in the data directory
+  ## (needed when runAsUser or fsGroup don't work properly - e.g. minikube)
+  volumePermissions:
+    enabled: false
+
