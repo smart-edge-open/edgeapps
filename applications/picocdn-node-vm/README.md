@@ -35,7 +35,7 @@ The picoCDN custom image can be obtained from the picoNETS support portal. For m
 |  ----------------------------------|-----------------------|
 | OpenNESS Version                   | 20.06                 |
 | Flavor Used 			     | kubevirt VM           |
-| Distribution	                     | IDO       	     |
+| Distribution	                     | Opensource   	     |
 
 This document assumes that OpenNESS 20.06 was installed through [OpenNESS playbooks](https://github.com/open-ness/specs/blob/openness-20.06/doc/getting-started/network-edge/controller-edge-node-setup.md). Certain configurations had been changed to support VM deployment on OpenNESS for network edge following [openness-network-edge-vm-support.md](https://github.com/open-ness/specs/blob/openness-20.06/doc/applications-onboard/openness-network-edge-vm-support.md).
 
