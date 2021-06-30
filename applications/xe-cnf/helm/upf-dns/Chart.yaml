@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+appVersion: "1.0"
+description: A Helm chart for UPF N4FE Context Service
+name: upf-dns
+version: 0.1.0

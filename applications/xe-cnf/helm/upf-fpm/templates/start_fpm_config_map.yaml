@@ -1,0 +1,292 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: start-fpm-config
+data:
+  startup-exedge-5gup.conf: |
+    unix {
+      nodaemon
+      log /var/log/vpp/vpp.log
+      coredump-size unlimited
+      full-coredump
+      cli-listen /run/vpp/cli.sock
+      gid vpp
+      cli-prompt exedge-5gup#
+      #poll-sleep-usec 10
+    }
+        
+    #logging {
+    #  default-log-level error
+    #}
+    
+    api-trace {
+    ## This stanza controls binary API tracing. Unless there is a very strong reason,
+    ## please leave this feature enabled.
+    on
+    ## Additional parameters:
+    ##
+    ## To set the number of binary API trace records in the circular buffer, configure nitems
+    ##
+    ## nitems <nnn>
+    ##
+    ## To save the api message table decode tables, configure a filename. Results in /tmp/<filename>
+    ## Very handy for understanding api message changes between versions, identifying missing
+    ## plugins, and so forth.
+    ##
+    ## save-api-table <filename>
+    }
+    
+    api-segment {
+            gid vpp
+    }
+    
+    socksvr {
+            default
+    }
+    
+    cpu {
+            ## In the VPP there is one main thread and optionally the user can create worker(s)
+            ## The main thread and worker thread(s) can be pinned to CPU core(s) manually or automatically
+            
+            ## Manual pinning of thread(s) to CPU core(s)
+            
+            ## Set logical CPU core where main thread runs, if main core is not set
+            ## VPP will use core 1 if available
+            #main-core 2
+            
+            ## Set logical CPU core(s) where worker threads are running
+            # corelist-workers 2-3,18-19
+            #corelist-workers 4,6
+            
+            ## Automatic pinning of thread(s) to CPU core(s)
+            
+            ## Sets number of CPU core(s) to be skipped (1 ... N-1)
+            ## Skipped CPU core(s) are not used for pinning main thread and working thread(s).
+            ## The main thread is automatically pinned to the first available CPU core and worker(s)
+            ## are pinned to next free CPU core(s) after core assigned to main thread
+            # skip-cores 4
+            
+            ## Specify a number of workers to be created
+            ## Workers are pinned to N consecutive CPU cores while skipping "skip-cores" CPU core(s)
+            ## and main thread's CPU core
+            # workers 1
+            
+            ## Set scheduling policy and priority of main and worker threads
+            
+            ## Scheduling policy options are: other (SCHED_OTHER), batch (SCHED_BATCH)
+            ## idle (SCHED_IDLE), fifo (SCHED_FIFO), rr (SCHED_RR)
+            # scheduler-policy fifo
+            
+            ## Scheduling priority is used only for "real-time policies (fifo and rr),
+            ## and has to be in the range of priorities supported for a particular policy
+            # scheduler-priority 50
+    }
+    
+    buffers {
+            ## Increase number of buffers allocated, needed only in scenarios with
+            ## large number of interfaces and worker threads. Value is per numa node.
+            ## Default is 16384 (8192 if running unpriviledged)
+            buffers-per-numa 128000
+            
+            ## Size of buffer data area
+            ## Default is 2048
+            # default data-size 2048
+    }
+    
+    #heapsize 2G
+
+    dpdk {
+            log-level debug
+            ## Change default settings for all interfaces
+            dev default {
+                            ## Number of receive queues, enables RSS
+                            ## Default is 1
+                            num-rx-queues 2
+            
+                            ## Number of transmit queues, Default is equal
+                            ## to number of worker threads or 1 if no workers treads
+                            num-tx-queues 2
+            
+                            ## Number of descriptors in transmit and receive rings
+                            ## increasing or reducing number can impact performance
+                            ## Default is 1024 for both rx and tx
+                            # num-rx-desc 512
+                            # num-tx-desc 512
+            
+                            ## VLAN strip offload mode for interface
+                            ## Default is off
+                            # vlan-strip-offload on
+            }
+            
+            ## Whitelist specific interface by specifying PCI address
+            # dev 0000:02:00.0
+            
+            ## Blacklist specific device type by specifying PCI vendor:device
+            ## Whitelist entries take precedence
+            # blacklist 8086:10fb
+    
+            ## Set interface name
+            #
+            dev {{.Values.env.nwuPciAddr}} {
+                    name nwu
+            }
+    
+            dev {{.Values.env.n644PciAddr}} {
+                    name n6-nat44
+            }
+    
+            #dev n6-64-pci-addr {
+            #       name n6-nat64
+            #}
+    
+            ## Whitelist specific interface by specifying PCI address and in
+            ## addition specify custom parameters for this interface
+            # dev 0000:02:00.1 {
+            #       num-rx-queues 2
+            # }
+            
+            ## Change UIO driver used by VPP, Options are: igb_uio, vfio-pci,
+            ## uio_pci_generic or auto (default)
+            uio-driver {{.Values.env.driverPci}}
+            
+            ## Disable multi-segment buffers, improves performance but
+            ## disables Jumbo MTU support
+            no-multi-seg
+            
+            ## Change hugepages allocation per-socket, needed only if there is need for
+            ## larger number of mbufs. Default is 256M on each detected CPU socket
+            # socket-mem 100,100
+            socket-mem 16384,16384
+            
+            ## Disables UDP / TCP TX checksum offload. Typically needed for use
+            ## faster vector PMDs (together with no-multi-seg)
+            #no-tx-checksum-offload
+    
+            # no-pci
+    
+            # Enable DPDK Cryptodev
+            #vdev crypto_scheduler_pmd_1
+            #vdev crypto_aesni_mb0,socket_id=0
+            #vdev crypto_aesni_mb1,socket_id=0
+            #vdev crypto_aesni_mb
+            #vdev crypto_aesni_mb1,socket_id=0
+            #vdev crypto_aesni_gcm,socket_id=0,max_nb_sessions=128
+            #vdev cryptodev_aesni_mb_pmd,socket_id=0
+            #vdev cryptodev_aesni_mb_pmd,socket_id=0
+    
+    }
+    
+    nat {
+    
+            #deterministic
+            outside VRF id 1
+            inside VRF id 1
+            
+            # per thread max translations limit, ceiling = 10 times of following number
+            # when not set, default value used is 1024; so per thread ceiling = 1024 * 10 sessions
+            # assuming 10000 users simultaneously using a single xE with 500 sessions per user,
+            # we can set this to (10000*512)/4 = 1280000
+            translation hash buckets 1280000
+            # memory set aside explicity for the in2out/out2in bihash tables
+            # when not set, default value is 128 << 20 = 134217728
+            # better to keep around 256 per user hash bucket above, i.e. 128000 * 256 = 26,84,35,456
+            translation hash memory 327680000
+            #user hash table buckets, one user can be one src-ip of 10.x.y.z series
+            #when not set, default value is 128
+            #this should be >> number of users we expect to land on a single xE; we can keep this 512
+            user hash buckets 2500
+            #point at which sessions from a user get recycled - pick the LRU-session for the same user
+            #when not set, default value is 100
+            #we can set this to 500
+            max translations per user 512
+    
+    }
+    
+    
+    plugins {
+    
+            ## Adjusting the plugin path depending on where the VPP plugins are
+            #       path /ws/vpp/build-root/install-vpp-native/vpp/lib/vpp_plugins
+            
+            ## Disable all plugins by default and then selectively enable specific plugins
+            # plugin default { disable }
+            plugin dpdk_plugin.so { enable }
+            # plugin acl_plugin.so { enable }
+            
+            ## Enable all plugins by default and then selectively disable specific plugins
+            # plugin dpdk_plugin.so { disable }
+            # plugin acl_plugin.so { disable }
+    }
+    
+    punt {
+            socket /run/vpp/punt.socket
+    }
+  start-fpm.sh: |
+    #!/bin/bash
+    set -xe
+    
+    # Start VPP
+    ./start-vpp.sh
+    
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/usr/lib/
+    ## Start RM
+    ./upf-rm &
+    
+    # Configure VPP
+    ./config-vpp.sh
+    
+    # Check for IPS
+    #if [[ -z "${IPS_ENV}" ]]; then
+    #    echo "IPS_ENV not exported"
+    #else
+    #    if [[ ${IPS_ENV} == 1 ]]; then
+    #        echo "IPS Enabled. Starting log parser.. "
+    #        # Start IPS log parser script.
+    #        ./ips-log-parser.py -f /var/log/suricata/eve.json -l /var/log/ips.log -e /etc/dpi/nta/nta-ips.csv -vv &
+    #    else
+    #        echo "IPS not Enabled"
+    #    fi
+    #fi
+    
+    tail -f /dev/null
+  healthcheck-probe.sh: |
+    #!/bin/bash
+    now=$(date +"%T")
+    echo > PROBE OK>> /tmp/healthy.txt
+    if [ $(pgrep 'vpp_main|upf-rm' | wc -l) -lt 2 ]; then
+    echo "PROBE FAIL : $now" >> /tmp/healthcheck-probe.txt
+    echo "PROBE FAIL : $now" >> /tmp/unhealthy.txt
+    echo "=================" >> /tmp/unhealthy.txt
+    #rm -f /tmp/healthy.txt
+    exit 0
+    else
+    echo "PROBE OK : $now" >> /tmp/healthcheck-probe.txt
+    echo "PROBE OK : $now" >> /tmp/healthy.txt
+    echo "=================" >> /tmp/healthy.txt
+    exit 0
+    fi
+  start-init.sh: |
+    #!/bin/bash
+    set -xe
+    
+    # Start VPP
+    echo "Starting exedge-5gup instance from ConfigMap"
+    /usr/bin/vpp -c /etc/vpp/startup-exedge-5gup.conf &
+    
+    # Wait for instance to come up
+    typeset -i cnt=60
+    until ls -l /run/vpp/cli.sock ; do
+    ((cnt=cnt-1)) || exit 1
+    sleep 1
+    echo "Waiting for exedge-5gup vpp instance to come up"
+    done
+    echo "Instance exedge-5gup vpp is up"
+    
+    vppctl sh pci
+    vppctl create interface vmxnet3 $NWU_PCI_ADDR bind
+    vppctl create interface vmxnet3 $N6_44_PCI_ADDR bind
+    vppctl sh pci
+    #tail -f /dev/null

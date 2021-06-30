@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+nameOverride: redis
+fullnameOverride: redis
+usePassword: false
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  storageClass: local-storage
+  size: 8Gi
+master:
+  disableCommands: []
+slave:
+  disableCommands: []
+

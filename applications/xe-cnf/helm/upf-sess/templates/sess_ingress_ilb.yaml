@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: upf-sess-ilb-gateway
+spec:
+  selector:
+    istio: ilbgateway
+  servers:
+  - port:
+      number: 32058
+      name: GRPC
+      protocol: GRPC
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: upf-sess-ingress-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 32058
+      name: GRPC
+      protocol: GRPC
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: upf-sess-lb-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - upf-sess-ilb-gateway
+  - upf-sess-ingress-gateway
+  http:
+  - match:
+    - port: 32058
+    route:
+    - destination:
+        host: upf-sess
+        port:
+          number: 5058
+---

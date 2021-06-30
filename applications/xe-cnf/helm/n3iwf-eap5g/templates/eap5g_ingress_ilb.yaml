@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: n3iwf-eap5g-ilb-gateway
+spec:
+  selector:
+    istio: ilbgateway
+  servers:
+  - port:
+      number: 32057
+      name: GRPC
+      protocol: GRPC
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: n3iwf-eap5g-ingress-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 32057
+      name: GRPC
+      protocol: GRPC
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: n3iwf-eap5g-lb-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - n3iwf-eap5g-ilb-gateway
+  - n3iwf-eap5g-ingress-gateway
+  http:
+  - match:
+    - port: 32057
+    route:
+    - destination:
+        host: n3iwf-eap5g
+        port:
+          number: 5057
+---

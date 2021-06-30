@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: start-dns-config
+data:
+  blockeddomain.hosts: |
+    ; This zone will kill all traffic to a listed domain
+    ;  Replace exium.net with your nameserver
+    ;
+    
+    $TTL    86400   ; one day
+    
+    @       IN      SOA     ns1.exium.net. exium.net. (
+                                                1
+                                                28800   ; refresh  8 hours
+                                                7200    ; retry    2 hours
+                                                864000  ; expire  10 days
+                                                86400 ) ; min ttl  1 day
+                                NS      ns1.exium.net.
+    
+                                A       127.0.0.1
+    
+    *               IN      A       127.0.0.1
+  start-dns.sh: |
+    #!/bin/bash
+    set -xe
+    echo "Starting DNS Container From ConfigMap"
+    #
+    mkdir -p /var/named
+    mkdir -p /var/named/dynamic/
+    mkdir -p /var/named/data/
+    touch /var/named/named.ca
+    chmod 775 -R /var/named
+    #chmod 775 -R /etc/bind
+    #chown root:bind /var/named >/dev/null 2>&1 || true
+    #route -A inet6 add $UPF_N6_UE_IPV6_POOL_SUBNET gw $UPF_N6_UE_IPV6_POOL_SUBNET_GW
+    
+    named  -c $UPF_DNS_CONF_PATH/named.conf $UPF_DNS_OPTS
+
+    tail -f /dev/null

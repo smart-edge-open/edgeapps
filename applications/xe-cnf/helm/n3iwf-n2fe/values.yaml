@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+# Default values for upf-sess.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+appName: n3iwf
+name: n3iwf-n2fe
+version: v1
+
+image:
+  repository: gcr.io/ec2nf-256816/n3iwf-n2fe
+  tag: v2.0.1-9495a39
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 5051
+  name: n2ctxt-n2fe
+  protocol: TCP
+  nodePort: 5051
+
+gateway:
+  enabled: true
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "50m"
+  limits:
+    memory: "256Mi"
+    cpu: "100m"
+
+env:
+  redisMaster: "redis-master.exopsagent:6379"
+  redisSlave: "redis-slave.exopsagent:6379"
+  jaegerServer: "jaeger-agent.exopsagent:6831"
+  logLevel: "trace"
+  enableTracer: true
+  enableMetrics: true
+  enableNats: true
+  natsServer: "nats://nats-client.exopsagent:4222"
+  enableCfgMgr: true
+  fluentServer: "fluentd"
+  n2fePort: ""
+  n2ctxtAddr: "n3iwf-n2ctxt:5052"
+
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+    - host: 
+      paths: []
+  tls: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

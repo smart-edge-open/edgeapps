@@ -1,0 +1,164 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+# Default values for upf-fpm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+appName: upf
+name: upf-fpm
+version: v1
+
+image:
+  repository: gcr.io/ec2nf-256816/upf-fpm
+  tag: openess.3 
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 5054
+  name: fpm
+  protocol: TCP
+  nodePort: 5054
+
+  viciport: 5059
+  viciname: fpm
+
+  udpport: 6000
+  udpname: eap5gUdp
+  udpprotocol: UDP
+
+gateway:
+  enabled: true
+
+resources:
+  limits:
+    hugepages-2Mi: 1500Mi
+    memory: 5000Mi
+  requests:
+    memory: 4000Mi
+
+env:
+  redisMaster: "redis-master.exopsagent:6379"
+  redisSlave: "redis-slave.exopsagent:6379" 
+  jaegerServer: "jaeger-agent.exopsagent:6831"
+  lenableTracer: true                   
+  enableMetrics: "false"          
+  enableNats: true                                                                    
+  natsServer: "nats://nats-client.nats:4222"
+  enableCfgMgr: true
+  metricsSuffix: "/metrics"
+  metricsPort : ":8080"
+  n3iwfNwuIntf: "nwu"
+  n3iwfNwuIpv4Addr: ""
+  n3iwfNwuIpv4Mask: "29"
+  n3iwfNwuNextIpv4Addr: "1.1.8.2"
+  nwuPciAddr: "0000:00:00.0"
+  n3iwfNwuNextHopMacAddr: "06:d3:e7:fb:f2:79"
+  eap5gServerIp: "172.21.192.140"
+  eap5gServerPort: "6000"
+  nwuUeIpAddres: "192.168.125.100"
+  nwuNasIpAddres: "192.168.124.100"
+  nwuNasTcpPort: "6002"
+  nwuMode: "server"
+  nwuIpPool: "172.53.0.0/16"
+  n3iwfLocalGreIp: "192.168.125.100"
+  n3iwfIke2ServerIp: "%any"
+  n3iwfSubnet: "192.168.124.0/24"
+  upfN6IfName: "n6-nat44"
+  upfN6Ipv6IfName: "n6-nat44"
+  upfN6Nat64IfName: "n6-nat64"
+  upfN6Ipv4Addr: ""
+  upfN6Ipv4AddrMask: "29"
+  upfN6Ipv6Addr: "2406:da1a:d5b:7afe:9688:d13c:99a:737d"
+  upfN6Ipv6AddrMask: "/128"
+  upfN6NextIpv4Addr: "1.1.3.9"
+  n644PciAddr: "0000:b:00.0"
+  upfN6Nat64Ipv6AddrMask: "24"                                                                                 
+  upfN6Nat64Ipv4Addr: "172.32.201.202"
+  upfN6Nat64NextIpv4Addr: "172.32.201.1"
+  upfN6UeIpPoolSubnet: "10.53.0.0"
+  upfN6UeIpPoolSubnetMask: "22"
+  upfN6UeIpPoolStart: "10.53.0.1"
+  upfN6UeIpPoolEnd: "10.53.0.255"
+  upfN6UeIpPoolClassifyPrefix: "10.53.0"
+  upfN6UeIpv6PoolClassifyPrefix: "fd12:3456:0091"
+  upfN6UeIpv6PoolSubnet: "fd12:3456:0091::/48"
+  upfN6Ipv6DnsSubnet: "fd15:555::/32"
+  upfEnableNat44: "YES"
+  upfEnableNat64: "NO"
+  upfIkev2ServerId: "exedge.exium.net"
+  uesimIkev2ClientId: "%any"
+  vppTabHostIntfName: "ctrl-gw"
+  vppTapHostIpv4Addr: "192.168.124.1"
+  vppTapHostIpv4Mask: "24"
+  vppTabIntfIpv4Addr: "192.168.124.100"
+  vppTapIntfIpv4Mask: "24"
+  vppClientSubnet: "0.0.0.0/0"
+  rmTcpServerIp: "192.168.124.100"
+  rmTcpServerPort: "6002"
+  rmTcpServerIntf: "1"
+  nwuGoviciServerIp: "127.0.0.1"
+  nwuGoviciServerPort: "6010"
+  nwuGoviciServerModuleName: "server"
+  upfLocalGtpuIp: "192.168.126.100"
+  n3iwfLocalGtpuIp: "192.168.127.100"
+  nwuSubnetUeIp: "192.168.125.0/25"
+  vppServerIp: "127.0.0.1"
+  vppSswanIp: "127.0.0.1"
+  vppSswanPort : "8000"
+  vppServerPort: "8001"
+  logLevel: "TRACE"
+  jagerServerAddr: "jaeger:6831"
+  tracingEnabled: "false"
+  metricsEnabled: "true"
+  upfDpiEnabled: "1"
+  upfNatLoopbackMac: "02:fe:aa:aa:aa:aa"
+  exedgeName: ""
+  exedgeId: "53"
+  upfGarpIntvl: "30"
+  stngDir: "/etc/ike"
+  nwuN3iwfNwuIpv4Addr: "172.32.100.32"
+  nwuN3iwfNwuIpv4Mask: "24"
+  nwuN3iwfNwuNextHopMacAddr: "02:68:84:c7:ff:cc"
+  driverPci: "vfio-pci"
+  extGreEndPoint: "193.168.254.254"
+  extGreEndPointExt: "192.168.254.254"
+  extGreEndPointInt: "192.168.254.53"
+
+nwu:
+  name: upf-nwu
+  image:
+    repository: gcr.io/ec2nf-256816/n3iwf-nwu
+    tag: openess.3
+    pullPolicy: IfNotPresent
+  resources: {}
+  metricsPort: ":8081"
+
+init:
+  name: upf-fpm-init
+  image:
+    repository: gcr.io/ec2nf-256816/upf-fpm-init
+    tag: openess.3
+    pullPolicy: IfNotPresent
+  resources: {}
+
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+    - host:
+      paths: []
+  tls: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

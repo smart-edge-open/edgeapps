@@ -1,0 +1,501 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: apps/v1
+kind: StatefulSet
+spec:
+  replicas: {{ .Values.replicaCount }}
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.appName }}
+    name: {{ .Values.name }}
+  #annotations:
+  #  k8s.v1.cni.cncf.io/networks: hostdevice-conf, hostdevice1-conf
+spec:
+  serviceName: {{ .Values.name }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      name: {{ .Values.name }}
+      version: {{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        name: {{ .Values.name }}
+        version: {{ .Values.version }}
+    spec:
+      containers:
+        - name: {{ .Values.name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities: 
+              add: ["ALL"]
+            privileged: true
+          volumeMounts:
+          - mountPath: /dev/hugepages
+            name: hugepage
+          - mountPath: /dev
+            name: volume-dev
+          - mountPath: /sys
+            name: volume-sys
+          - mountPath: /root/.aws/
+            name: cfgmap
+          - name: healthcheck-dir
+            mountPath: /tmp
+          - mountPath: /etc/vpp/start-fpm.sh
+            name: start-fpm-cfgmap
+            subPath: start-fpm.sh
+          - mountPath: /etc/vpp/startup-exedge-5gup.conf
+            name: start-fpm-cfgmap
+            subPath: startup-exedge-5gup.conf
+          - mountPath: /etc/vpp/healthcheck-probe.sh
+            name: start-fpm-cfgmap
+            subPath: healthcheck-probe.sh
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /etc/vpp/healthcheck-probe.sh
+            periodSeconds: 30 
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_SVCNAME
+              value: {{ .Values.name }}
+            - name: REDIS_MASTER_ADDR
+              value: {{ .Values.env.redisMaster }}
+            - name: REDIS_SLAVE_ADDR
+              value: {{ .Values.env.redisSlave }}
+            - name: JEAGER_SERVER_ADDR
+              value: {{ .Values.env.jaegerServer }}
+            - name: LOG_LEVEL
+              value: {{ .Values.env.logLevel }}
+            - name: TRACING_ENABLED
+              value: {{ .Values.env.enableTracer | quote }}
+            - name: METRICS_ENABLED
+              value: {{ .Values.env.enableMetrics | quote }}
+            - name: NATS_ENABLED
+              value: {{ .Values.env.enableNats | quote }}
+            - name: NATS_SERVER
+              value: {{ .Values.env.natsServer }}
+            - name: CFGMGR_ENABLED
+              value: {{ .Values.env.enableCfgMgr | quote }}
+            - name: FLUENT_SERVER
+              value: {{ .Values.env.fluentServer }}
+            - name: EXEDGE_NAME
+              value: {{ .Values.env.exedgeName }}
+            - name: EXEDGE_ID
+              value: {{ .Values.env.exedgeId | quote }}
+    
+            - name: METRICS_SUFFIX
+              value: {{ .Values.env.metricsSuffix }}
+            - name: METRICS_PORT
+              value: {{ .Values.env.metricsPort }}
+            - name: N3IWF_NWU_IF_NAME
+              value: {{.Values.env.n3iwfNwuIntf}}
+            - name: N3IWF_NWU_IPV4_ADDR
+              value: {{.Values.env.n3iwfNwuIpv4Addr}}
+            - name: N3IWF_NWU_IPV4_ADDR_MASK
+              value: {{.Values.env.n3iwfNwuIpv4Mask | quote }}
+            - name: N3IWF_NWU_NEXT_IPV4_ADDR
+              value: {{.Values.env.n3iwfNwuNextIpv4Addr}}
+            - name: N3IWF_NWU_NEXT_HOP_MAC_ADDR
+              value: {{.Values.env.n3iwfNwuNextHopMacAddr}}
+            - name: EAP5G_SERVER_PORT
+              value: {{.Values.env.eap5gServerPort | quote}}
+            - name: NWU_UP_IP_ADDRESS
+              value: {{.Values.env.nwuUeIpAddres}}
+            - name: NWU_NAS_IP_ADDRESS
+              value: {{.Values.env.nwuNasIpAddres}}
+            - name: NWU_NAS_TCP_PORT
+              value: {{.Values.env.nwuNasTcpPort | quote}}
+            - name: NWU_MODE
+              value: {{.Values.env.nwuMode}}
+            - name: NWU_UE_IPPOOL
+              value: "172.$(EXEDGE_ID).0.0/16"
+            - name: N3IWF_LOCAL_GRE_IP
+              value: {{.Values.env.n3iwfLocalGreIp}}
+            - name: N3IWF_IKEV2_SERVER_IP
+              value: {{.Values.env.n3iwfIke2ServerIp | quote}}
+            - name: N3IWF_SUBNET
+              value: {{.Values.env.n3iwfSubnet}}
+            - name: UPF_N6_IF_NAME
+              value: {{.Values.env.upfN6IfName}}
+            - name: UPF_N6_IPV6_IF_NAME
+              value: {{.Values.env.upfN6Ipv6IfName}}
+            - name: UPF_N6_NAT64_IF_NAME
+              value: {{.Values.env.upfN6Nat64IfName}}
+            - name: UPF_N6_IPV4_ADDR
+              value: {{.Values.env.upfN6Ipv4Addr}}
+            - name: UPF_N6_IPV4_ADDR_MASK
+              value: {{.Values.env.upfN6Ipv4AddrMask | quote}}
+            - name: UPF_N6_IPV6_ADDR
+              value: {{.Values.env.upfN6Ipv6Addr}}
+            - name: UPF_N6_IPV6_ADDR_MASK
+              value: {{.Values.env.upfN6Ipv6AddrMask | quote}}
+            - name: UPF_N6_NEXT_IPV4_ADDR
+              value: {{.Values.env.upfN6NextIpv4Addr}}
+            - name: UPF_N6_NAT64_IPV4_ADDR_MASK
+              value: {{.Values.env.upfN6Nat64Ipv6AddrMask | quote}}
+            - name: UPF_N6_NAT64_IPV4_ADDR
+              value: {{.Values.env.upfN6Nat64Ipv4Addr}}
+            - name: UPF_N6_NAT64_NEXT_IPV4_ADDR
+              value: {{.Values.env.upfN6Nat64NextIpv4Addr}}
+            - name: UPF_N6_UE_IP_POOL_SUBNET
+              value: "10.$(EXEDGE_ID).0.0"
+            - name: UPF_N6_UE_IP_POOL_SUBNET_MASK
+              value: {{.Values.env.upfN6UeIpPoolSubnetMask | quote}}
+            - name: UPF_N6_UE_IP_POOL_START
+              value: "10.$(EXEDGE_ID).0.1"
+            - name: UPF_N6_UE_IP_POOL_END
+              value: "10.$(EXEDGE_ID).0.255"
+            - name: UPF_N6_UE_IP_POOL_CLASSIFY_PREFIX
+              value: "10.$(EXEDGE_ID).0"
+            - name: UPF_N6_UE_IPV6_POOL_CLASSIFY_PREFIX
+              value: {{.Values.env.upfN6UeIpv6PoolClassifyPrefix}}
+            - name: UPF_N6_UE_IPV6_POOL_SUBNET
+              value: {{.Values.env.upfN6UeIpv6PoolSubnet}}
+            - name: UPF_N6_IPV6_DNS_SUBNET
+              value: {{.Values.env.upfN6Ipv6DnsSubnet}}
+    
+            - name: UPF_ENABLE_NAT44
+              value: {{.Values.env.upfEnableNat44 | quote}}
+            - name: UPF_ENABLE_NAT64
+              value: {{.Values.env.upfEnableNat64 | quote}}
+            - name: UPF_NAT_LOOPBACK_MAC_ADDR
+              value: {{.Values.env.upfNatLoopbackMac | quote}}
+    
+            - name: N3IWF_IKEV2_SERVER_ID
+              value: {{.Values.env.upfIkev2ServerId}}
+            - name: UESIM_IKEV2_CLIENT_ID
+              value: {{.Values.env.uesimIkev2ClientId | quote}}
+            - name: VPP_TAP_HOST_IFACE_NAME
+              value: {{.Values.env.vppTabHostIntfName}}
+            - name: VPP_TAP_HOST_IPV4_ADDR
+              value: {{.Values.env.vppTapHostIpv4Addr}}
+            - name: VPP_TAP_HOST_IPV4_MASK
+              value: {{.Values.env.vppTapHostIpv4Mask | quote}}
+            - name: VPP_TAP_IFACE_IPV4_ADDR
+              value: {{.Values.env.vppTabIntfIpv4Addr}}
+            - name: VPP_TAP_IFACE_IPV4_MASK
+              value: {{.Values.env.vppTapIntfIpv4Mask | quote}}
+            - name: VPP_CLIENT_SUBNET
+              value: {{.Values.env.vppClientSubnet}}
+            - name: RM_TCP_SERVER_IP
+              value: {{.Values.env.rmTcpServerIp}}
+            - name: RM_TCP_SERVER_PORT
+              value: {{.Values.env.rmTcpServerPort | quote}}
+            - name: RM_TCP_SERVER_INTF
+              value: {{.Values.env.rmTcpServerIntf | quote}}
+    
+            - name: NWU_GOVICI_SERVER_IP
+              value: {{.Values.env.nwuGoviciServerIp}}
+            - name: NWU_GOVICI_SERVER_PORT
+              value: {{.Values.env.nwuGoviciServerPort | quote}}
+            - name: NWU_GOVICI_SERVER_MODULE_NAME
+              value: {{.Values.env.nwuGoviciServerModuleName}}
+            - name: UPF_LOCAL_GTPU_IP
+              value: {{.Values.env.upfLocalGtpuIp}}
+            - name: N3IWF_LOCAL_GTPU_IP
+              value: {{.Values.env.n3iwfLocalGtpuIp}}
+            - name: NWU_SUBNET_UP_IP
+              value: {{.Values.env.nwuSubnetUeIp}}
+            - name: VPP_SERVER_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: VPP_SSWAN_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: VPP_SSWAN_PORT
+              value: {{.Values.env.vppSswanPort | quote}}
+            - name: VPP_SERVER_PORT
+              value: {{.Values.env.vppServerPort | quote}}
+            - name: LOG_LEVEL
+              value: {{.Values.env.logLevel}}
+            - name: JEAGER_SERVER_ADDR
+              value: {{.Values.env.jagerServerAddr}}
+            - name: TRACING_ENABLED
+              value: {{.Values.env.tracingEnabled | quote }}
+            - name: METRICS_ENABLED
+              value: {{.Values.env.metricsEnabled | quote}}
+            - name: UPF_DPI_ENABLED
+              value: {{.Values.env.upfDpiEnabled | quote}}
+            - name: VPP_PERIODIC_GARP_INTERVAL
+              value: {{.Values.env.upfGarpIntvl | quote}}
+            - name: UPF_PARSE_TIP_IP
+              value: {{.Values.env.upfParseTipIp | quote}}
+            - name: UPF_PARSE_TIP_URL
+              value: {{.Values.env.upfParseTipUrl | quote}}
+            - name: UPF_PARSE_TIP_BIND
+              value: {{.Values.env.upfParseTipBind | quote}}
+            - name: UPF_PARSE_TIP_CAT
+              value: {{.Values.env.upfParseTipCat | quote}}
+            - name: NWU_PCI_ADDR
+              value: {{.Values.env.nwuPciAddr}}
+            - name: N6_44_PCI_ADDR
+              value: {{.Values.env.n644PciAddr}}
+            - name: DRIVER_PCI
+              value: {{.Values.env.driverPci}}
+            - name: UPF_XRTR_GRE_ENDPOINT_IP
+              value: {{.Values.env.extGreEndPoint}}
+            - name: UPF_XRTR_GRE_ENDPOINT_IP_EXT
+              value: {{.Values.env.extGreEndPointExt}}
+            - name: UPF_XRTR_GRE_ENDPOINT_IP_INT
+              value: {{.Values.env.extGreEndPointInt}}
+    
+        - name: {{ .Values.nwu.name }}
+          image: "{{ .Values.nwu.image.repository }}:{{ .Values.nwu.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities: 
+              add: ["ALL"]
+            privileged: true
+            allowPrivilegeEscalation: true
+          resources:
+{{ toYaml .Values.nwu.resources | indent 12 }}
+          ports:
+            - containerPort: {{ .Values.service.viciport }}
+          volumeMounts:
+          - mountPath: /dev
+            name: volume-dev
+          - mountPath: /sys
+            name: volume-sys
+          - name: healthcheck-dir
+            mountPath: /tmp/health
+          - mountPath: /etc/ike/start-nwu.sh
+            name: start-nwu-cfgmap
+            subPath: start-nwu.sh
+          - mountPath: /etc/ike/healthcheck-probe.sh.sh
+            name: start-nwu-cfgmap
+            subPath: healthcheck-probe.sh
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /etc/ike/healthcheck-probe.sh.sh
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: REDIS_MASTER_ADDR
+              value: {{ .Values.env.redisMaster }}
+            - name: REDIS_SLAVE_ADDR
+              value: {{ .Values.env.redisSlave }}
+            - name: JEAGER_SERVER_ADDR
+              value: {{ .Values.env.jaegerServer }}
+            - name: EXEDGE_NAME
+              value: {{ .Values.env.exedgeName }}
+            - name: EXEDGE_ID
+              value: {{ .Values.env.exedgeId | quote }}
+    
+            - name: LOG_LEVEL
+              value: {{ .Values.env.logLevel }}
+            - name: TRACING_ENABLED
+              value: {{ .Values.env.enableTracer | quote }}
+            - name: METRICS_ENABLED
+              value: {{ .Values.env.enableMetrics | quote }}
+            - name: NATS_ENABLED
+              value: {{ .Values.env.enableNats | quote }}
+            - name: NATS_SERVER
+              value: {{ .Values.env.natsServer }}
+            - name: CFGMGR_ENABLED
+              value: {{ .Values.env.enableCfgMgr | quote }}
+            - name: FLUENT_SERVER
+              value: {{ .Values.env.fluentServer }}
+            - name: EXEDGE_NAME
+              value: {{ .Values.env.exedgeName }}
+    
+            - name: METRICS_SUFFIX
+              value: {{ .Values.env.metricsSuffix }}
+            - name: METRICS_PORT
+              value: {{ .Values.nwu.metricsPort }}
+          
+            - name: N3IWF_NWU_IF_NAME
+              value: {{.Values.env.n3iwfNwuIntf}}
+            - name: N3IWF_NWU_IPV4_ADDR
+              value: {{.Values.env.nwuN3iwfNwuIpv4Addr}}
+            - name: N3IWF_NWU_IPV4_ADDR_MASK
+              value: {{.Values.env.nwuN3iwfNwuIpv4Mask | quote }}
+            - name: N3IWF_NWU_NEXT_HOP_MAC_ADDR
+              value: {{.Values.env.nwuN3iwfNwuNextHopMacAddr}}
+            - name: EAP5G_SERVER_PORT
+              value: {{.Values.env.eap5gServerPort | quote}}
+            - name: NWU_UP_IP_ADDRESS
+              value: {{.Values.env.nwuUeIpAddres}}
+            - name: NWU_NAS_IP_ADDRESS
+              value: {{.Values.env.nwuNasIpAddres}}
+            - name: NWU_NAS_TCP_PORT
+              value: {{.Values.env.nwuNasTcpPort | quote}}
+            - name: NWU_MODE
+              value: {{.Values.env.nwuMode}}
+            - name: NWU_UE_IPPOOL
+              value: "172.$(EXEDGE_ID).0.0/16"
+            - name: N3IWF_LOCAL_GRE_IP
+              value: {{.Values.env.n3iwfLocalGreIp}}
+            - name: N3IWF_IKEV2_SERVER_IP
+              value: {{.Values.env.n3iwfIke2ServerIp | quote}}
+            - name: N3IWF_SUBNET
+              value: {{.Values.env.n3iwfSubnet}}
+                
+            - name: UPF_N6_UE_IP_POOL_SUBNET
+              value: "10.$(EXEDGE_ID).0.0"
+            - name: UPF_N6_UE_IP_POOL_SUBNET_MASK
+              value: {{.Values.env.upfN6UeIpPoolSubnetMask | quote}}
+            - name: UPF_N6_UE_IP_POOL_START
+              value: "10.$(EXEDGE_ID).0.1"
+            - name: UPF_N6_UE_IP_POOL_END
+              value: "10.$(EXEDGE_ID).0.255"
+    
+            - name: N3IWF_IKEV2_SERVER_ID
+              value: {{.Values.env.upfIkev2ServerId}}
+            - name: UESIM_IKEV2_CLIENT_ID
+              value: {{.Values.env.uesimIkev2ClientId | quote}}
+            - name: VPP_TAP_HOST_IFACE_NAME
+              value: {{.Values.env.vppTabHostIntfName}}
+            - name: VPP_TAP_HOST_IPV4_ADDR
+              value: {{.Values.env.vppTapHostIpv4Addr}}
+            - name: VPP_TAP_HOST_IPV4_MASK
+              value: {{.Values.env.vppTapHostIpv4Mask | quote}}
+            - name: VPP_TAP_IFACE_IPV4_ADDR
+              value: {{.Values.env.vppTabIntfIpv4Addr}}
+            - name: VPP_TAP_IFACE_IPV4_MASK
+              value: {{.Values.env.vppTapIntfIpv4Mask | quote}}
+            - name: VPP_CLIENT_SUBNET
+              value: {{.Values.env.vppClientSubnet}}
+            - name: RM_TCP_SERVER_IP
+              value: {{.Values.env.rmTcpServerIp}}
+            - name: RM_TCP_SERVER_PORT
+              value: {{.Values.env.rmTcpServerPort | quote}}
+            - name: RM_TCP_SERVER_INTF
+              value: {{.Values.env.rmTcpServerIntf | quote}}
+    
+            - name: NWU_GOVICI_SERVER_IP
+              value: {{.Values.env.nwuGoviciServerIp}}
+            - name: NWU_GOVICI_SERVER_PORT
+              value: {{.Values.env.nwuGoviciServerPort | quote}}
+            - name: NWU_GOVICI_SERVER_MODULE_NAME
+              value: {{.Values.env.nwuGoviciServerModuleName}}
+            - name: UPF_LOCAL_GTPU_IP
+              value: {{.Values.env.upfLocalGtpuIp}}
+            - name: N3IWF_LOCAL_GTPU_IP
+              value: {{.Values.env.n3iwfLocalGtpuIp}}
+            - name: NWU_SUBNET_UP_IP
+              value: {{.Values.env.nwuSubnetUeIp}}
+            - name: VPP_SERVER_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: VPP_SSWAN_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: VPP_SSWAN_PORT
+              value: {{.Values.env.vppSswanPort | quote}}
+            - name: VPP_SERVER_PORT
+              value: {{.Values.env.vppServerPort | quote}}
+            - name: LOG_LEVEL
+              value: {{.Values.env.logLevel}}
+            - name: STRONGSWAN_DIR
+              value: {{.Values.env.stngDir}}
+      initContainers:
+        - name: {{ .Values.init.name }}
+          image: {{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities: 
+              add: ["ALL"]
+            privileged: true
+          volumeMounts:
+          - mountPath: /dev/hugepages
+            name: hugepage
+          - mountPath: /dev
+            name: volume-dev
+          - mountPath: /sys
+            name: volume-sys
+          - mountPath: /etc/vpp/startup-exedge-5gup.conf
+            name: start-fpm-cfgmap
+            subPath: startup-exedge-5gup.conf
+          - mountPath: /start-init.sh
+            name: start-fpm-cfgmap
+            subPath: start-init.sh
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NWU_PCI_ADDR
+              value: {{.Values.env.nwuPciAddr}}
+            - name: N6_44_PCI_ADDR
+              value: {{.Values.env.n644PciAddr}}
+            - name: DRIVER_PCI
+              value: {{.Values.env.driverPci}}
+            
+      restartPolicy: Always 
+      volumes:
+      - name: hugepage
+        emptyDir:
+          medium: HugePages
+      - name: healthcheck-dir
+        emptyDir: {}
+      - name: volume-dev
+        hostPath:
+          path: /dev
+      - name: volume-sys
+        hostPath:
+          path: /sys
+      - name: cfgmap
+        configMap:
+          name: aws-config
+      - name: start-nwu-cfgmap
+        configMap:
+          name: start-nwu-config
+          defaultMode: 0755
+      - name: start-fpm-cfgmap
+        configMap:
+          name: start-fpm-config
+          defaultMode: 0777

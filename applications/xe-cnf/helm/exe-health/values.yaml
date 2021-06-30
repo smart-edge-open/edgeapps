@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+# Default values for upf-sess.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+appName: exedge
+name: exe-health
+version: v1
+
+image:
+  repository: gcr.io/ec2nf-256816/exe-health
+  tag: v2.4.1-31f5303
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 5060
+  name: exe-health
+  protocol: TCP
+  nodePort: 5060
+
+gateway:
+  enabled: true
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "150m"
+  limits:
+    memory: "512Mi"
+    cpu: "200m"
+
+env:
+  redisMaster: "redis-master.exopsagent:6379"
+  redisSlave: "redis-slave.exopsagent:6379"
+  logLevel: "trace"
+  enableTracer: true
+  enableMetrics: true
+  enableNats: true
+  natsServer: "nats://nats-client.nats:4222"
+  enableCfgMgr: true
+  exedgeName: ""
+  xOpsHealthIntvl: 600
+  xOpsUrl: ""
+
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+    - host: 
+      paths: []
+  tls: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: prometheus-ilb-gateway
+spec:
+  selector:
+    istio: ilbgateway
+  servers:
+  - port:
+      number: 32500
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: prometheus-ingress-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 32500
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: prometheus-lb-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - prometheus-ilb-gateway
+  - prometheus-ingress-gateway
+  http:
+  - match:
+    - port: 32500
+    route:
+    - destination:
+        host: prometheus-server
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: prometheus-lb
+spec:
+  host: prometheus-server
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---

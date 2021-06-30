@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: n3iwf-ike
+spec:
+  selector:
+    app: {{ .Values.appName }}
+    name: upf-fpm
+  type: {{ .Values.service.type }}
+  # clusterIP: None
+  ports:
+   - name: grpc-ike
+     port: 5058
+     protocol: {{ .Values.service.protocol }}
+  

@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: start-nwu-config
+data:
+  start-nwu.sh: |
+    #!/bin/bash
+    set -xe
+
+    sleep 5
+    # Start Strongswan
+    /start-strongswan.sh
+
+    sleep 2
+
+    # Start nwu-vici
+    ./nwu-vici
+
+    #tail -f /dev/null
+  healthcheck-probe.sh: |
+    #!/bin/bash
+    if [ $(pgrep 'nwu-vici|charon' | wc -l) -lt 2 ]; then
+      exit 1
+    else
+      FILE=/tmp/health/healthy.txt
+      if [ -f "$FILE" ]; then
+        echo "$FILE exists."
+      else 
+        echo "$FILE does not exist."
+        exit 1
+      fi
+    exit 0
+    fi

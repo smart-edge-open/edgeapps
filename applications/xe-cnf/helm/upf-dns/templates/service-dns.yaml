@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: upf-dns
+  labels:
+    app: upf
+    service: upf-dns
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+spec:
+  externalTrafficPolicy: Local
+  selector:
+    app: upf
+    name: upf-dns
+  type: LoadBalancer
+  #clusterIP: None
+  ports:
+   - name: pfcp
+     protocol: UDP
+     port: 53
+     targetPort: 53

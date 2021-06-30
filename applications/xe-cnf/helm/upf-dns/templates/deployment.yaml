@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.appName }}
+    name: {{ .Values.name }}
+    version: {{ .Values.version }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      name: {{ .Values.name }}
+      version: {{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        name: {{ .Values.name }}
+        version: {{ .Values.version }}
+    spec:
+      containers:
+        - name: {{ .Values.name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            capabilities: 
+              add: ["ALL"]
+            privileged: true
+            allowPrivilegeEscalation: true
+            #sysctls:
+            #- name: net.ipv6.conf.all.disable_ipv6
+              #value: "0"
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+          - mountPath: /dev
+            name: volume-dev
+          - mountPath: /sys
+            name: volume-sys
+          - mountPath: /etc/dns/namedb/blockeddomain.hosts
+            name: start-dns-cfgmap
+            subPath: blockeddomain.hosts
+          - mountPath: /start-dns.sh
+            name: start-dns-cfgmap
+            subPath: start-dns.sh
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: LOG_LEVEL
+              value: {{ .Values.env.logLevel }}
+            - name: UPF_DNS_CONF_PATH
+              value: {{ .Values.env.dnsConfPath | quote }}
+            - name: UPF_DNS_OPTS
+              value: {{ .Values.env.dnsOpts | quote }}
+            - name: UPF_N6_UE_IPV6_POOL_SUBNET
+              value: {{ .Values.env.n6UeIpv6PoolSubnet | quote }}
+            - name: UPF_N6_UE_IPV6_POOL_SUBNET_GW
+              value: {{ .Values.env.n6UeIpv6PoolSubnetGw | quote }}
+
+              
+      volumes:
+      - name: volume-dev
+        hostPath:
+          path: /dev
+      - name: volume-sys
+        hostPath:
+         path: /sys
+      - name: start-dns-cfgmap
+        configMap:
+          name: start-dns-config
+          defaultMode: 0777

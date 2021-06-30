@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+spec:
+  components:
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s:
+        service:
+          ports:
+            - port: 15021
+              targetPort: 15021
+              name: status-port
+            - port: 80
+              targetPort: 8080
+              name: http2
+            - port: 443
+              targetPort: 8443
+              name: https
+            - port: 15443
+              targetPort: 15443
+              name: tls
+            - port: 32500
+              name: jaeger
+            - port: 32501
+              name: elastic
+            - port: 32502
+              name: misc
+            - port: 32052
+              name: grpc-n2ctxt
+            - port: 32053
+              name: grpc-n3sess
+            - port: 32054
+              name: grpc-fpm
+            - port: 32055
+              name: grpc-upfsess
+            - port: 32056
+              name: grpc-n4fe
+            - port: 32057
+              name: grpc-eap5g
+            - port: 32058
+              name: grpc-ike
+    - name: ilb-gateway
+      enabled: true
+      k8s:
+        serviceAnnotations: {}
+        service:
+          ports:
+            #- port: 32501
+            #  name: elastic
+            #- port: 32502
+            #  name: misc
+            #- port: 32503
+            #  name: grpc
+            - port: 32052
+              name: grpc-n2ctxt
+            - port: 32500
+              name: jaeger
+  addonComponents:
+    prometheus:
+      enabled: false
+    tracing:
+      enabled: false
+    kiali:
+      enabled: false

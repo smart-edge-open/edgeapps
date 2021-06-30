@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-config
+data:
+  credentials: |
+    [default]
+    aws_access_key_id = AKIAR7BMZRAADBPHHOPA
+    aws_secret_access_key = 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

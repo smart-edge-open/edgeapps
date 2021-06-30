@@ -1,0 +1,75 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+# Default values for upf-sess.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+appName: n3iwf
+name: n3iwf-sess
+version: v1
+
+image:
+  repository: gcr.io/ec2nf-256816/n3iwf-sess
+  tag: v2.4.1-43c9feb
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 5053
+  name: n3iwf-sess
+  protocol: TCP
+  nodePort: 5053
+
+gateway:
+  enabled: true
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "150m"
+  limits:
+    memory: "1024Mi"
+    cpu: "200m"
+
+env:
+  redisMaster: "redis-master.exopsagent:6379"
+  redisSlave: "redis-slave.exopsagent:6379"
+  jaegerServer: "jaeger-agent.exopsagent:6831"
+  logLevel: "trace"
+  enableTracer: true
+  enableMetrics: true
+  metricsSuffix: "/metrics"
+  metricsPort : "8080"
+  enableNats: true
+  natsServer: "nats://nats-client.nats:4222"
+  enableCfgMgr: true
+  fluentServer: "fluentd.exopsagent"
+  upfPfcpIpAdrr: ""
+  exedgeName: ""
+  n2CtxtSrvcName: "n3iwf-n2ctxt"
+  eap5gSrvcName: "n3iwf-eap5g"
+  n3iwfSessRegAcceptSleep: "2000"
+  rmAddr: "upf-fpm.production:5054"
+  viciAddr: "upf-fpm.production:5059"
+  healthCheckAddr: "exe-health.production:5060"
+
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+    - host: 
+      paths: []
+  tls: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
