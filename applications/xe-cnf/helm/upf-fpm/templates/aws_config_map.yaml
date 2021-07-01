@@ -8,5 +8,5 @@ metadata:
 data:
   credentials: |
     [default]
-    aws_access_key_id = AKIAR7BMZRAADBPHHOPA
-    aws_secret_access_key = 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
+    # aws_access_key
+    # aws_secret_access
