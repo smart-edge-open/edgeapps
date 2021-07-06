@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.appName }}
+    service: {{ .Values.name }}
+  annotations:
+    prometheus.io/scrape: {{ .Values.env.enableMetrics | quote }}
+    prometheus.io/scheme: "http"
+    prometheus.io/port: {{ .Values.env.metricsPort | quote }}
+    prometheus.io/path: {{ .Values.env.metricsSuffix | quote }}
+spec:
+  selector:
+    app: {{ .Values.appName }}
+    name: {{ .Values.name }}
+  type: {{ .Values.service.type }}
+  ports:
+   - name: grpc-n3iwf-eap5g
+     port: {{ .Values.service.port }}
+     protocol: {{ .Values.service.protocol }}
+   - name: udp-nwu-eap5g
+     port: {{ .Values.service.udpport }}
+     protocol: {{ .Values.service.udpprotocol }}  
+   - name: http 
+     port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: n3iwf
+    service: n3iwf-eap5g
+  name: n3iwf-eap5g-udp
+spec:
+  externalTrafficPolicy: Local
+  ports:
+  - name: eap5g
+    nodePort: 32576
+    port: 6000
+    protocol: UDP
+    targetPort: 6000
+  selector:
+    app: n3iwf
+    name: n3iwf-eap5g
+  type: LoadBalancer

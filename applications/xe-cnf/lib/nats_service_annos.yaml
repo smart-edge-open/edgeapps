@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+auth:
+  enabled: false
+clusterAuth:
+  enabled: false
+client:
+  service:
+    annotations:
+      cloud.google.com/load-balancer-type: "internal"

@@ -1,0 +1,79 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+#  annotations:
+#    prometheus.io/scrape: {{ .Values.env.enableMetrics | quote }}
+#    prometheus.io/scheme: "http"
+#    prometheus.io/port: {{ .Values.env.metricsPort | quote }}
+#    prometheus.io/path: {{ .Values.env.metricsSuffix | quote }}
+  labels:
+    app: {{ .Values.appName }}
+    name: {{ .Values.name }}
+    version: {{ .Values.version }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      name: {{ .Values.name }}
+      version: {{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        name: {{ .Values.name }}
+        version: {{ .Values.version }}
+    spec:
+      containers:
+        - name: {{ .Values.name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_SVCNAME
+              value: {{ .Values.name }}
+            - name: REDIS_MASTER_ADDR
+              value: {{ .Values.env.redisMaster }}
+            - name: REDIS_SLAVE_ADDR
+              value: {{ .Values.env.redisSlave }}
+            - name: JEAGER_SERVER_ADDR
+              value: {{ .Values.env.jaegerServer }}
+            - name: LOG_LEVEL
+              value: {{ .Values.env.logLevel }}
+            - name: TRACING_ENABLED
+              value: {{ .Values.env.enableTracer | quote }}
+            - name: METRICS_ENABLED
+              value: {{ .Values.env.enableMetrics | quote }}
+            - name: NATS_ENABLED
+              value: {{ .Values.env.enableNats | quote }}
+            - name: NATS_SERVER
+              value: {{ .Values.env.natsServer }}
+            - name: CFGMGR_ENABLED
+              value: {{ .Values.env.enableCfgMgr | quote }}
+            - name: FLUENT_SERVER
+              value: {{ .Values.env.fluentServer }}
+            - name: N2_CTXT_ADDR
+              value: {{ .Values.env.n2ctxtAddr | quote}}
+            - name: N3IWF_SCTP_PORT
+              value: {{ .Values.env.n2fePort | quote }}
+            - name: XEDGE_HEALTHCHECK_ADDR
+              value: {{ .Values.env.healthCheckAddr | quote }}
