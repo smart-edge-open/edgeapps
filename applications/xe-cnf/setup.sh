@@ -5,9 +5,9 @@
 
 script_dir="$(dirname "$0")"
 
-# source "${script_dir}/precheck.sh"
-# source "${script_dir}/config.sh"
-# source "${script_dir}/lib/exium-config.sh"
+source "${script_dir}/precheck.sh"
+source "${script_dir}/config.sh"
+source "${script_dir}/lib/exium-config.sh"
 
 #########                                                                             
 # Install Istio                                                                       
