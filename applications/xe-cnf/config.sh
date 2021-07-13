@@ -17,6 +17,6 @@
 #exedge_sctp_ip='xx.xx.xx.xx'
 
 # For connectivity to 5GC , reach out to Exium support team
-exedge_name=""
-xops_url=""
-n2fe_port=""
+export exedge_name=""
+export xops_url=""
+export n2fe_port=""
