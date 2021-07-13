@@ -5,9 +5,9 @@
 
 script_dir="$(dirname "$0")"
 
-source "${script_dir}/precheck.sh"
-source "${script_dir}/config.sh"
-source "${script_dir}/lib/exium-config.sh"
+# source "${script_dir}/precheck.sh"
+# source "${script_dir}/config.sh"
+# source "${script_dir}/lib/exium-config.sh"
 
 #########                                                                             
 # Install Istio                                                                       
@@ -23,7 +23,7 @@ systemctl start nfs-server rpcbind
 systemctl enable nfs-server rpcbind
 mkdir -p /srv/nfs/exium
 chmod -R 777 /srv/nfs/
-cp /etc/exports /etc/exports.$(date +%F_%R)
+cp /etc/exports /etc/exports."$(date +%F_%R)"
 echo "/srv/nfs/exium  *(rw,sync,no_subtree_check,no_root_squash,insecure)" > /etc/exports
 exportfs -rv
 showmount -e
