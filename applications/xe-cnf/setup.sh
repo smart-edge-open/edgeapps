@@ -5,10 +5,10 @@
 
 script_dir="$(dirname "$0")"
 
-# shellcheck source="./precheck.sh"
+# shellcheck disable=SC1091
 source "${script_dir}/precheck.sh"
 
-# shellcheck source="./config.sh"
+# shellcheck disable=SC1091
 source "${script_dir}/config.sh"
 
 # shellcheck disable=SC1091
