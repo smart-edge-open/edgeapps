@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2021 Exium Inc.
 script_dir="$(dirname "$0")"

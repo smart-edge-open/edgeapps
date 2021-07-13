@@ -1,7 +1,9 @@
+#!/bin/bash
+
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2021 Exium Inc.
 
-#!/bin/bash
+
 nwu_ip='xx.xx.xx.xx'
 nwu_mask='xx'
 nwu_pci_addr='0000:xx:00.0'
