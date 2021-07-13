@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2021 Exium Inc.
 
+#shellcheck disable=2154 
+
 script_dir="$(dirname "$0")"
 
 # shellcheck disable=SC1091
@@ -84,8 +86,8 @@ helm upgrade --install upf-n4fe helm/upf-n4fe --namespace production  --set env.
 # n3iwf-eap5g
 ##########
 helm upgrade --install n3iwf-eap5g helm/n3iwf-eap5g --namespace production \
- --set env.exedgeName="$exedge_name"  \
- --set env.n3iwfName="$exedge_name" \
+ --set env.exedgeName="${exedge_name}"  \
+ --set env.n3iwfName="${exedge_name}" \
  --set env.fluentServer="fluentd.production" \
  --set env.natsServer="nats://nats-client.exopsagent:4222"
 
@@ -93,9 +95,9 @@ helm upgrade --install n3iwf-eap5g helm/n3iwf-eap5g --namespace production \
 # exe-health
 ##########
 helm upgrade --install --wait --namespace production exe-health helm/exe-health \
- --set env.exedgeName="$exedge_name" \
+ --set env.exedgeName="${exedge_name}" \
  --set env.natsServer="nats://nats-client.exopsagent:4222" \
- --set env.xOpsUrl="$xops_url"
+ --set env.xOpsUrl="${xops_url}"
 
 ############
 # n3iwf-n2fe
@@ -103,7 +105,7 @@ helm upgrade --install --wait --namespace production exe-health helm/exe-health 
 
 helm upgrade --install --namespace production n3iwf-n2fe helm/n3iwf-n2fe \
  --set env.fluentServer="fluentd.production" \
- --set env.n2fePort="$n2fe_port" 
+ --set env.n2fePort="${n2fe_port}" 
 
 ############
 # LB patch for Non-cloud setup
