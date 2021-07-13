@@ -8,7 +8,8 @@ PARAM_FILE=${script_dir}/lib/exium-config.sh
 echo  "$AUTH_FILE"
 echo "$PARAM_FILE"
 if [[ ! -f "$AUTH_FILE" ||  ! -f "$PARAM_FILE" ]]; then
-    echo "All required files are not present\n Please contact Exium support: Email : support@exium.net" 
+    echo "All required files are not present."
+    echo "Please contact Exium support: Email : support@exium.net" 
     exit 1
 else
     echo "Dependency Validated.."	

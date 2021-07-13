@@ -5,9 +5,9 @@
 
 script_dir="$(dirname "$0")"
 
-source ${script_dir}/precheck.sh
-source ${script_dir}/config.sh
-source ${script_dir}/lib/exium-config.sh
+source "${script_dir}/precheck.sh"
+source "${script_dir}/config.sh"
+source "${script_dir}/lib/exium-config.sh"
 
 #########                                                                             
 # Install Istio                                                                       
@@ -35,7 +35,7 @@ showmount -e
 nodeExternalIP=$(kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}')
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
 helm install --wait nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
- --set nfs.server=${nodeExternalIP} \
+ --set nfs.server="${nodeExternalIP}" \
  --set nfs.path=/srv/nfs/exium \
  --set storageClass.defaultClass=true
 
@@ -79,8 +79,8 @@ helm upgrade --install upf-n4fe helm/upf-n4fe --namespace production  --set env.
 # n3iwf-eap5g
 ##########
 helm upgrade --install n3iwf-eap5g helm/n3iwf-eap5g --namespace production \
- --set env.exedgeName=${exedge_name}  \
- --set env.n3iwfName=${exedge_name} \
+ --set env.exedgeName="${exedge_name}"  \
+ --set env.n3iwfName="${exedge_name}" \
  --set env.fluentServer="fluentd.production" \
  --set env.natsServer="nats://nats-client.exopsagent:4222"
 
@@ -88,9 +88,9 @@ helm upgrade --install n3iwf-eap5g helm/n3iwf-eap5g --namespace production \
 # exe-health
 ##########
 helm upgrade --install --wait --namespace production exe-health helm/exe-health \
- --set env.exedgeName=${exedge_name} \
+ --set env.exedgeName="${exedge_name}" \
  --set env.natsServer="nats://nats-client.exopsagent:4222" \
- --set env.xOpsUrl=${xops_url}
+ --set env.xOpsUrl="${xops_url}"
 
 ############
 # n3iwf-n2fe
@@ -98,13 +98,13 @@ helm upgrade --install --wait --namespace production exe-health helm/exe-health 
 
 helm upgrade --install --namespace production n3iwf-n2fe helm/n3iwf-n2fe \
  --set env.fluentServer="fluentd.production" \
- --set env.n2fePort=${n2fe_port} 
+ --set env.n2fePort="${n2fe_port}" 
 
 ############
 # LB patch for Non-cloud setup
 ##########
 nodeCount=$(kubectl get node| wc -l)
-if [ $nodeCount -ne 2 ]
+if [ "$nodeCount" -ne 2 ]
 then
 	echo "Cluster has more than 1 nodes. Setup may not work properly. Please contact Exium" 
         exit 1
