@@ -5,13 +5,13 @@
 
 script_dir="$(dirname "$0")"
 
-# shellcheck source="${script_dir}/precheck.sh"
+# shellcheck source="./precheck.sh"
 source "${script_dir}/precheck.sh"
 
-# shellcheck source="${script_dir}/config.sh"
+# shellcheck source="./config.sh"
 source "${script_dir}/config.sh"
 
-# shellcheck source="${script_dir}/lib/exium-config.sh"
+# shellcheck disable=SC1091
 source "${script_dir}/lib/exium-config.sh"
 
 #########                                                                             
