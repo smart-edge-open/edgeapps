@@ -23,5 +23,5 @@ before_install:
   - sudo apt-get install -y shellcheck
   - sudo apt-get install -y pylint
 
-#script:
-#  - ./run_ci_build.sh
+script:
+  - ./run_ci_build.sh
