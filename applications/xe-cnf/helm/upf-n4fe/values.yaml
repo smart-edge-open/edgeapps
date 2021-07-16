@@ -1,0 +1,69 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+
+# Default values for upf-n4fet.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+appName: upf
+name: upf-n4fe
+version: v1
+
+image:
+  repository: gcr.io/ec2nf-256816/upf-n4fe
+  tag: v2.0.0-1b5b521
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 5056
+  name: n4fe
+  protocol: TCP
+
+gateway:
+  enabled: true
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "150m"
+  limits:
+    memory: "1024Mi"
+    cpu: "200m"
+
+env:
+  redisMaster: "redis-master.exopsagent:6379"
+  redisSlave: "redis-slave.exopsagent:6379"
+  jaegerServer: "jaeger-agent.exopsagent:6831"
+  onKube: true
+  enableNats: true
+  natsServer: "nats://nats-client.nats:4222"
+  enableCfgMgr: true
+  logLevel: "info"
+  enableTracer: true
+  enableMetrics: true
+  metricsSuffix: "/metrics"
+  metricsPort : "8080"
+  upfPfcpIpAddr: "0.0.0.0"
+  healthCheckAddr: "exe-health.production:5060"
+
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+    - host: 
+      paths: []
+  tls: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

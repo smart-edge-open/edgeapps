@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.appName }}
+    service: {{ .Values.name }}
+#  annotations:
+#    prometheus.io/scrape: {{ .Values.env.enableMetrics | quote }}
+#    prometheus.io/scheme: "http"
+#    prometheus.io/port: {{ .Values.env.metricsPort | quote }}
+#    prometheus.io/path: {{ .Values.env.metricsSuffix | quote }}
+spec:
+  selector:
+    app: {{ .Values.appName }}
+    name: {{ .Values.name }}
+  type: {{ .Values.service.type }}
+  ports:
+   - name: grpc-n3iwf-n2fe
+     port: {{ .Values.service.port }}
+     protocol: {{ .Values.service.protocol }}
+   - name: http 
+     port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-sctp
+  labels:
+    app: {{ .Values.appName }}
+    service: {{ .Values.name }}
+spec:
+  selector:
+    app: {{ .Values.appName }}
+    name: {{ .Values.name }}
+  type: LoadBalancer
+  ports:
+   - name: sctp-n3iwf-n2fe
+     port: 38411
+     protocol: SCTP
+

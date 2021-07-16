@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: exe-health-ilb-gateway
+spec:
+  selector:
+    istio: ilbgateway
+  servers:
+  - port:
+      number: 32060
+      name: GRPC
+      protocol: GRPC
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: exe-health-ingress-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 32060
+      name: GRPC
+      protocol: GRPC
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: exe-health-lb-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - exe-health-ilb-gateway
+  - exe-health-ingress-gateway
+  http:
+  - match:
+    - port: 32060
+    route:
+    - destination:
+        host: exe-health
+        port:
+          number: 5060
+---
