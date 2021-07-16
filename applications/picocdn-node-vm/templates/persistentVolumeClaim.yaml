@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 NetPico LAbs Pvt. Ltd.(picoNETS)
+
+{{- $release_name := include "picocdn-node-vm.fullname" . }}
+
+{{- if not .Values.PersistentVolume.rootfs.scratch }}
+{{- if not .Values.PersistentVolume.rootfs.imgSrc }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "picocdn-node-vm.fullname" . }}-dv
+spec:
+  accessModes:
+        - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: {{ required "Rootfs Volume Size required. Missing" .Values.PersistentVolume.rootfs.size }}
+  volumeName: {{ template "picocdn-node-vm.fullname" . }}-rootfs-pv0
+{{- end }}
+{{- end }}
+{{- range $cacheDisk, $val := .Values.PersistentVolume.cacheDisks }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $release_name }}-{{ $cacheDisk }}-pvc
+spec:
+  accessModes:
+        - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: {{ $val.size }}
+  volumeName: {{ $release_name }}-{{ $cacheDisk }}-pv
+{{- end }}
+

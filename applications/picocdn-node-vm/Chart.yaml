@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 NetPico LAbs Pvt. Ltd.(picoNETS)
+
+apiVersion: v2
+appVersion: 1.0.0
+description: kubevirt VM based picoCDN Node
+keywords:
+- storage
+- local
+name: picocdn-node-vm
+version: 1.0.0

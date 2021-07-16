@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 NetPico LAbs Pvt. Ltd.(picoNETS)
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "picocdn-node-vm.fullname" . }}-service
+spec:
+  type: {{ default "NodePort" .Values.cdnService.type }}
+  selector:
+    kubevirt.io/domain: {{ template "picocdn-node-vm.fullname" . }}
+  externalIPs:
+    - 192.168.1.100 # Need to update this based on the deployment network configuration/IP Pools
+
+  ports:
+    - name: https
+      nodePort: 30020
+      port: 443
+      protocol: TCP
+      targetPort: 443
+     
