@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "niotis.fullname" . }}
+  labels:
+    {{- include "niotis.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "niotis.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "niotis.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: DATA_SOURCE_URL
+            value: {{ .Values.environment.DATA_SOURCE_URL }}
+          - name: NABSTRACT_NEF_SERVICE_REGISTRATION_URL
+            value: {{ .Values.environment.NABSTRACT_NEF_SERVICE_REGISTRATION_URL }}
+          - name: 3GPP_5G_NABSTRACT_AF_PFDS_URL
+            value: {{ .Values.environment.3GPP_5G_NABSTRACT_AF_PFDS_URL }}
+          - name: 3GPP_5G_NABSTRACT_AF_SUBSCRIPTION_URL
+            value: {{ .Values.environment.3GPP_5G_NABSTRACT_AF_SUBSCRIPTION_URL }}
+          - name: TRUST_LOCAL_STORE
+            value: {{ .Values.environment.TRUST_LOCAL_STORE }}
+          ports:
+            - name: {{ .Values.portName }}
+              containerPort: {{ .Values.containerPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
