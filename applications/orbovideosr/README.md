@@ -12,11 +12,11 @@ Orbo Video Super Resolution converts a low resolution video into high resolution
 
 | **Resource Information**           |                      |
 |------------------------------------|----------------------|
-| Application Type                   | Video-Enhancement		| 
+| Application Type                   | Video-Enhancement	| 
 | Compute  (vCores)                  | 8                    |  
 | Memory (RAM)                       | 16 GB                |  
 | Storage 				             | 200  GB              |  
-| Host OS                            | CentOS 7.6.1810      | 
+| Host OS                            | CentOS 7.9.2009      | 
   
 
 
@@ -27,17 +27,15 @@ Contact support@orbo.ai
 ## Pre Requisites - Installing OpenNESS
 |**Configuration**                   |                       |
 |  ----------------------------------|-----------------------|
-| OpenNESS Version                   | 20.12.02		         |
+| OpenNESS Version                   | 21.03.05		         |
 | Flavor Used 					     | Minimal				 |
 | Distribution						 | OpenSource    	     |
 
 
 Follow below link to setup controller and edge-node for installing OpenNESS.
 
-https://github.com/open-ness/specs/blob/openness-20.12.02/doc/getting-started/network-edge/controller-edge-node-setup.md
+https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md
 
-* Go to openness-experience-kits/ directory and comment out the grub role (role: machine_setup/grub) in the **network_edge.yml** file.
-* Run the deployment script as ./deploy_ne.sh 
 
 ## Loading Docker Images
 docker image load -i openness-sr5000.tar.gz
