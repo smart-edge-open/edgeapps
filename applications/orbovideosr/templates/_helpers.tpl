@@ -1,4 +1,9 @@
 {{/*
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2021 ORBO
+*/}}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "orbovideosr.name" -}}
