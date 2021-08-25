@@ -1,6 +1,6 @@
 {{/*
 SPDX-License-Identifier: Apache-2.0
-Copyright (c) 2021 ORBO
+Copyright (c) 2021 Modaviti eMarketing Private Limited
 */}}
 
 {{/*

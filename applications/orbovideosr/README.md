@@ -1,9 +1,9 @@
 ```text
 SPDX-License-Identifier: Apache-2.0
-Copyright (c) 2021 ORBO
+Copyright (c) 2021 Modaviti eMarketing Private Limited
 ```
 
-# **About ORBO
+# ORBO AI (A Product of Modaviti eMarketing Private Limited)
 ORBO AI provides a cutting edge visual AI platform to solve problems associated with low quality & low resolution visuals to boost conversions and higher customer satisfaction. These Visual AI solutions enable visual enhancement, AI automation and visual insights.
 
 ORBO’s team of AI experts have developed cutting edge computer vision and deep learning technology based on years of research that is tested on large data sets. The visual AI solutions help to improve the quality of visuals by enhancing the details.
