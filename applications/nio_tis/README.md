@@ -15,7 +15,12 @@ NIO_TIS leverages Intel OpenNESS Microservices and provides a 5G AF enabler Port
 
 ## **Pre Requisites – Resources Required**
 
-This document assumes that the Intel openness was installed through the openness playbook. Single Node or Multiple Node deployment.
+This document assumes that the Intel Distribution of OpenNESS (IDO) was installed through the CEEK and the flavor used was "CERA core-cplane".
+
+Follow below link to setup:
+
+https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md" , "https://github.com/open-ness/ido-specs/blob/master/doc/flavors.md#cera-core-control-plane-flavor
+
 
 | **OpenNESS IDO**           |                                |
 |----------------------------|--------------------------------|
