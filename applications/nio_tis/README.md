@@ -19,8 +19,9 @@ This document assumes that the Intel Distribution of OpenNESS (IDO) was installe
 
 **Follow below reference links to setup:**
 
-> `https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md`
-> `https://github.com/open-ness/ido-specs/blob/master/doc/flavors.md#cera-core-control-plane-flavor`
+https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md
+
+https://github.com/open-ness/ido-specs/blob/master/doc/flavors.md#cera-core-control-plane-flavor
 
 
 | **OpenNESS IDO**           |                                |
