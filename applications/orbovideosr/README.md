@@ -32,11 +32,12 @@ Contact support@orbo.ai
 
 
 ## Pre Requisites - Installing OpenNESS
-|**Configuration**                   |                       |
-|  ----------------------------------|-----------------------|
-| OpenNESS Version                   | 21.03.05		         |
-| Flavor Used 					     | Minimal				 |
-| Distribution						 | OpenSource    	     |
+
+|**Configuration**                   |                          |
+|  ----------------------------------|--------------------------|
+| OpenNESS Version                   | 21.03.05		            |
+| Flavor Used 					     | CERA Minimal Flavor	    |
+| Distribution						 | OpenSource    	        |
 
 
 Follow below link to setup controller and edge-node for installing OpenNESS.
