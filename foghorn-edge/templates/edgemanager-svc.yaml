@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    service.name: {{ .Values.edgemanager.serviceName }}
+  name: {{ .Values.edgemanager.serviceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+{{- if .Values.openPorts }}
+  type: LoadBalancer
+  externalIPs:
+  - {{ .Values.service.loadBalancerIP }}
+{{ end }}
+  ports:
+  - name: "{{ .Values.edgemanager.port }}"
+    port: {{ .Values.edgemanager.port }}
+    targetPort: {{ .Values.edgemanager.port }}
+  selector:
+    service.name: {{ .Values.edgemanager.serviceName }}
+status:
+  loadBalancer: {}

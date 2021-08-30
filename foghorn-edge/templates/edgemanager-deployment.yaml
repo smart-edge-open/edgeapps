@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    service.name: {{ .Values.edgemanager.serviceName }}
+  name: {{ .Values.edgemanager.serviceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.edgemanager.replicaCount }}
+  selector:
+    matchLabels:
+      service.name: {{ .Values.edgemanager.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "foghorn-edge.labels" . | nindent 8 }}
+        service.name: {{ .Values.edgemanager.serviceName }}
+        edge.foghorn.io/app-name: {{ .Values.edgemanager.serviceName }}
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: edge.foghorn.io/app-name
+                operator: In
+                values:
+                - {{ .Values.messageBus.serviceName }}
+            topologyKey: "kubernetes.io/hostname"
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecret }}
+      containers:
+      - env:
+        - name: COMPONENT_NAME
+          value: {{ .Values.edgemanager.componentName }}
+        - name: MESSAGE_BUS_HOST
+          value: {{ .Values.messageBus.componentName }}
+        - name: FOGHORN_K8S_NAMESPACE
+          value: "{{ .Release.Namespace }}"
+        - name: FOGHORN_K8S_NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        image: {{ .Values.image.repository }}/{{ .Values.image.releasesSubRepository }}{{ .Values.edgemanager.imageName }}{{ .Values.image.arch }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        name: {{ .Values.edgemanager.componentName }}
+        ports:
+        - containerPort: {{ .Values.edgemanager.port }}
+        resources: {}
+        volumeMounts:
+        - mountPath: /fh_vol
+          name: {{ .Values.volume.foghorn.name }}
+        - name: address-secret
+          mountPath: /fh_ext/devices/eth0/address
+          subPath: address
+          readOnly: true
+      initContainers:
+      - name: init-edgemanager
+        image: {{ .Values.busybox.image }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command: [ 'sh' ]
+        args: [ '-c', {{ .Files.Get "scripts/bootstrap-edgemanager.sh" | quote }} ]
+        volumeMounts:
+        - mountPath: /fh_vol
+          name: {{ .Values.volume.foghorn.name }}
+        - name: certs-secret
+          mountPath: /fh_vol/fh/tmp/certs/
+        - name: logger-properties
+          mountPath: /fh_vol/fh/tmp/logger/
+        - name: logrotate-properties
+          mountPath: /fh_vol/fh/tmp/logrotate/
+        - name: edge-properties
+          mountPath: /fh_vol/fh/tmp/configs/edge_properties.json
+          subPath: edge_properties.json
+        - name: em-container-list
+          mountPath: /fh_vol/fh/tmp/configs/em-container-list.txt
+          subPath: em-container-list.txt
+      restartPolicy: Always
+      serviceAccountName: {{ .Release.Namespace }}-em-sa
+      volumes:
+      - name: {{ .Values.volume.foghorn.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumeClaim.foghorn.name }}
+      - name: address-secret
+        secret:
+          secretName: address-secret-file
+      - name: certs-secret
+        secret:
+          secretName: certs-secret
+      - name: edge-properties
+        configMap:
+          name: edge-properties
+      - name: logger-properties
+        configMap:
+          name: logger-properties
+      - name: em-container-list
+        configMap:
+          name: em-container-list
+      - name: logrotate-properties
+        configMap:
+          name: logrotate-properties
+status: {}

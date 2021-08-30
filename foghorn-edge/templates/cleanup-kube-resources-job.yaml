@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    "helm.sh/hook": "post-delete"
+    "helm.sh/hook-weight": "17"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation,hook-failed"
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    edge.foghorn.io/created-for: cleanup
+  name: "cleanup-kube-resources"
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "foghorn-edge.labels" . | nindent 8 }}
+        edge.foghorn.io/created-for: cleanup
+    spec:
+      serviceAccountName: cleanup-sa
+      containers:
+      - name: cleanup-kube-resources
+        image: {{ .Values.kubectl.image }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command: [ 'kubectl' ]
+        # Had to add --wait=false, as 2 out of the first 3 cleanup jobs are not deleted even though they are completed if the volumemount attached to them is based on dynamically provisioned volume and this job when it tries to delete pvc is stuck until those 2 jobs are deleted
+        args: [ 'delete', 'service,deployment,job,pod,configmap,pvc,pv,rolebinding,clusterrolebinding,role,clusterrole,secret,sa', '-ledge.foghorn.io/managed-by={{ .Release.Name }},edge.foghorn.io/created-for!=cleanup', '--ignore-not-found', '--wait=false' ]
+      restartPolicy: Never
+status: {}

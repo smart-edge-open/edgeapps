@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    service.name: {{ .Values.avAgent.serviceName }}
+  name: {{ .Values.avAgent.serviceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.avAgent.replicaCount }}
+  selector:
+    matchLabels:
+      service.name: {{ .Values.avAgent.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "foghorn-edge.labels" . | nindent 8 }}
+        service.name: {{ .Values.avAgent.serviceName }}
+        edge.foghorn.io/app-name: {{ .Values.avAgent.serviceName }}
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: edge.foghorn.io/app-name
+                operator: In
+                values:
+                - {{ .Values.messageBus.serviceName }}
+            topologyKey: "kubernetes.io/hostname"     
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecret }}
+      containers:
+      - env:
+        - name: COMPONENT_NAME
+          value: {{ .Values.avAgent.componentName }}
+        image: {{ .Values.image.repository }}/{{ .Values.image.releasesSubRepository }}{{ .Values.avAgent.imageName }}{{ .Values.image.arch }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        name: {{ .Values.avAgent.componentName }}
+        resources: {}
+        volumeMounts:
+        - mountPath: /fh_vol
+          name: {{ .Values.volume.foghorn.name }}
+        - mountPath: /opt/video
+          name: {{ .Values.volume.hostVideo.name }}
+        - mountPath: /opt/audio
+          name: {{ .Values.volume.hostAudio.name }}
+{{ if eq .Values.avAgent.privilegedMount true}}
+        - mountPath: /dev/v4l/
+          name: dev-v4l
+        - mountPath: /dev/snd
+          name: dev-snd
+        securityContext:
+          privileged: true
+{{ end }}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: {{ .Values.volume.foghorn.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumeClaim.foghorn.name }}
+      - name: {{ .Values.volume.hostAudio.name }}
+        hostPath:
+          path: {{ .Values.volume.hostAudio.path }}
+          type: DirectoryOrCreate
+      - name: {{ .Values.volume.hostVideo.name }}
+        hostPath:
+          path: {{ .Values.volume.hostVideo.path }}
+          type: DirectoryOrCreate
+{{ if eq .Values.avAgent.privilegedMount true}}
+      - name: dev-v4l
+        hostPath:
+          path: /dev/v4l
+      - name: dev-snd
+        hostPath:
+          path: /dev/snd
+{{ end }}
+status: {}

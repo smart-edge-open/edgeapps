@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "-19"
+  creationTimestamp: null
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+  name: foghorn
+  namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: {{ .Values.storageClassName }}
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+status: {}

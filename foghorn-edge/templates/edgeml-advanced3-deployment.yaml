@@ -1,0 +1,64 @@
+{{ if eq .Values.edgeml.type "ADVANCED3"}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    service.name: {{ .Values.edgeml.serviceName }}
+  name: {{ .Values.edgeml.serviceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.edgeml.replicaCount }}
+  selector:
+    matchLabels:
+      service.name: {{ .Values.edgeml.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "foghorn-edge.labels" . | nindent 8 }}
+        service.name: {{ .Values.edgeml.serviceName }}
+        edge.foghorn.io/app-name: {{ .Values.edgeml.serviceName }}
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: edge.foghorn.io/app-name
+                operator: In
+                values:
+                - {{ .Values.messageBus.serviceName }}
+            topologyKey: "kubernetes.io/hostname"     
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecret }}
+      containers:
+      - env:
+        - name: COMPONENT_NAME
+          value: {{ .Values.edgeml.componentName }}
+        - name: EDGE_MANAGER_HOST
+          value: {{ .Values.edgemanager.componentName }}
+        - name: EDGE_MANAGER_PORT
+          value: {{ quote .Values.edgemanager.port }}
+        - name: MESSAGE_BUS_HOST
+          value: {{ quote .Values.messageBus.componentName }}
+        - name: MESSAGE_BUS_PUB_PORT
+          value: {{ quote .Values.messageBus.port.pub }}
+        - name: MESSAGE_BUS_SUB_PORT
+          value: {{ quote .Values.messageBus.port.sub }}
+        image: {{ .Values.image.repository }}/{{ .Values.image.releasesSubRepository }}{{ .Values.edgemlAdvanced3.imageName }}{{ .Values.image.arch }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        name: {{ .Values.edgeml.componentName }}
+        resources: {}
+        volumeMounts:
+        - mountPath: /fh_vol
+          name: {{ .Values.volume.foghorn.name }}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: {{ .Values.volume.foghorn.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumeClaim.foghorn.name }}
+status: {}
+{{ end }}

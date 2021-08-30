@@ -1,0 +1,3 @@
+Foghorn lightning edge installed successfully!
+
+You can manage this edge using Foghorn Manager running at https://{{ .Values.fhm.endpoint }}

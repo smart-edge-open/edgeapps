@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "-13"
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+  name: edge-properties
+  namespace: {{ .Release.Namespace }}
+data:
+  edge_properties.json: |
+{{ (tpl (.Files.Get "files/edge_properties.json") .) | indent 4 }}

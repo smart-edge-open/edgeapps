@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "-12"
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+  name: logger-properties
+  namespace: {{ .Release.Namespace }}
+data:
+  data-publisher-logback.xml: |
+{{ .Files.Get "files/logger/data-publisher-logback.xml" | indent 4 }}
+  opc-agent-logback.xml: |
+{{ .Files.Get "files/logger/opc-agent-logback.xml" | indent 4 }}
+  modbus-agent-logback.xml: |
+{{ .Files.Get "files/logger/modbus-agent-logback.xml" | indent 4 }}
+  data-publisher-log4j.properties: |
+{{ .Files.Get "files/logger/data-publisher-log4j.properties" | indent 4 }}
+  opc-agent-log4j.properties: |
+{{ .Files.Get "files/logger/opc-agent-log4j.properties" | indent 4 }}
+  modbus-agent-log4j.properties: |
+{{ .Files.Get "files/logger/modbus-agent-log4j.properties" | indent 4 }}

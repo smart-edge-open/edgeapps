@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "-11"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+  name: "init-folder-structure"
+  namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        {{- include "foghorn-edge.labels" . | nindent 8 }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecret }}
+      containers:
+      - name: "init-folder-structure"
+        image: {{ .Values.busybox.image }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command: ['sh', '-c', {{ .Files.Get "scripts/init-folder-structure.sh" | quote }}]
+        resources: {}
+        volumeMounts:
+        - mountPath: /fh_vol
+          name: {{ .Values.volume.foghorn.name }}
+      restartPolicy: Never
+      serviceAccountName: ""
+      volumes:
+      - name: {{ .Values.volume.foghorn.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumeClaim.foghorn.name }}
+status: {}

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service.name: {{ .Values.dataPublisher.serviceName }}
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+  name: {{ .Values.dataPublisher.serviceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.dataPublisher.replicaCount }}
+  selector:
+    matchLabels:
+      service.name: {{ .Values.dataPublisher.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "foghorn-edge.labels" . | nindent 8 }}
+        service.name: {{ .Values.dataPublisher.serviceName }}
+        edge.foghorn.io/app-name: {{ .Values.dataPublisher.serviceName }}
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: edge.foghorn.io/app-name
+                operator: In
+                values:
+                - {{ .Values.messageBus.serviceName }}
+            topologyKey: "kubernetes.io/hostname"     
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecret }}
+      containers:
+      - env:
+        - name: COMPONENT_NAME
+          value: {{ .Values.dataPublisher.componentName }}
+        - name: FOGHORN_DATA_PUBLISHER_OPTS
+          value: -Demhost={{ .Values.edgemanager.componentName }} -Ddbasehost={{ .Values.influxdb.componentName }} -Ddbushost={{ .Values.messageBus.componentName }}
+            -Demport={{ .Values.edgemanager.port }} -DretryExitOnError=true -DactiveKey= -Dlog4j.configuration=file:/fh_vol/fh/configs/logger/data-publisher-log4j.properties
+            -Dlogback.configurationFile=file:/fh_vol/fh/configs/logger/data-publisher-logback.xml
+        - name: JAVA_OPTS
+          value: -Dhttps.protocols=TLSv1.1,TLSv1.2 -Xmx512M -XX:+ExitOnOutOfMemoryError
+            -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/fh_vol/fh/logs/data-publisher/mps
+        image: {{ .Values.image.repository }}/{{ .Values.image.releasesSubRepository }}{{ .Values.dataPublisher.imageName }}{{ .Values.image.arch }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        name: {{ .Values.dataPublisher.componentName }}
+        resources: {}
+        volumeMounts:
+        - mountPath: /fh_vol
+          name: {{ .Values.volume.foghorn.name }}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: {{ .Values.volume.foghorn.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumeClaim.foghorn.name }}
+status: {}

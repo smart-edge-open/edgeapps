@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "-9"
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    edge.foghorn.io/created-for: edgemanager
+  name: {{ .Release.Namespace }}-em-workloads-manager-role
+  namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups: [ "", apps, batch, extensions ]
+    resources: [ configmaps, endpoints, persistentvolumeclaims, pods, replicationcontrollers, secrets, services, daemonsets, deployments, replicasets, statefulsets, cronjobs, jobs, endpointslices, ingresses ]
+    verbs: [ get, list, create, update, patch, watch, delete, and deletecollection ]
