@@ -1,7 +1,5 @@
-{{/*
-SPDX-License-Identifier: Apache-2.0
-Copyright (c) 2021 Modaviti eMarketing Private Limited
-*/}}
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Modaviti eMarketing Private Limited
 
 {{/*
 Expand the name of the chart.
