@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 InReality LLC
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ava-gst
+  labels:
+    app: ava-gst
+spec:
+  replicas: 1
+  selector:
+   matchLabels:
+     app: ava-gst
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: ava-gst
+    spec:
+      containers:
+      - name: ava-gst
+        image: irllc/ava-gst:{{ .Values.global.ava.version }}
+        resources:
+          limits:
+            memory: {{ .Values.global.ava.memory }}
+        imagePullPolicy: Always
+        env:
+        - name: LICENSE_URL
+          value: {{ .Values.global.ava.license.url }}
+        - name: ACCOUNT_ID
+          value: {{ .Values.global.ava.license.account }}
+        - name: API_KEY
+          value: {{ .Values.global.ava.license.api_key }}
+        - name: PRODUCT_CODE
+          value: "AVA_GST"
+        - name: LICENSE_KEY
+          value: {{ .Values.global.ava.license.license_key}}
+        - name: IS_DOCKER
+          value: "true"
+      imagePullSecrets:
+      - name: docker-registry-secret
