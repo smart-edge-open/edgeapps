@@ -55,5 +55,5 @@ To uninstall the application run below command:
 `helm uninstall hc-openness`
 
 ## **Related material**
-* See ourt website at https://herta.ai
+* See our website at https://herta.ai
 
