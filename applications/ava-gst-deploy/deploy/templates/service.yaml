@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 InReality LLC
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ava-gst
+spec:
+  type: NodePort
+  selector:
+    app: ava-gst
+  ports:
+    - port: 8080
+      targetPort: {{ .Values.global.ava.port }} 
