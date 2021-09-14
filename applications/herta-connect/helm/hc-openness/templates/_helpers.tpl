@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Herta Security
+
 {{/*
 Expand the name of the chart.
 */}}
