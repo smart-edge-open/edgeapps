@@ -11,7 +11,7 @@ InReality's Deep Learning Anonymous Analytics Engine helps companies with their 
 <p>
 Now DLAV is more accessible than ever by making it available through Intel's OpenNess platform. You just have to use the helm chart provided to deploy our DLAV into your own environment.
 </p>
-<h1>Techical Details</h1>
+<h1>Technical Details</h1>
 
 ## **Pre Requisites – Resources Required**
 
@@ -21,7 +21,7 @@ Now DLAV is more accessible than ever by making it available through Intel's Ope
 | Compute  (vCores)                  | 8                    |  
 | Memory (RAM)                       | 16 GB                |  
 | Storage 				       | 100  GB              |  
-| Host OS                            | CentOS 7.6.1810      | 
+| Host OS                            | CentOS 7-9.2009      | 
   
 ## **Where to Purchase**
 Contact sales@inreality.com
@@ -30,19 +30,17 @@ Contact sales@inreality.com
 ## Pre Requisites - Installing OpenNESS
 |**Configuration**                   |                       |
 |  ----------------------------------|-----------------------|
-| OpenNESS Version                   | 20.12.02		         |
+| OpenNESS Version                   | 21.03		         |
 | Flavor Used 					     | media-analytics			 |
 | Distribution						 | IDO    	     |
 
 
 Follow below link to setup controller and edge-node for installing OpenNESS.
 
-https://github.com/open-ness/specs/blob/openness-20.12.02/doc/getting-started/network-edge/controller-edge-node-setup.md
+https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md
 
-* Go to openness-experience-kits/ directory and comment out the grub role (role: machine_setup/grub) in the **network_edge.yml** file.
-* Run the deployment script as ./deploy_ne.sh 
 
-<h2>Docker Image</h2>
+<h2>Loading Docker Images</h2>
 <p>
 The base image is available at dockerhub <a href="https://hub.docker.com/r/irllc/ava-gst">https://hub.docker.com/r/irllc/ava-gst</a>. This is a public image made available by InReality LLC.
 </p>
@@ -52,17 +50,9 @@ You can contact us at <a href="mailto:sales@inreality.com?">Sales at InReality</
 </p>
 
 
-## Loading Docker Images
-In case of requirement to "pre-pull" the docker container images onto the edge nodes, the partner needs to provide information here. 
-To obtain the application image please go to
-https://xxxxxxxxxxxxxx.
-Once available and copied to the edge nodes, the application container images can be loaded using the following commands:
-
-docker load -i xxxxxxx.tar.gz
-
 <h2>Helm Chart</h2>
 <P>
-Helm chart is also available for easier deployment. The helm chart is available at our <a href="https://github.com/inrealityllc/ava-gst-deploy">Github Repository</a>.
+Helm chart is also available for easier deployment. The helm chart is under the deploy/ folder.
 </P>
 
 ## Installing <application name> using helm
