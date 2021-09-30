@@ -112,7 +112,7 @@ The EII application can be deployed through the OpenNESS architecture which requ
 - **Camera**: A set of cameras connected through the wireless network.
 
 
-EII installation and deployment on the OpenNESS Network Edge environment is available at [eis-experience-kit](https://github.com/open-ness/edgeapps/blob/master/applications/eis-experience-kit/README.md)
+EII installation and deployment on the OpenNESS Network Edge environment is available at [eis-experience-kit](https://github.com/smart-edge-open/edgeapps/blob/master/applications/eis-experience-kit/README.md)
 
 *NOTE: `In the above diagram, the RTSP Camera Stream pod is used for sending the RTSP stream. But in LTE/5G Network real-time deployment, the camera stream will come from real IP camera as per below diagram`*
 
@@ -145,6 +145,6 @@ With a Cloud Native approach, the EII application can be deployed on multiple no
 The PCB demo sample application when deployed on OpenNESS creates an impactful edge computing use case that utilizes the capability of OpenNESS and EII.
 
 ## Reference
-- [OpenNESS Architecture]( https://github.com/open-ness/specs/blob/master/doc/architecture.md)
+- [OpenNESS Architecture]( https://github.com/smart-edge-open/specs/blob/master/doc/architecture.md)
 - [Intel’s Edge Insights for Industrial](https://www.intel.com/content/www/us/en/internet-of-things/industrial-iot/edge-insights-industrial.html)
 

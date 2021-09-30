@@ -14,7 +14,7 @@ WORKDIR /root
 COPY cmd/ ./
 RUN go build main.go eaa_interface.go
 
-FROM alpine:3.12.0
+FROM alpine:3.13
 COPY --from=Builder /lib/x86_64-linux-gnu/libpthread.so.0 /lib/x86_64-linux-gnu/libpthread.so.0
 COPY --from=Builder /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6
 COPY --from=Builder /lib64/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2

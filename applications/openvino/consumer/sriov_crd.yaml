@@ -1,0 +1,20 @@
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: sriov-net-openvino
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: intel.com/intel_sriov_10G_VEDIOSTREAM
+spec:
+  config: '{
+  "type": "sriov",
+  "cniVersion": "0.3.1",
+  "name": "sriov-network",
+  "ipam": {
+    "type": "host-local",
+    "subnet": "192.168.2.0/24",
+    "routes": [{
+      "dst": "0.0.0.0/0"
+    }],
+    "gateway": "192.168.2.1"
+  }
+}'
