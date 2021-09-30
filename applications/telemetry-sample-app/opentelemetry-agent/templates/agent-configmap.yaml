@@ -13,15 +13,12 @@ data:
     receivers:
       opencensus:
         endpoint: "{{ .Values.agent.receiver.opencensus.endpoint }}"
-      
+
     exporters:
       opencensus:
         endpoint: "{{ .Values.agent.exporter.opencensus.endpoint }}"
         ca_file: {{ .Values.agent.rootca }}
         server_name_override: {{ .Values.agent.servername }}
-
-    extensions:
-      health_check: {}
 
     service:
       pipelines:

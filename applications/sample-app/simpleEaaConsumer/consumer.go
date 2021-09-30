@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/open-ness/edgeapps/applications/sample-app/common"
+	"github.com/smart-edge-open/edgeapps/applications/sample-app/common"
 	"github.com/pkg/errors"
 )
 

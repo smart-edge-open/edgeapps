@@ -98,15 +98,17 @@ func discoverServices(client *http.Client) (ServiceList, error) {
 		log.Println("Service-discovery request failed:", err)
 		return servList, err
 	}
-	reconnectTries := 0
-	for resp.StatusCode == http.StatusServiceUnavailable && reconnectTries < 10 {
-		reconnectTries++
-		log.Println("EAA service is not currently available, trying again")
-		time.Sleep(time.Duration(5) * time.Second)
-		resp, err = client.Do(req)
-		if err != nil {
-			log.Println("Service-discovery request failed:", err)
-			return servList, err
+	for reconnectTries := 0; reconnectTries < 10; reconnectTries++ {
+		if resp.StatusCode == http.StatusServiceUnavailable {
+			log.Println("EAA service is not currently available, trying again")
+			time.Sleep(time.Duration(5) * time.Second)
+			resp, err = client.Do(req)
+			if err != nil {
+				log.Println("Service-discovery request failed:", err)
+				return servList, err
+			}
+		} else {
+			break
 		}
 	}
 	if reconnectTries == 10 {

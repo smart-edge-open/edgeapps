@@ -16,7 +16,7 @@ Smart City application is a sample application that is built on top of the OpenV
 - [References](#references)
 
 ## Installing OpenNESS
-The OpenNESS must be installed before going forward with Smart City application deployment. Installation is performed through [OpenNESS Deployment Flavors](https://github.com/open-ness/specs/blob/master/doc/flavors.md).
+The OpenNESS must be installed before going forward with Smart City application deployment. Installation is performed through [OpenNESS Deployment Flavors](https://github.com/smart-edge-open/specs/blob/master/doc/flavors.md).
 
 > **NOTE:** At the time of writing this guide, there was no [Network Policy for Kubernetes](https://kubernetes.io/docs/concepts/services-networking/network-policies/) defined yet for the Smart City application. So, it is advised to remove **all** the network policies existing in the `default` namespace such as:
 > ```shell
@@ -71,7 +71,7 @@ This mode provide an easy and quick start with executing the application in the 
 
 Visual Cloud Accelerator Card - Analytics (VCAC-A) is a PCIe add on card comprising of Intel Core i3-7100U Processor with Intel HD Graphics 620 and 12 Movidius VPUs. Provisioning the network edge with VCAC-A acceleration through Converged Edge Experience Kits enables dense and performant Smart City video analytics and transcoding pipelines.
 
-1. Deploy the OpenNESS [Media Analytics Flavor with VCAC-A](https://github.com/open-ness/specs/blob/master/doc/flavors.md#media-analytics-flavor-with-vcac-a) and place the OpenNESS edge node hostname, that has the VCAC-A card(s) plugged-in, in `edgenode_vca_group:` group in `inventory.yml` file of the converged-edge-experience-kits.
+1. Deploy the OpenNESS [Media Analytics Flavor with VCAC-A](https://github.com/smart-edge-open/specs/blob/master/doc/flavors.md#media-analytics-flavor-with-vcac-a) and place the OpenNESS edge node hostname, that has the VCAC-A card(s) plugged-in, in `edgenode_vca_group:` group in `inventory.yml` file of the converged-edge-experience-kits.
 
 2. Configure converged-edge-experience-kits to deploy "Weave Net" CNI by editing `group_vars/all/10-default.yml`
 
@@ -129,11 +129,11 @@ helm uninstall smart-city-app
 ## Deploying the Smart City Application with EMCO
 EMCO (Edge Multi-Cluster Orchestration) is a Geo-distributed application orchestrator for Kubernetes\*. The main objective of EMCO is automation of the deployment of applications and services across clusters. It acts as a central orchestrator that can manage edge services and network functions across geographically distributed edge clusters from different third parties. Finally, the resource orchestration within a cluster of nodes will leverage Kubernetes* and Helm charts.
 
-For more details, refer to [OpenNESS EMCO whitepaper](https://github.com/open-ness/specs/blob/master/doc/building-blocks/emco/openness-emco.md).
+For more details, refer to [OpenNESS EMCO whitepaper](https://github.com/smart-edge-open/specs/blob/master/doc/building-blocks/emco/openness-emco.md).
 
 
 ## References
 
-- [OpenNESS Smart City application whitepaper](https://github.com/open-ness/specs/blob/master/doc/applications/openness_ovc.md)
+- [OpenNESS Smart City application whitepaper](https://github.com/smart-edge-open/specs/blob/master/doc/applications/openness_ovc.md)
 - [Intel Open Visual Cloud Smart City reference pipeline](https://github.com/OpenVisualCloud/Smart-City-Sample)
 - [Intel Open Visual Cloud VCAC-A card media analytics software](https://github.com/OpenVisualCloud/VCAC-SW-Analytics/)

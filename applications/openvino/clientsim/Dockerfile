@@ -19,6 +19,7 @@ RUN apt-get update && \
        apt-get -y install sudo && \
        apt-get -y install unzip && \
        apt-get -y install wget && \
+       apt-get -y install curl && \
        apt-get -y install lsb-core && \
        apt-get -y install autoconf libtool && \
        apt-get -y install ffmpeg x264 && \
