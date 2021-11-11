@@ -43,7 +43,7 @@ The Technical Steering Committee roles include:
 * Any new project repositories must be approved by the Technical Steering Committee.
 
 ## Submitting Changes
-Inbound contributions are done through [pull requests](https://github.com/open-ness/edgeapps/pulls) which include code changes, enhancements, bug fixes or new applications/features. If you are getting started, you may refer to Github's [how-to](https://help.github.com/articles/using-pull-requests/). With your contributions, we expect that you:
+Inbound contributions are done through [pull requests](https://github.com/smart-edge-open/edgeapps/pulls) which include code changes, enhancements, bug fixes or new applications/features. If you are getting started, you may refer to Github's [how-to](https://help.github.com/articles/using-pull-requests/). With your contributions, we expect that you:
 
 * certify that you wrote and/or have the right to submit the pull request,
 * agree with the [Developer Certificate of Origin](http://developercertificate.org/),
@@ -71,18 +71,18 @@ Big contributions, ideas or controversial features should be discussed with the 
 6. Merging the pull requests can only be performed by the maintainer(s).
 
 ## How to report an issue/bug/enhancement
-It is encouraged to use the [GitHub Issues](https://github.com/open-ness/edgeapps/issues) tool to report any bug, issue, enhancement or to seek help.
+It is encouraged to use the [GitHub Issues](https://github.com/smart-edge-open/edgeapps/issues) tool to report any bug, issue, enhancement or to seek help.
 
 ## Resources
 Below are some useful resources for getting started with OpenNESS:
-* [OpenNESS release notes](https://github.com/open-ness/specs/blob/master/openness_releasenotes.md)
-* [OpenNESS solution index](https://github.com/open-ness/specs/blob/master/README.md)
-* [OpenNESS architecture and solution overview](https://github.com/open-ness/specs/blob/master/doc/architecture.md)
-* [OpenNESS getting started guide — network edge](https://github.com/open-ness/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md)
-* [OpenNESS getting started guide — on-premises](https://github.com/open-ness/specs/blob/master/doc/getting-started/on-premises/controller-edge-node-setup.md)
-* [OpenNESS application onboarding — network edge](https://github.com/open-ness/specs/blob/master/doc/applications-onboard/network-edge-applications-onboarding.md)
-* [OpenNESS application onboarding — on-premises](https://github.com/open-ness/specs/blob/master/doc/applications-onboard/on-premises-applications-onboarding.md)
-* [OpenNESS application development and porting guide](https://github.com/open-ness/specs/blob/master/doc/applications/openness_appguide.md)
+* [OpenNESS release notes](https://github.com/smart-edge-open/specs/blob/master/openness_releasenotes.md)
+* [OpenNESS solution index](https://github.com/smart-edge-open/specs/blob/master/README.md)
+* [OpenNESS architecture and solution overview](https://github.com/smart-edge-open/specs/blob/master/doc/architecture.md)
+* [OpenNESS getting started guide — network edge](https://github.com/smart-edge-open/specs/blob/master/doc/getting-started/network-edge/controller-edge-node-setup.md)
+* [OpenNESS getting started guide — on-premises](https://github.com/smart-edge-open/specs/blob/master/doc/getting-started/on-premises/controller-edge-node-setup.md)
+* [OpenNESS application onboarding — network edge](https://github.com/smart-edge-open/specs/blob/master/doc/applications-onboard/network-edge-applications-onboarding.md)
+* [OpenNESS application onboarding — on-premises](https://github.com/smart-edge-open/specs/blob/master/doc/applications-onboard/on-premises-applications-onboarding.md)
+* [OpenNESS application development and porting guide](https://github.com/smart-edge-open/specs/blob/master/doc/applications/openness_appguide.md)
 
 ## Style Guide / Coding conventions
 All contributions must follow the [Development Guide](DEVELOPING.md).
