@@ -62,7 +62,7 @@ Contact support@orbo.ai
 
 Follow below link to setup controller and edge-node for installing OpenNESS.
 
-https://github.com/open-ness/specs/blob/master/doc/getting-started/openness-cluster-setup.md
+https://github.com/smart-edge-open/specs/blob/master/doc/getting-started/smartedge-open-cluster-setup.md
 
 
 ## Loading Docker Images
