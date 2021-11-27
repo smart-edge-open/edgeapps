@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -20,7 +21,15 @@ const (
 
 var cmd *exec.Cmd
 
-func callOpenVINO(model string, accl string) {
+func checkEnvVariable(number string) {
+
+	_, err := strconv.Atoi(number)
+	if err != nil {
+		log.Fatal("The invalid environment variable: OPENVINO_TASKSET_CPU")
+	}
+}
+
+func callOpenVINO(model string, accl string, cpuset string) {
 
 	var modelXML string
 	// validate accelerator type
@@ -46,14 +55,13 @@ func callOpenVINO(model string, accl string) {
 	openvinoPath := os.Getenv("APP_DIR")
 	openvinoCmd := "object_detection_demo_ssd_async.py"
 
-	// get taskset cpu from env
-	openvinoTasksetCPU := os.Getenv("OPENVINO_TASKSET_CPU")
+	checkEnvVariable(cpuset)
 
 	if err := os.Chdir(openvinoPath); err != nil {
 		log.Fatal("Failed to change directory:", err)
 	}
 
-	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
+	cmd = exec.Command("taskset", "-c", cpuset,
 		"python3", openvinoCmd, "-d", accl,
 		"-i", "rtmp://127.0.0.1:5000/live/test.flv",
 		"-m", modelXML)

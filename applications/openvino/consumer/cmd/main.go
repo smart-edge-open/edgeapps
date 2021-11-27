@@ -28,6 +28,7 @@ const (
 )
 
 var myURN URN
+var cpuSet string
 
 // InferenceSettings is the notification structure of OpenVINO inference
 // settings: model name & acceleration type
@@ -257,7 +258,7 @@ func switchModel(payload []byte) {
 		infSettings.Accelerator)
 
 	// Call OpenVINO C++ App with the model name & acceleration type
-	callOpenVINO(infSettings.Model, infSettings.Accelerator)
+	callOpenVINO(infSettings.Model, infSettings.Accelerator, cpuSet)
 }
 
 func notifListener(conn *websocket.Conn, client *http.Client) {
@@ -304,8 +305,11 @@ func notifListener(conn *websocket.Conn, client *http.Client) {
 }
 
 func main() {
+	if len(os.Args) < 2 {
+		log.Fatal("Usage help: ./main <cpu_core>\nFor example: ./main 8")
+	}
 	log.Println("OpenVINO Consumer Started")
-
+	cpuSet = os.Args[1]
 	myURN = URN{
 		ID:        "consumer",
 		Namespace: "openvino",

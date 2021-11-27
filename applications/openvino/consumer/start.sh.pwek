@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2019 Intel Corporation
+
+# shellcheck disable=SC1091
+source "$OPENVINO_ROOT"/bin/setupvars.sh
+nginx -g "daemon on;"
+sleep 2
+ffmpeg -re -stream_loop -1 -i output_320x240.mp4 -c:v copy -an -f flv rtmp://127.0.0.1:5000/live/test.flv &
+# shellcheck disable=SC1091
+./main $OPENVINO_TASKSET_CPU

@@ -248,7 +248,7 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context): #pylint: 
             print("test reference:", file_ref)
             if os.path.exists(file_tst):
                 try:
-                    file_tst = open(file_tst, 'r')
+                    file_tst = open(file_tst, 'r') #pylint: disable=consider-using-with
                 except OSError:
                     print("Could not open/read file:", file_tst)
                     sys.exit()
@@ -258,7 +258,7 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context): #pylint: 
                 return res
             if os.path.exists(file_ref):
                 try:
-                    file_ref = open(file_ref, 'r')
+                    file_ref = open(file_ref, 'r') #pylint: disable=consider-using-with
                 except OSError:
                     print("Could not open/read file:", file_ref)
                     sys.exit()
@@ -302,14 +302,14 @@ def compare_results(rantech, cat, m_u, xran_path, direction, context): #pylint: 
                             res = -1
                             print("FAIL:", "IndexError on tst: ant:[", i, "]:",
                                   offset, slot_idx, sym_idx, line_idx, len(tst))
-                            raise GetOutOfLoops
+                            raise GetOutOfLoops #pylint: disable=raise-missing-from
                         try:
                             line_ref = ref[offset].rstrip()
                         except IndexError:
                             res = -1
                             print("FAIL:", "IndexError on ref: ant:[", i, "]:",
                                   offset, slot_idx, sym_idx, line_idx, len(ref))
-                            raise GetOutOfLoops
+                            raise GetOutOfLoops #pylint: disable=raise-missing-from
 
                         if comp == 1:
                             # discard LSB bits as BFP compression is not "bit exact"
