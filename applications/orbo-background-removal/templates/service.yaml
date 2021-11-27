@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Modaviti eMarketing Private Limited
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "orbo-background-removal.fullname" . }}
+  labels:
+    {{- include "orbo-background-removal.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.containerPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "orbo-background-removal.selectorLabels" . | nindent 4 }}
