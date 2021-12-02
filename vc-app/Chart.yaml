@@ -1,0 +1,15 @@
+apiVersion: v2
+name: vc-app
+description: A Helm chart for Vsblty Vision Captor application
+
+type: application
+
+version: 0.1.0
+
+appVersion: "1.16.0"
+
+dependencies:
+  - name: ai-pipeline
+    condition: ai-pipeline.enabled
+  - name: vclite
+    condition: vclite.enabled
