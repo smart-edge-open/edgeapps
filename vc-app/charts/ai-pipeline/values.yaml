@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: vsblty.azurecr.io/vedge/ai-pipeline
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   tag: "1.1.18"
 
 device:
