@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+#fullnameOverride: "5gcore-ba"
+fullnameOverride: "arcus5g"
+
+#commonLabels:
+#  deployer: venkatesh
+#  organization: Bluearcus
+
+amf:
+  enabled: true 
+#  image:
+#    pullPolicy: Never
+
+#  nodeSelector:
+#    appserver: "3"
+
+ausf:
+  enabled: true
+#  nodeSelector:
+#    appserver: "2"
+
+udm:
+  enabled: true
+#  nodeSelector:
+#    appserver: "1"
+
+smf:
+  enabled: true
+
+pcf:
+  enabled: true

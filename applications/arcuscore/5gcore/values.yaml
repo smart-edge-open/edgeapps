@@ -1,0 +1,163 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+# Default values for Blue Arcus 5gcore.
+# https://www.bluearcus.com/
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Provide a name in place of 5gcore for `app:` labels
+##
+nameOverride: ""
+
+## Override the deployment namespace
+##
+#namespaceOverride: ""
+
+## Provide a name to substitute for the full names of resources
+##
+fullnameOverride: ""
+
+## Labels to apply to all resources
+##
+commonLabels: {}
+# scmhash: abc123
+# myLabel: aakkmd
+
+busybox:
+  image:
+    repository: busybox
+    tag: 1.31.1
+    pullPolicy: IfNotPresent
+
+amf:
+
+  ## Deploy amf
+  ##
+  enabled: true
+
+  ## Labels to add to the amf pod
+  ##
+  #podLabels {}
+
+  ## amf image
+  ##
+  image:
+    repository: amf_image
+    tag: 1.1.3
+    sha: ""
+    pullPolicy: IfNotPresent
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+
+  replicaCount: 1
+
+  service:
+    type: NodePort 
+    port: 4100 
+
+ausf:
+
+  ## Deploy ausf
+  ##
+  enabled: true
+
+  ## Labels to add to the ausf pod
+  ##
+  #podLabels {}
+
+  ## ausf image
+  ##
+  image:
+    repository: ausf
+    tag: 1.1.5
+    sha: ""
+    pullPolicy: IfNotPresent
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+
+  replicaCount: 1
+
+  service:
+    type: NodePort
+    port: 4100
+
+udm:
+
+  ## Deploy udm
+  ##
+  enabled: true
+
+  ## Labels to add to the udm pod
+  ##
+  #podLabels {}
+
+  ## udm image
+  ##
+  image:
+    repository: udm
+    tag: 1.1.10
+    sha: ""
+    pullPolicy: IfNotPresent
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+
+  replicaCount: 1
+
+  service:
+    type: NodePort
+    port: 8080
+
+smf:
+
+  ## Deploy smf
+  ##
+  enabled: true
+
+  ## Labels to add to the smf pod
+  ##
+  #podLabels {}
+
+  ## smf image
+  ##
+  image:
+    repository: smf
+    tag: 1.0.16
+    sha: ""
+    pullPolicy: IfNotPresent
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+
+  replicaCount: 1
+
+pcf:
+
+  ## Deploy pcf
+  ##
+  enabled: true
+
+  ## Labels to add to the pcf pod
+  ##
+  #podLabels {}
+
+  ## pcf image
+  ##
+  image:
+    repository: pcf
+    tag: 1.0.14
+    sha: ""
+    pullPolicy: IfNotPresent
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+
+  replicaCount: 1

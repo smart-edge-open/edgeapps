@@ -1,0 +1,7 @@
+dual_mode=0
+local_ip=10.10.1.107
+db_ip_0=127.0.0.1
+db_port_0=6379
+db_ip_1=192.168.1.234
+db_port_1=6380
+#unix_sock=/tmp/redis.sock

@@ -1,0 +1,21 @@
+#ausf profile
+admin=0
+label=agt-ausf
+nf_instance_id=af3ae26f-56b0-4e0e-8d21-88a60df7e5b9
+nf_type=AUSF
+schme=0
+bind_ip=127.0.0.10
+listen_port=8088
+udm_ip=127.0.0.20
+udm_port=8080
+intra_ind=0
+nrf_0=N/A
+nrf_1=N/A
+nrf_noti_uri=
+ausf_fqdn=ausf.agt.com
+ausf_priority=1
+ausf_capacity=4096
+#ausf info
+group_id=0
+supi_ranges=imsi-554010100080000~imsi-554010100080099
+

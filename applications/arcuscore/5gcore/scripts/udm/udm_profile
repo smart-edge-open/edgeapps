@@ -1,0 +1,29 @@
+#udm profile
+admin=0
+label=test-udm
+nf_instance_id=242ca49c-73d2-4e9e-9e63-f087df93e5c0
+nf_type=UDM
+hplmn_id=46000
+schme=0
+bind_ip=127.0.0.20
+listen_port=8080
+intra_ind=0
+ausf_prod_uri=http://127.0.0.10:8088
+op_0=7983658960860C9E56732E0B307E693B
+rlst_0=4000204060
+op_1=7983658960860C9E56732E0B307E693B
+rlst_1=4000204060
+op_2=7983658960860C9E56732E0B307E693B
+rlst_2=4000204060
+hnprivkey_0=FD430DDC314A4744CDF299BC6E587B2D21B736E613EFC7E3841E4855105FB469
+nrf_0=N/A
+nrf_1=N/A
+nrf_noti_uri=http://127.0.0.20:8080/nf-instances/242ca49c-73d2-4e9e-9e63-f087df93e5c0
+udm_fqdn=udm.com
+udm_priority=1
+udm_capacity=4096
+#udm info
+group_id=
+supi_ranges=imsi-460000100080000~imsi-460000100080099
+gpsi_ranges=msisdn-69072000~msisdn-69072099
+snssais=

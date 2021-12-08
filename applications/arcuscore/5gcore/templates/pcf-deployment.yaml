@@ -1,0 +1,107 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.pcf.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "5gcore.fullname" . }}-pcf
+  labels:
+    app: {{ template "5gcore.name" . }}-pcf
+    {{- include "5gcore.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.pcf.replicaCount }}
+  selector:
+    matchLabels:
+      appname: {{ template "5gcore.name" . }}-pcf
+      release: {{ $.Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        appname: {{ template "5gcore.name" . }}-pcf
+        release: {{ $.Release.Name | quote }}
+    spec:
+      ## init container to verify if volume mount has happened and modify the applicable IP addresses in the configuration files
+#      hostNetwork: true
+      initContainers:
+        - name: init-container-pcf
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          imagePullPolicy: "{{ .Values.busybox.image.pullPolicy }}"
+
+          ##The IP 192.168.1.85 in config file needs to be substituted with the host IP on which pcf is intended to be run. 172.27.58.19 is IP on host in the below example.
+          #command: ['sh', '-c', "sleep 2; cp /var/tmp/* /usr/local/etc/pcf/; sed -i -e s/192.168.1.85/172.27.58.19/g /usr/local/etc/pcf/pcf_server.json"]
+          ##Use below if using kubernetes CNI for the PCF
+          command: ['sh', '-c', "sleep 2; POD_IP=`hostname -i`; echo $POD_IP > /usr/local/etc/pcf/license/pod_ip.txt; cp /var/tmp/* /usr/local/etc/pcf/; sed -i -e s/192.168.1.85/$POD_IP/g /usr/local/etc/pcf/pcf_server.json"]
+
+      #     resources:
+      #       {}
+          volumeMounts:
+            - name: sbin
+              mountPath: "/sbin"
+            - name: usrlocaletcpcflicense
+              mountPath: "/usr/local/etc/pcf/license"
+            - name: etclocaltime
+              mountPath: "/etc/localtime"
+              readOnly: true
+            - name: pcf-config-vol
+              mountPath: /var/tmp
+            - name: pcf-cache
+              mountPath: /usr/local/etc/pcf
+      containers:
+        - name: 5gcore-pcf-container
+          {{- if .Values.pcf.image.sha }}
+          image: "{{ .Values.pcf.image.repository }}:{{ .Values.pcf.image.tag }}@sha256:{{ .Values.pcf.image.sha }}"
+          {{- else }}
+          image: "{{ .Values.pcf.image.repository }}:{{ .Values.pcf.image.tag }}"
+          {{- end }}
+          imagePullPolicy: "{{ .Values.pcf.image.pullPolicy }}"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: pcf-http
+            - containerPort: 3867
+              protocol: TCP
+              name: pcf-rx
+            - containerPort: 3868
+              protocol: TCP
+              name: pcf-gx
+            - containerPort: 4100
+              protocol: TCP
+              name: pcf-mml
+            - containerPort: 4957
+#              protocol: UDP
+              name: pcf-snmp
+          volumeMounts:
+            - name: sbin
+              mountPath: "/sbin"
+            - name: usrlocaletcpcflicense
+              mountPath: "/usr/local/etc/pcf/license"
+            - name: etclocaltime
+              mountPath: "/etc/localtime"
+              readOnly: true
+            - name: pcf-config-vol
+              mountPath: /var/tmp
+            - name: pcf-cache
+              mountPath: /usr/local/etc/pcf
+      volumes:
+        - name: sbin
+          hostPath:
+            path: /sbin
+        - name: etclocaltime
+          hostPath:
+            path: /etc/localtime
+        - name: usrlocaletcpcflicense
+          hostPath:
+            path: /usr/local/etc/pcf/license
+        - name: pcf-config-vol
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: {{ template "5gcore.fullname" . }}-pcf-cm-1
+        - name: pcf-cache
+          emptyDir: {}
+      {{- with .Values.pcf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- end }}

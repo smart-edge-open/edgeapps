@@ -1,0 +1,20 @@
+{
+	"log":{"output":"console", "level":"debug", "path":"/var/log/pcf.log", "maxAge":720, "rotationTime":3 },
+
+	"pcfIp":"192.168.1.85",
+	"pcfPort":8080,
+	"nfInstanceId":"",
+	"nrfAddress":"192.168.1.102:8080",
+	"mysqlDb":{"flag":0, "addr":"192.168.1.211:3306", "username":"root", "password":"admin123"},
+	"redisDb":{"netType":"tcp", "addr":"192.168.1.78:6379"},
+	"ueReport":{"flag":0, "mqUrl":"amqp://rabbitmq:SpnMq0914@192.168.111.123:5672/", 
+				"priAuthResQue":"pushPriAuthResQueue", "dataUsageQue":"pushDataUsageQueue", 
+				"userStatusQue":"pushUserStatusQueue", "vplmnCheatQue":"pushVplmnCheatQueue"},
+
+	"rx":{"flag":0, "netType":"tcp", "addr":"192.168.1.85:3867",
+		  "host":"pcrf.epc.mnc000.mcc460.3gppnetwork.org", 
+		  "realm":"epc.mnc000.mcc460.3gppnetwork.org"},
+	"gx":{"flag":0, "netType":"tcp", "addr":"192.168.1.85:3868",
+		  "host":"pcrf.epc.mnc000.mcc460.3gppnetwork.org", 
+		  "realm":"epc.mnc000.mcc460.3gppnetwork.org"}
+}

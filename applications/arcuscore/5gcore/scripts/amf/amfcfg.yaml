@@ -1,0 +1,99 @@
+info:
+  version: 1.0.0
+  description: AMF initial local configuration
+configuration:
+  instance: 0
+  amfName: AMF
+  ngapIpList:
+  - 192.168.1.183
+  ngapSctpPort: 38412
+  sctpOutStreams: 2
+  relativeCapacity: 255
+  sbi:
+    scheme: http
+    registerIPv4: 192.168.1.183
+    bindingIPv4: 192.168.1.183
+    port: 8080
+  serviceNameList:
+  - namf-comm
+  - namf-evts
+  - namf-mt
+  - namf-loc
+  servedGuamiList:
+  - plmnId:
+      mcc: 001
+      mnc: 01
+    amfId: 010041
+  supportTaiList:
+  - plmnId:
+      mcc: 001
+      mnc: 01
+    tac: 81
+  plmnSupportList:
+  - plmnId:
+      mcc: 001
+      mnc: 01
+    snssaiList:
+    - sst: 1
+      sd: 000001
+  ladnEnabled: false
+  supportLadnList:
+  - dnn: TTOK
+    taiList:
+    - plmnId:
+        mcc: 001
+        mnc: 01
+      tac: 81
+  smsOverNasEnabled: false
+  imsVoPs3GPPEnabled: true
+  statusReportEnabled: false
+  statusReportImsiPre: 4600001
+  triggerInitCtxSetupForAllNASProc: true
+  supportDnnList:
+  - cmnet
+  nrfEnabled: false
+  nrfUri: http://192.168.1.102:8080
+  ausfUri: http://10.233.96.12:8088
+  udmUri: http://10.90.43.201:8080
+  smfUri: http://10.233.96.13:8080
+  pcfUri: http://10.233.92.20:8080
+  security:
+    integrityOrder:
+    - NIA2
+    cipheringOrder:
+    - NEA0
+  debugLevel: trace
+  networkName:
+    enable: false
+    full: BlueArcus5G
+    short: ba
+  t3502Value: 720
+  t3512Value: 3600
+  non3gppDeregistrationTimerValue: 3240
+  t3513:
+    enable: true
+    expireTime: 6s
+    maxRetryTimes: 4
+  t3522:
+    enable: true
+    expireTime: 6s
+    maxRetryTimes: 4
+  t3550:
+    enable: true
+    expireTime: 6s
+    maxRetryTimes: 4
+  t3560:
+    enable: true
+    expireTime: 6s
+    maxRetryTimes: 4
+  t3565:
+    enable: true
+    expireTime: 6s
+    maxRetryTimes: 4
+  t3570:
+    enable: true
+    expireTime: 6s
+    maxRetryTimes: 4
+  purgeTimer:
+    enable: false
+    expireTime: 24h

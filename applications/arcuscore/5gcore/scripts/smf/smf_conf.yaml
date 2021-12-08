@@ -1,0 +1,87 @@
+localconfig:
+  debuglogging:
+    file: /var/log/smf.log
+    level: debug
+  httpcfg:
+    ip: 192.168.1.232
+    port: 8080
+    scheme: http
+  ischarging: true
+  n4interfacecfg:
+    iptype: ipv4
+    ipv4: 192.168.1.232
+    port: 8805
+  pcscf: 10.10.1.103
+  snmpcfg:
+    ip: 192.168.1.232
+    port: 4957
+    systemid: 0
+  uedns:
+    ipv4:
+      default: 8.8.8.8
+      secondary: 114.114.114.114
+    ipv6:
+      default: 2001:4860:4860::8888
+      secondary: 2400:3200::1
+  uemtu: 1400
+nfconfig:
+  amf:
+    ip:
+    - 192.168.1.190:8080
+  pcf:
+    ip:
+    - 192.168.1.177:8080
+  udm:
+    ip:
+    - 10.10.1.107:8080
+statusreport:
+  localip: 192.168.1.232
+  localport: 6600
+  remoteip: 192.168.1.85
+  remoteport: 6600
+testiperfcfg:
+  enable: false
+  gnbip: 192.168.12.36
+  ueip: 10.100.0.1
+  uenum: 10
+  upfpfcpip: 192.168.1.40
+  upfupip: 192.168.1.41
+upfconfig:
+- id: upf-1
+  ip: 192.168.1.236:8805
+  ueippool:
+    ipv4:
+    - 10.5.254.0/24
+    ipv6: []
+  uestaticipv4enable: false
+  uestaticipv4rangebegin: '-'
+  uestaticipv4rangeend: '-'
+  uestaticipv6enable: false
+  uestaticipv6rangebegin: ""
+  uestaticipv6rangeend: ""
+upfselectcfg:
+  dnntaiiupfpsaupfmap:
+  - Dnn: cmnet
+    IUpfId: upf-2
+    PsaUpfId: upf-1
+    Tai: 46000001124
+  dnntaisnssaiupfmap:
+  - Dnn: cmnet
+    Snssai:
+      sd: 1
+      sst: "000001"
+    Tai: 46000001125
+    upfid:
+    - upf-1
+  dnntaiupfmap:
+  - Dnn: cmnet
+    Tai: 46000001123
+    upfid:
+    - upf-2
+  dnnupfmap:
+  - Dnn: cmnet
+    upfid:
+    - upf-1
+  - Dnn: ims
+    upfid:
+    - upf-1
