@@ -1,21 +1,67 @@
-#data-captor is the vision captor helm chart with data-captor
 
-#Before deploying the application we require k3s to be installed on the machine where we want to deploy charts.
+# **Data Captor Application Overview**
+DataCaptor leverages camera and sensor technology through AI tools (machine learning and computer vision), enabling real-time analytics and anonymous audience data based on who and what the camera sees
 
-#On the host machine we need to create 3 folders as below and need to place data into it(VSBLTY need to provide data for models & gallery while other folders can be kept empty)
+## **Pre Requisites – Resources Required**
 
-    1.mkdir -p /home/vedge/models
-    2.mkdir -p /home/vedge/gallery
-    3.mkdir -p /home/vedge/videos
-   
+| **Resource Information**           |                      |
+|------------------------------------|----------------------|
+| Application Type                   | Data Captor		    | 
+| Compute  (vCores)                  | 8                    |  
+| Memory (RAM)                       | 8 GB                 |  
+| Storage 				             | 128 GB               |  
+| Host OS                            | Ubuntu 20 or higher  |  
+| Physical Display                   |                      |
+| Connected cameras(USB/IP/Network)  | With RTSP URL        |    
+  
 
-#In values.yaml file of data-captor chart we have couple of things to be filled before deployment.
-    1.device.accessToken : It'll be generated when the camera will be registered to vsblty portal (manually) and that need to copy in values.yaml file.(VSBLTY can give before deployment).
 
-    2. camera.rtsp : It's the camera rtsp stream url.
-
+## **Where to Purchase**
+Contact info@vsblty.net
 
 
-#Once we have all the above things set up we can deploy by following command.
+## Pre Requisites - Installing Data Captor
+|**Configuration**                   |                                    |
+|  ----------------------------------|------------------------------------|
+| Ubuntu                             | 20 or later		                  |
+| Folder to create on system 		 | /home/vedge/models	              |
+| Folder to create on system 		 | /home/vedge/gallery	              |
+| Folder to create on system 		 | /home/vedge/videos	              |
 
-    helm install data-captor data-captor/
+
+
+## Loading Docker Images
+docker image load -i data-captor.tar.gz
+
+## Installing Data Captor Application using helm
+
+Run the following commands to deploy  through helm:
+
+`helm install data-captor ./data-captor`
+
+ Sample Output would look like:
+
+> `NAME: data-captor`
+>
+> `LAST DEPLOYED:`
+>
+> `NAMESPACE: default`
+>
+> `STATUS: deployed`
+>
+> `REVISION: 1`
+>
+> `TEST SUITE: None`
+
+
+
+## Uninstall Data captor application
+To uninstall application run below command:
+    
+`helm uninstall data-captor`
+
+## Testing Steps
+For further instructions about steps for testing, contact VSBLTY Team (info@vsblty.net)
+
+## **Related material**
+* https://vsblty.net/
