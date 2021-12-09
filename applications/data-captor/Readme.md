@@ -20,6 +20,22 @@ DataCaptor leverages camera and sensor technology through AI tools (machine lear
 Contact info@vsblty.net
 
 
+## Pre Requisites - Installing OpenNESS
+|**Configuration**                   |                       |
+|  ----------------------------------|-----------------------|
+| OpenNESS Version                   | 20.12.02		         |
+| Flavor Used 					     | Minimal				 |
+| Distribution						 | OpenSource    	     |
+
+
+Follow below link to setup controller and edge-node for installing OpenNESS.
+
+https://github.com/open-ness/specs/blob/openness-20.12.02/doc/getting-started/network-edge/controller-edge-node-setup.md
+
+* Go to openness-experience-kits/ directory and comment out the grub role (role: machine_setup/grub) in the **network_edge.yml** file.
+* Run the deployment script as ./deploy_ne.sh 
+
+
 ## Pre Requisites - Installing Data Captor
 |**Configuration**                   |                                    |
 |  ----------------------------------|------------------------------------|
