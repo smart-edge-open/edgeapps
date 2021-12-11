@@ -1,4 +1,7 @@
 {
+	"__comment_1__": "SPDX-License-Identifier: Apache-2.0",
+	"__comment_2__": " Copyright (c) 2021 Blue Arcus Technologies, Inc",
+
 	"log":{"output":"console", "level":"debug", "path":"/var/log/pcf.log", "maxAge":720, "rotationTime":3 },
 
 	"pcfIp":"192.168.1.85",

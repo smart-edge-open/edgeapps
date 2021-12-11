@@ -1,4 +1,6 @@
 {
+	"__comment_1__": "SPDX-License-Identifier: Apache-2.0",
+	"__comment_2__": " Copyright (c) 2021 Blue Arcus Technologies, Inc",
 	"rfspIndex":	0,
 	"restrictionType":	0,
 	"maxNumOfTAs":	24,
