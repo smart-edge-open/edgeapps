@@ -1,0 +1,147 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.udm.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "5gcore.fullname" . }}-udm
+  labels:
+    app: {{ template "5gcore.name" . }}-udm
+    {{- include "5gcore.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.udm.replicaCount }}
+  selector:
+    matchLabels:
+      appname: {{ template "5gcore.name" . }}-udm
+      release: {{ $.Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        appname: {{ template "5gcore.name" . }}-udm
+        release: {{ $.Release.Name | quote }}
+    spec:
+      ## init container to verify if volume mount has happened and modify the applicable IP addresses in the configuration files
+      #hostNetwork: true
+      initContainers:
+        - name: init-container-udm
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          imagePullPolicy: "{{ .Values.busybox.image.pullPolicy }}"
+          ##If hostnetwork is enabled. The IP 192.168.1.183 in config file needs to be substituted with the host IP on which udm is intended to be run. 172.27.58.19 is IP on host in the below example.
+          #command: ['sh', '-c', "sleep 2; cp /var/tmp/udm/* /usr/local/etc/udm/; cp /var/tmp/hss/* /usr/local/etc/hss/; sleep 3600"]
+          command: ['sh', '-c', "sleep 2; cp /var/tmp/udm/* /usr/local/etc/udm/; cp /var/tmp/hss/* /usr/local/etc/hss/; POD_IP=`hostname -i`; echo $POD_IP > /usr/local/etc/udm/license/pod_ip.txt; sed -i -e s/127.0.0.20/$POD_IP/g /usr/local/etc/udm/udm_profile"]
+      #     resources:
+      #       {}
+          volumeMounts:
+            - name: sbin
+              mountPath: "/sbin"
+              readOnly: true
+            - name: dev
+              mountPath: "/dev"
+            - name: etclocaltime
+              mountPath: "/etc/localtime"
+              readOnly: true
+            - name: usrlocaletcudmlicense
+              mountPath: "/usr/local/etc/udm/license"
+            - name: hss-config-vol
+              mountPath: /var/tmp/hss
+            # - name: redis-config-vol
+            #   mountPath: /var/tmp/redis
+            - name: udm-config-vol
+              mountPath: /var/tmp/udm
+            - name: hss-cache
+              mountPath: /usr/local/etc/hss
+            # - name: redis-cache
+            #   mountPath: /usr/local/etc/redis
+            - name: udm-cache
+              mountPath: /usr/local/etc/udm
+#            - name: redisconf 
+#              mountPath: /etc/redis/
+#            - name: redisdata
+#              mountPath: /data
+      containers:
+         - name: 5gcore-udm-container
+           image: udm:1.1.10
+           ports:
+             # Ports definition if going with service
+             - containerPort: 8080
+               protocol: TCP
+               name: udm-https
+             - containerPort: 4957
+#               protocol: UDP
+               name: udm-udp
+           volumeMounts:
+             - name: sbin
+               mountPath: "/sbin"
+               readOnly: true
+             - name: dev
+               mountPath: "/dev"
+             - name: etclocaltime
+               mountPath: "/etc/localtime"
+               readOnly: true
+             - name: usrlocaletcudmlicense
+               mountPath: "/usr/local/etc/udm/license"
+             - name: hss-config-vol
+               mountPath: /var/tmp/hss
+             - name: udm-config-vol
+               mountPath: /var/tmp/udm
+             - name: hss-cache
+               mountPath: /usr/local/etc/hss
+             - name: udm-cache
+               mountPath: /usr/local/etc/udm
+#        - name: 5gcore-udm-redis-container
+#          image: redis:latest
+#          command:
+#            - redis-server
+#            - "/etc/redis/redis.conf"
+#          ports:
+#            - containerPort: 6379
+#              protocol: TCP
+#              name: redis-server
+#          volumeMounts:
+#            - name: redisconf 
+#              mountPath: /etc/redis/
+#            - name: redisdata
+#              mountPath: /data
+
+      volumes:
+        - name: sbin
+          hostPath:
+            path: /sbin
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: etclocaltime
+          hostPath:
+            path: /etc/localtime
+        - name: usrlocaletcudmlicense
+          hostPath:
+            path: /usr/local/etc/udm/license
+        - name: udm-config-vol
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: {{ template "5gcore.fullname" . }}-udm-cm-1
+        - name: hss-config-vol
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: {{ template "5gcore.fullname" . }}-hss-cm-1
+#        - name: redisconf
+#          hostPath:
+#            path: /usr/local/etc/redis/conf
+#        - name: redisdata
+#          hostPath:
+#            path: /usr/local/etc/redis/data
+        - name: hss-cache
+          emptyDir: {}
+#        - name: redis-cache
+#          emptyDir: {}
+        - name: udm-cache
+          emptyDir: {}
+
+      {{- with .Values.udm.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- end }}

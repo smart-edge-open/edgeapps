@@ -1,0 +1,115 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.amf.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "5gcore.fullname" . }}-amf
+  labels:
+    app: {{ template "5gcore.name" . }}-amf
+    {{- include "5gcore.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.amf.replicaCount }}
+  selector:
+    matchLabels:
+      appname: {{ template "5gcore.name" . }}-amf
+      release: {{ $.Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        appname: {{ template "5gcore.name" . }}-amf
+        release: {{ $.Release.Name | quote }}
+    spec:
+#      securityContext:
+#        runAsUser: 1000
+#        runAsGroup: 3000
+#        fsGroup: 2000
+      ## init container to verify if volume mount has happened and modify the applicable IP addresses in the configuration files
+#      hostNetwork: true
+      initContainers:
+        - name: init-container-amf
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          imagePullPolicy: "{{ .Values.busybox.image.pullPolicy }}"
+
+          ##The IP 192.168.1.183 in config file needs to be substituted with the host IP on which amf is intended to be run. 172.27.58.19 is IP on host in the below example.
+          #command: ['sh', '-c', "sleep 2; cp /var/tmp/amfcfg.yaml /usr/local/etc/amf/; sed -i -e s/192.168.1.183/172.27.58.19/g /usr/local/etc/amf/amfcfg.yaml"]
+          ##Use below if using kubernetes CNI for the AMF
+          command: ['sh', '-c', "sleep 2; POD_IP=`hostname -i`; echo $POD_IP > /usr/local/etc/amf/license/pod_ip.txt; cp /var/tmp/amfcfg.yaml /usr/local/etc/amf/; sed -i -e s/192.168.1.183/$POD_IP/g /usr/local/etc/amf/amfcfg.yaml"]
+
+      #     resources:
+      #       {}
+          volumeMounts:
+            - name: varlog
+              mountPath: "/var/log"
+              readOnly: true
+            - name: usrlocaletcamflicense
+              mountPath: "/usr/local/etc/amf/license"
+            - name: etclocaltime
+              mountPath: "/etc/localtime"
+              readOnly: true
+            - name: amf-config-vol
+              mountPath: /var/tmp
+            - name: amf-cache
+              mountPath: /usr/local/etc/amf
+      containers:
+        - name: 5gcore-amf-container
+          # image: amf_image:1.1.3
+          {{- if .Values.amf.image.sha }}
+          image: "{{ .Values.amf.image.repository }}:{{ .Values.amf.image.tag }}@sha256:{{ .Values.amf.image.sha }}"
+          {{- else }}
+          image: "{{ .Values.amf.image.repository }}:{{ .Values.amf.image.tag }}"
+          {{- end }}
+          imagePullPolicy: "{{ .Values.amf.image.pullPolicy }}"
+          ports:
+            - containerPort: 38412
+#              hostPort: 38412
+#              protocol: SCTP
+              name: amf-ngap
+            - containerPort: 4100
+#              hostPort: 4100
+              protocol: TCP
+              name: amf-mml
+            - containerPort: 8080
+#              hostPort: 8080
+              protocol: TCP
+              name: amf-http2
+            - containerPort: 4957
+#              hostPort: 4957
+#              protocol: UDP
+              name: amf-snmp
+          volumeMounts:
+            - name: varlog
+              mountPath: "/var/log"
+#              readOnly: true
+            - name: usrlocaletcamflicense
+              mountPath: "/usr/local/etc/amf/license"
+            - name: etclocaltime
+              mountPath: "/etc/localtime"
+              readOnly: true
+            - name: amf-config-vol
+              mountPath: /var/tmp
+            - name: amf-cache
+              mountPath: /usr/local/etc/amf
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: usrlocaletcamflicense
+          hostPath:
+            path: /usr/local/etc/amf/license
+        - name: etclocaltime
+          hostPath:
+            path: /etc/localtime
+        - name: amf-config-vol
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: {{ template "5gcore.fullname" . }}-amf-cm-1
+        - name: amf-cache
+          emptyDir: {}
+      {{- with .Values.amf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- end }}

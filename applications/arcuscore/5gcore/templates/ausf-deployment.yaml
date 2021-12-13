@@ -1,0 +1,95 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.ausf.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "5gcore.fullname" . }}-ausf
+  labels:
+    app: {{ template "5gcore.name" . }}-ausf
+    {{- include "5gcore.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.ausf.replicaCount }}
+  selector:
+    matchLabels:
+      appname: {{ template "5gcore.name" . }}-ausf
+      release: {{ $.Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        appname: {{ template "5gcore.name" . }}-ausf
+        release: {{ $.Release.Name | quote }}
+    spec:
+      ## init container to verify if volume mount has happened and modify the applicable IP addresses in the configuration files
+      initContainers:
+        - name: init-container-ausf
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          imagePullPolicy: "{{ .Values.busybox.image.pullPolicy }}"
+          command: ['sh', '-c', "sleep 2; POD_IP=`hostname -i`; cp /var/tmp/5gc_sys.conf /usr/local/etc/ausf/; cp /var/tmp/ausf.key /usr/local/etc/ausf/; cp /var/tmp/ausf.pem /usr/local/etc/ausf/; cp /var/tmp/ausf_profile /usr/local/etc/ausf/; echo $POD_IP > /usr/local/etc/ausf/license/pod_ip.txt; sed -i -e s/127.0.0.10/$POD_IP/g /usr/local/etc/ausf/ausf_profile"]
+      #     resources:
+      #       {}
+          volumeMounts:
+            - name: usrlocaletcausflicense
+              mountPath: "/usr/local/etc/ausf/license"
+            - name: ausf-config-vol
+              mountPath: /var/tmp
+            - name: ausf-cache
+              mountPath: /usr/local/etc/ausf
+      containers:
+        - name: 5gcore-ausf-container
+          image: ausf:1.1.5
+          ports:
+            ## Ports definition if going with service
+            - containerPort: 4957
+#              protocol: UDP
+              name: ausf-snmp
+            - containerPort: 8088
+              protocol: TCP
+              name: ausf-http2
+          volumeMounts:
+            - name: sbin
+              mountPath: "/sbin"
+            - name: dev
+              mountPath: "/dev"
+            - name: varlog
+              mountPath: "/var/log"
+            - name: etclocaltime
+              mountPath: "/etc/localtime"
+              readOnly: true
+            - name: usrlocaletcausflicense
+              mountPath: "/usr/local/etc/ausf/license"
+            - name: ausf-config-vol
+              mountPath: /var/tmp
+            - name: ausf-cache
+              mountPath: /usr/local/etc/ausf
+
+      volumes:
+        - name: sbin
+          hostPath:
+            path: /sbin
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: usrlocaletcausflicense
+          hostPath:
+            path: /usr/local/etc/ausf/license
+        - name: etclocaltime
+          hostPath:
+            path: /etc/localtime
+        - name: ausf-config-vol
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: {{ template "5gcore.fullname" . }}-ausf-cm-1
+        - name: ausf-cache
+          emptyDir: {}
+
+      {{- with .Values.ausf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- end }}

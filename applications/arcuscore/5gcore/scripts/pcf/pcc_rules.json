@@ -1,0 +1,66 @@
+{
+	"__comment_1__": "SPDX-License-Identifier: Apache-2.0",
+	"__comment_2__": " Copyright (c) 2021 Blue Arcus Technologies, Inc",
+
+	"pccRules":	[{
+			"ruleId":	"internet",
+			"activate":	1,
+			"var5qi":	9,
+			"precedence":	255,
+			"flowUsage":	0,
+			"flowDesc":	"permit out ip from any to assigned",
+			"flowDirection":	2,
+			"maxbrDl":	"5Gbps",
+			"maxbrUl":	"1Gbps",
+			"gbrDl":	"2Gbps",
+			"gbrUl":	"100Mbps",
+			"arpPriorityLevel":	1,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	1
+		}, {
+			"ruleId":	"ims_sig",
+			"activate":	1,
+			"var5qi":	5,
+			"precedence":	80,
+			"flowUsage":	1,
+			"flowDesc":	"permit out ip from any to assigned",
+			"flowDirection":	2,
+			"maxbrDl":	"500Mbps",
+			"maxbrUl":	"200Mbps",
+			"gbrDl":	"200Mbps",
+			"gbrUl":	"100Mbps",
+			"arpPriorityLevel":	10,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	0
+		}, {
+			"ruleId":	"web",
+			"activate":	0,
+			"var5qi":	6,
+			"precedence":	85,
+			"flowUsage":	0,
+			"flowDesc":	"permit out 6 from 192.168.1.205 80 to assigned",
+			"flowDirection":	2,
+			"maxbrDl":	"50 Mbps",
+			"maxbrUl":	"30 Mbps",
+			"gbrDl":	"50 Mbps",
+			"gbrUl":	"30 Mbps",
+			"arpPriorityLevel":	10,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	0
+		}, {
+			"ruleId":	"ftp",
+			"activate":	0,
+			"var5qi":	8,
+			"precedence":	80,
+			"flowUsage":	0,
+			"flowDesc":	"permit out 6 from any 20-21 to assigned",
+			"flowDirection":	2,
+			"maxbrDl":	"50 Mbps",
+			"maxbrUl":	"30 Mbps",
+			"gbrDl":	"50 Mbps",
+			"gbrUl":	"30 Mbps",
+			"arpPriorityLevel":	10,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	0
+		}]
+}

@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.ausf.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "5gcore.fullname" . }}-ausf-cm-1
+  labels:
+    app: {{ template "5gcore.name" . }}-ausf
+    {{- include "5gcore.labels" . | nindent 4 }}
+data:
+  ausf_profile: |-
+{{ .Files.Get "scripts/ausf/ausf_profile" | indent 4 }}
+  5gc_sys.conf: |-
+{{ .Files.Get "scripts/ausf/5gc_sys.conf" | indent 4 }}
+  ausf.key: |-
+{{ .Files.Get "scripts/ausf/ausf.key" | indent 4 }}
+  ausf.pem: |-
+{{ .Files.Get "scripts/ausf/ausf.pem" | indent 4 }}
+{{- end }}
