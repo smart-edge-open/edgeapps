@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sgx-openvino-ssd
+spec:
+  template:
+    spec:
+      containers:
+      - name: sgx-openvino-ssd
+        imagePullPolicy: IfNotPresent
+        image: gsc-openvino-ssd:latest
+        command: ["/bin/bash", "/apploader.sh", "street.jpg"]
+        volumeMounts:
+        - mountPath: /home/openvino/output
+          name: outdir
+        resources:
+          limits:
+            sgx.intel.com/epc: "16Gi"
+
+      restartPolicy: Never
+      volumes:
+      - name: outdir
+        hostPath:
+          path: /home/smartedge-open/output
+          # Ensures the file directory is created.
+          type: DirectoryOrCreate
+  backoffLimit: 4
