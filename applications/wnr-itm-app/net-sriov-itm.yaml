@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2019-2022 Intel Corporation
+ 
+# NetworkAttachmentDefinition define
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: intel.com/intel_sriov_10G_VEDIOSTREAM
+  name: sriov-net-itm
+  namespace: smartedge-apps
+spec:
+  config: '{ "type": "sriov", "ipam": { "type": "host-local", "subnet": "6.6.6.0/24",    "rangeStart": "6.6.6.30", "rangeEnd": "6.6.6.50", "routes": [{ "dst":    "0.0.0.0/0" }], "gateway": "6.6.6.1" } }'
