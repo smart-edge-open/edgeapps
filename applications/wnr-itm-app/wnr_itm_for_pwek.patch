@@ -1,0 +1,225 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Intel Corporation
+
+diff -uprN a/WNR_ITM/deploy/grafana/templates/deployment.yaml b/WNR_ITM/deploy/grafana/templates/deployment.yaml
+--- a/WNR_ITM/deploy/grafana/templates/deployment.yaml	2022-01-07 10:14:57.617824996 +0800
++++ b/WNR_ITM/deploy/grafana/templates/deployment.yaml	2022-01-05 13:49:18.868125535 +0800
+@@ -19,6 +19,8 @@ spec:
+       labels:
+         app.kubernetes.io/name: grafana
+         app.kubernetes.io/instance: grafana-abcxzy
++      annotations:
++        k8s.v1.cni.cncf.io/networks: sriov-net-itm
+     spec:
+       containers:
+       - name: {{ .Chart.Name }}
+@@ -28,9 +30,11 @@ spec:
+           limits:
+             cpu: {{ .Values.cpu }}
+             memory: {{ .Values.memory }}
++            intel.com/intel_sriov_10G_VEDIOSTREAM: '1'
+           requests:
+             cpu: {{ .Values.cpu }}
+             memory: {{ .Values.memory }}
++            intel.com/intel_sriov_10G_VEDIOSTREAM: '1'
+         env:
+           - name: GF_AUTH_BASIC_ENABLED
+             value: "true"
+@@ -69,3 +73,5 @@ spec:
+       - configMap:
+           name: grafana-config
+         name: grafana-config
++      nodeSelector:
++        node-role.kubernetes.io/worker: 'worker'
+diff -uprN a/WNR_ITM/deploy/grafana/values.yaml b/WNR_ITM/deploy/grafana/values.yaml
+--- a/WNR_ITM/deploy/grafana/values.yaml	2022-01-07 10:14:57.617824996 +0800
++++ b/WNR_ITM/deploy/grafana/values.yaml	2022-01-05 13:51:03.684260536 +0800
+@@ -3,7 +3,7 @@
+ # Declare variables to be passed into your templates.
+ 
+ replicaCount: 1
+-namespace: monitoring
++namespace: smartedge-apps
+ image:
+   repository: grafana
+   pullPolicy: IfNotPresent
+@@ -25,7 +25,7 @@ podSecurityContext: {}
+ 
+ 
+ cpu: 100m
+-memory: 100Mi
++memory: 250Mi
+ securityContext: {}
+   # capabilities:
+   #   drop:
+diff -uprN a/WNR_ITM/deploy/influxdb/templates/deployment.yaml b/WNR_ITM/deploy/influxdb/templates/deployment.yaml
+--- a/WNR_ITM/deploy/influxdb/templates/deployment.yaml	2022-01-07 10:14:57.617824996 +0800
++++ b/WNR_ITM/deploy/influxdb/templates/deployment.yaml	2022-01-05 13:49:18.868125535 +0800
+@@ -28,7 +28,13 @@ spec:
+           volumeMounts:
+           - mountPath: /var/lib/influxdb
+             name: var-lib-influxdb
++      tolerations:
++      - key: "node-role.kubernetes.io/master"
++        operator: "Exists"
++        effect: "NoSchedule"
+       volumes:
+       - name: var-lib-influxdb
+         persistentVolumeClaim:
+           claimName: influxdb
++      nodeSelector:
++        node-role.kubernetes.io/master: ''
+diff -uprN a/WNR_ITM/deploy/influxdb/values.yaml b/WNR_ITM/deploy/influxdb/values.yaml
+--- a/WNR_ITM/deploy/influxdb/values.yaml	2022-01-07 10:14:57.617824996 +0800
++++ b/WNR_ITM/deploy/influxdb/values.yaml	2022-01-05 13:51:03.684260536 +0800
+@@ -4,7 +4,7 @@
+ 
+ replicaCount: 1
+ 
+-namespace: monitoring
++namespace: smartedge-apps
+ image:
+   repository: influxdb
+   pullPolicy: IfNotPresent
+diff -uprN a/WNR_ITM/deploy/itm/templates/deployment.yaml b/WNR_ITM/deploy/itm/templates/deployment.yaml
+--- a/WNR_ITM/deploy/itm/templates/deployment.yaml	2022-01-07 10:14:57.617824996 +0800
++++ b/WNR_ITM/deploy/itm/templates/deployment.yaml	2022-01-05 13:51:03.684260536 +0800
+@@ -4,7 +4,7 @@ metadata:
+   name: {{ include "itm.fullname" . }}
+   labels:
+     {{- include "itm.labels" . | nindent 4 }}
+-  namespace: default
++  namespace: smartedge-apps
+ spec:
+   replicas: {{ .Values.replicaCount }}
+   selector:
+@@ -16,7 +16,7 @@ spec:
+         {{- include "itm.selectorLabels" . | nindent 8 }}
+     spec:
+       containers:
+-      - image: "{{ .Values.hostIP }}:30003/intel/{{ .Values.image.repository }}:{{ .Values.image.Version }}"
++      - image: "{{ .Values.image.repository }}:{{ .Values.image.Version }}"
+         imagePullPolicy: {{ .Values.image.pullPolicy }}
+         name: {{ .Chart.Name }}
+         env:
+@@ -28,3 +28,11 @@ spec:
+             value: "{{ .Values.influxdbPort }}"
+           - name: GRAFANA_PORT
+             value: "{{ .Values.grafanaPort }}"
++          - name: SRIOV_IP
++            value: "{{ .Values.sriovIP }}"
++      tolerations:
++      - key: "node-role.kubernetes.io/master"
++        operator: "Exists"
++        effect: "NoSchedule"
++      nodeSelector:
++        node-role.kubernetes.io/master: ''
+diff -uprN a/WNR_ITM/deploy/itm/templates/service.yaml b/WNR_ITM/deploy/itm/templates/service.yaml
+--- a/WNR_ITM/deploy/itm/templates/service.yaml	2022-01-07 10:14:57.617824996 +0800
++++ b/WNR_ITM/deploy/itm/templates/service.yaml	2022-01-06 17:04:21.257228348 +0800
+@@ -2,7 +2,7 @@ apiVersion: v1
+ kind: Service
+ metadata:
+   name: {{ include "itm.fullname" . }}
+-  namespace: default
++  namespace: smartedge-apps
+   labels:
+     {{- include "itm.labels" . | nindent 4 }}
+ spec:
+diff -uprN a/WNR_ITM/deploy/itm/values.yaml b/WNR_ITM/deploy/itm/values.yaml
+--- a/WNR_ITM/deploy/itm/values.yaml	2022-01-07 10:14:57.617824996 +0800
++++ b/WNR_ITM/deploy/itm/values.yaml	2022-01-05 13:49:18.868125535 +0800
+@@ -14,6 +14,7 @@ nameOverride: ""
+ fullnameOverride: ""
+ 
+ hostIP: ""
++sriovIP: ""
+ serverIP: "0.0.0.0"
+ grafanaPort: "30800"
+ influxdbPort: "30700"
+diff -uprN a/WNR_ITM/grafana/Dockerfile b/WNR_ITM/grafana/Dockerfile
+--- a/WNR_ITM/grafana/Dockerfile	2022-01-07 10:14:57.617824996 +0800
++++ b/WNR_ITM/grafana/Dockerfile	2022-01-05 13:51:24.679456604 +0800
+@@ -13,3 +13,8 @@
+ # Install grafana
+ FROM grafana/grafana:7.3.4-ubuntu
+ RUN grafana-cli plugins install ryantxu-ajax-panel
++USER root
++RUN apt update && apt install -y iproute2 && apt install -y net-tools
++RUN apt install -y nginx && apt install -y vim
++RUN sed -i 's/^[^#].*root*/#&/g' /etc/nginx/sites-available/default
++RUN sed -i 's/80/30301/' /etc/nginx/sites-available/default
+diff -uprN a/WNR_ITM/ITM/app/server.py b/WNR_ITM/ITM/app/server.py
+--- a/WNR_ITM/ITM/app/server.py	2022-01-07 10:14:57.613820618 +0800
++++ b/WNR_ITM/ITM/app/server.py	2022-01-05 13:49:18.868125535 +0800
+@@ -34,6 +34,7 @@ log = logging.getLogger(__name__)
+ 
+ LOCAL_IP = os.getenv('HOST_IP')
+ SERVER_HOST = os.getenv('LOCAL_HOST')
++SRIOV_IP = os.getenv("SRIOV_IP")
+ GRAFANA_HOST = LOCAL_IP
+ GRAFANA_PORT = os.getenv('GRAFANA_PORT')
+ INFLUXDB_HOST = LOCAL_IP
+@@ -56,12 +57,13 @@ class GrafanaConnect:
+     """
+     Class to communicate with grafana server
+     """
+-    def __init__(self, grafana_url, map_server_url, influxdb_url, user, password):
++    def __init__(self, grafana_url, map_server_url, mapui_server_url, influxdb_url, user, password):
+         """
+         Init function
+         """
+         self.grafana_url = grafana_url
+         self.map_server_url = map_server_url
++        self.mapui_server_url = mapui_server_url
+         self.influxdb_url = influxdb_url
+         self.datasource_url = os.path.join(self.grafana_url, 'api/datasources')
+         self.dashboard_url = os.path.join(self.grafana_url, 'api/dashboards/db')
+@@ -126,9 +128,9 @@ class GrafanaConnect:
+         Add/Update dashboard
+         """
+         if url:
+-            json_data['dashboard']['panels'][1]['url'] = self.map_server_url + url
++            json_data['dashboard']['panels'][1]['url'] = self.mapui_server_url + url
+         else:
+-            json_data['dashboard']['panels'][1]['url'] = self.map_server_url + '/dashboard'
++            json_data['dashboard']['panels'][1]['url'] = self.mapui_server_url + '/dashboard'
+         r = self._post(self.dashboard_url, json_data=json_data)
+         try:
+             res = r.json()
+@@ -148,7 +150,7 @@ class GrafanaConnect:
+             st = re.sub("channel0", f'channel{i}', str_data)
+             final_data = json.loads(st)
+             final_data['dashboard']['title'] = f'ITM - {camera_conf["cameras"][i]["address"]}'
+-            final_data['dashboard']['panels'][2]['url'] = self.map_server_url + f'/camera/{i}'
++            final_data['dashboard']['panels'][2]['url'] = self.mapui_server_url + f'/camera/{i}'
+             final_data['dashboard']['panels'][2]['method'] = "iframe"
+             res = self.add_dashboard(final_data, f'/camera/{i}')
+             url_data[i] = self.grafana_url + res['url']
+@@ -345,7 +347,7 @@ def init_all(over_write=False):
+     if not over_write or conf_data == CONF_DATA:
+         return
+     NUM_CH, CONF_DATA = num_ch, conf_data
+-    grafana_connect = GrafanaConnect(GRAFANA_URL, MAP_SERVER_URL, INFLUXDB_URL, 'admin', 'admin')
++    grafana_connect = GrafanaConnect(GRAFANA_URL, MAP_SERVER_URL, MAPUI_SERVER_URL, INFLUXDB_URL, 'admin', 'admin')
+     URL_DATA = grafana_connect.init_grafana_server(CONF_DATA, 'grafana_templates/datasource_template.json',
+                                                    'grafana_templates/consolidated_dashboard_template.json',
+                                                    'grafana_templates/channel_dashboard_template.json')
+@@ -377,7 +379,7 @@ def main():
+     """
+     Main Function
+     """
+-    global GRAFANA_URL, MAP_SERVER_URL, INFLUXDB_URL, CONFIG_PATH, Q_DATA, RUNNING, CURRENT_FRAMES
++    global GRAFANA_URL, MAP_SERVER_URL, MAPUI_SERVER_URL, INFLUXDB_URL, CONFIG_PATH, Q_DATA, RUNNING, CURRENT_FRAMES
+     parser = ArgumentParser()
+     parser.add_argument("-c", "--config_path",
+                         help="Path to camera config file",
+@@ -451,6 +453,8 @@ def main():
+     INFLUXDB_URL = f'http://{args.influxdb_host}:{args.influxdb_port}'
+     server_port = 30300
+     MAP_SERVER_URL = f'http://{LOCAL_IP}:{server_port}'
++    map_port = 30301
++    MAPUI_SERVER_URL = f'http://{SRIOV_IP}:{map_port}'
+     CONFIG_PATH = args.config_path
+ 
+     init_all(over_write=True)
