@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "curamedon-oauth.fullname" . }}-test-connection"
+  labels:
+    {{- include "curamedon-oauth.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "curamedon-oauth.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

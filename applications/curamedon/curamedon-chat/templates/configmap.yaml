@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-configs" (include "curamedon-chat.fullname" .) }}
+data:
+  APP_PORT: "80"
+  APP_HOST: {{ .Values.app.configs.appHost | quote }}
+  INTERNAL_API_HOST: {{ .Values.app.configs.internalApiHost | quote }}
+  METRICS_EXPORTER_PORT: {{ .Values.app.configs.metricsExporterPort | quote }}
+  APP_SECURE: "0"
+  NODE_ENV: {{ .Values.app.configs.appEnv | quote }}
+  JWT_PUBLIC_KEY: /var/www/html/secrets/jwt/public.pem
+  JWT_TTL: {{ .Values.app.configs.jwtTtl | quote }}

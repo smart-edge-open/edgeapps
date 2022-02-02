@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ printf "%s-renew-calendar-alerts" (include "curamedon-api.fullname" .) }}
+  labels:
+    app.kubernetes.io/name: {{ printf "%s-renew-calendar-alerts" (include "curamedon-api.name" .) }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  schedule: "40 * * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 120
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          containers:
+            - name: renew-calendar-alerts-subscription
+              image: "{{ .Values.php.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: [ "/bin/sh", "-c" ]
+              args: [ "docker-entrypoint; php -d memory_limit=256M bin/console app:external-calendar:renew-alert-subscription" ]
+              env:
+                - name: MESSENGER_ASYNC_TRANSPORT_DSN
+                  value: {{ printf "redis://%s/messages" (include "curamedon-api.redisHost" .)}}
+                - name: ELASTIC_SEARCH_HOST
+                  value: {{ include "curamedon-api.elasticsearchHost" . }}
+                - name: DATABASE_URL
+                  value: {{ printf "mysql://%s:%s@%s/%s" .Values.app.secrets.dbUser .Values.app.secrets.dbPassword (include "curamedon-api.mysqlHost" .) .Values.app.secrets.dbName }}
+              envFrom:
+                - secretRef:
+                    name: {{ printf "%s-secrets" (include "curamedon-api.fullname" .) }}
+                - configMapRef:
+                    name: {{ printf "%s-configs" (include "curamedon-api.fullname" .) }}
+          restartPolicy: Never

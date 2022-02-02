@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "curamedon-oauth.fullname" . }}
+  labels:
+    {{- include "curamedon-oauth.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "curamedon-oauth.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "curamedon-oauth.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "curamedon-oauth.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: "php"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.php.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DATABASE_URL
+              value: {{ printf "mysql://%s:%s@%s/%s" .Values.app.secrets.dbUser .Values.app.secrets.dbPassword (include "curamedon-oauth.mysqlHost" .) .Values.app.secrets.dbName }}
+          envFrom:
+            - secretRef:
+                name: {{ printf "%s-secrets" (include "curamedon-oauth.fullname" .) }}
+            - configMapRef:
+                name: {{ printf "%s-configs" (include "curamedon-oauth.fullname" .) }}
+          resources:
+            {{- toYaml .Values.php.resources | nindent 12 }}
+        - name: "nginx"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: localhost
+            initialDelaySeconds: 10
+            failureThreshold: 5
+          resources:
+            {{- toYaml .Values.php.resources | nindent 12 }}
+        {{- if .Values.metrics.enabled }}
+        - name: "metrics"
+          image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PHP_FPM_SCRAPE_URI
+              value: "tcp://localhost:9000/status"
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

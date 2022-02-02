@@ -1,0 +1,190 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+# Default values for curamedon_api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+podAnnotations: {}
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+imagePullSecrets: []
+
+nameOverride: ""
+
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Image settings related to both php and nginx images
+image:
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "2.1.1"
+
+# php specific image settings
+php:
+  image:
+    # <harbor ip>:30003/telemedicine/uploads_php
+    repository: ""
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: "0.4"
+    #   memory: "400M"
+    # requests:
+    #   cpu: "0.4"
+    #   memory: "400M"
+
+# nginx specific image settings
+nginx:
+  image:
+    # <harbor ip>:30003/telemedicine/uploads_nginx
+    repository: ""
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: "0.2"
+    #   memory: 128M
+    # requests:
+    #   cpu: "0.2"
+    #   memory: 128M
+antivirus:
+  enabled: false
+  image:
+    repository: mailu/clamav
+    tag: 1.9
+    pullPolicy: IfNotPresent
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: '2'
+    #   memory: 2560M
+    # requests:
+    #   cpu: '2'
+    #   memory: 2560M
+
+metrics:
+  enabled: false
+  image:
+    repository: hipages/php-fpm_exporter
+    tag: "2"
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  tls:
+    - secretName: telemedicine-curamedon-uploads-prod-tls-cert
+      # uploads host name should be listed here
+      # - uploads.your.domain
+      hosts: []
+  # should contain configuration for each domain like below
+  # - host: "uploads.your.domain"
+  #   paths:
+  #     - path: "/"
+  #       pathType: Prefix
+  hosts: []
+
+persistence:
+  ## @param persistence.enabled Enable persistence replicas using a `PersistentVolumeClaim`. If false, use emptyDir
+  ##
+  enabled: true
+  ## @param persistence.existingClaim Name of an existing `PersistentVolumeClaim` for replicas
+  ## NOTE: When it's set the rest of persistence parameters are ignored
+  ##
+  existingClaim: ""
+  ## @param persistence.storageClass persistent volume storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  storageClass: ""
+  ## @param persistence.annotations [object] persistent volume claim annotations
+  ##
+  annotations: {}
+  ## @param persistence.accessModes persistent volume access Modes
+  ##
+  accessModes:
+    - ReadWriteOnce
+  ## @param persistence.size persistent volume size
+  ##
+  size: 8Gi
+  ## @param persistence.selector [object] Selector to match an existing Persistent Volume
+  ## selector:
+  ##   matchLabels:
+  ##     app: my-app
+  ##
+  selector: {}
+
+# Application specific settings
+app:
+  configs:
+    appEnv: "prod"
+    trustedHosts: "^.+$$"
+    corsAllowOrigin: "^.+$$"
+    internalApiHost: ""
+    storageClass: "App\Service\Storage\LocalFileStorage"
+    scanForViruses: "0"
+    jwtTtl: "300"
+    environmentName: "openness"
+    s3Endpoint: ""
+    s3PrivateBucket: ""
+    s3PublicBucket: ""
+
+  secrets:
+    appSecret: ""
+    jwtPassphrase: ""
+    jwtPublicKeyContent: ""
+    jwtPrivateKeyContent: ""
+    internalApiBasicAuth: ""
+    telegramLogApiKey: ""
+    telegramLogChannel: ""
+    sentryDsn: ""
+    s3AccessKey: ""
+    s3SecretKey: ""
+
+

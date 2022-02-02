@@ -1,0 +1,255 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+# Default values for curamedon-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 90
+  targetMemoryUtilizationPercentage: 80
+
+podAnnotations: {}
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+# runAsUser: 1000
+
+# Image settings related to both php and nginx images
+image:
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "2.1.1"
+
+imagePullSecrets: []
+
+nameOverride: ""
+
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+consumer:
+  replicaCount: 1
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+  # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+  # runAsUser: 1000
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+# php specific image settings
+php:
+  image:
+    # <harbor ip>:30003/telemedicine/api_php
+    repository: ""
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: "1.2"
+    #   memory: 800M
+    # requests:
+    #   cpu: "1.2"
+    #   memory: 800M
+
+# nginx specific image settings
+nginx:
+  image:
+    # <harbor ip>:30003/telemedicine/api_nginx
+    repository: ""
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: "0.1"
+    #   memory: 64M
+    # requests:
+    #   cpu: "0.1"
+    #   memory: 64M
+
+metrics:
+  enabled: false
+  image:
+    repository: hipages/php-fpm_exporter
+    tag: "2"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  tls:
+    - secretName: telemedicine-curamedon-api-prod-tls-cert
+      # should contain a list of all hosts like below
+      #- customers-api.your.domain
+      #- professionals-api.your.domain
+      #- nurses-api.your.domain
+      #- managers-api.your.domain
+      #- assistants-api.your.domain
+      #- internal-api.your.domain
+      #- webhooks.your.domain
+      hosts: []
+  # should contain configuration for each domain like below
+  #- host: "customers-api.your.domain"
+  #  paths:
+  #    - path: "/"
+  #      pathType: Prefix
+  #- host: "professionals-api.your.domain"
+  #  paths:
+  #    - path: "/"
+  #      pathType: Prefix
+  #- host: "nurses-api.your.domain"
+  #  paths:
+  #    - path: "/"
+  #      pathType: Prefix
+  #- host: "managers-api.your.domain"
+  #  paths:
+  #    - path: "/"
+  #      pathType: Prefix
+  #- host: "assistants-api.your.domain"
+  #  paths:
+  #    - path: "/"
+  #      pathType: Prefix
+  #- host: "internal-api.your.domain"
+  #  paths:
+  #    - path: "/"
+  #      pathType: Prefix
+  #- host: "webhooks.your.domain"
+  #  paths:
+  #    - path: "/"
+  #      pathType: Prefix
+  hosts: []
+
+mysqlServiceName: "curamedon-mysql"
+
+redisServiceName: "curamedon-redis"
+
+elasticsearchServiceName: "curamedon-elasticsearch"
+
+# Application specific settings
+app:
+  configs:
+    appEnv: "prod"
+    appName: "Curamedon API"
+    trustedHosts: "^.+$$"
+    corsAllowOrigin: "^.+$$"
+    mercurePubSubUrl: ""
+    enableSmsTestMode: "1"
+    smsProvider: "test_provider"
+    customerApiHost: ""
+    professionalApiHost: ""
+    caregiverApiHost: ""
+    managerApiHost: ""
+    assistantApiHost: ""
+    internalApiHost: ""
+    webHooksHost: ""
+    uploadsServiceHost: ""
+    publicAssetsHost: ""
+    videoCallHost: "https://meet.econsult.lu"
+    videoCallWebsocketHost: "meet-backend.econsult.lu"
+    environmentName: "openness"
+    jwtTtl: "300"
+    jwtRefreshTtl: "1800"
+    appointmentRequestTtl: "86400"
+    supportEmail: ""
+    noReplyEmail: ""
+    salesEmail: ""
+    enableApiDocumentation: "1"
+    enable2Fa: "0"
+    firebaseDomain: ""
+    availabilityBeforeConsultationStart: "10"
+    prescriptionEndpoint: ""
+    prescriptionMicroserviceSource: ""
+    externalCalendarManualRefreshAwaitanceSeconds: "60"
+    enableDatabaseEncryption: "1"
+    emailActionButtonBackgroundColour: "0075FF"
+  secrets:
+    appSecret: ""
+    dbUser: ""
+    dbPassword: ""
+    dbName: "curamedon"
+    databaseEncryptionKey: ""
+    mailerUrl: ""
+    jwtPassphrase: ""
+    jwtPublicKeyContent: ""
+    jwtPrivateKeyContent: ""
+    mercureJwtKey: ""
+    ringRingApiKey: ""
+    luxembourgRingRingApiKey: ""
+    gcoreMeetUserPassword: ""
+    backooficeAppUserPassword: ""
+    chatAppUserPassword: ""
+    uploadsAppUserPassword: ""
+    telegramLogApiKey: ""
+    telegramLogChannel: ""
+    oauth2PrivateKeyPassphrase: ""
+    oauth2PublicKeyContent: ""
+    oauth2PrivateKeyContent: ""
+    oauth2EncryptionKey: ""
+    googleApiKey: ""
+    googleApiClientId: ""
+    googleApiClientSecret: ""
+    microsoftClientIdProfessional: ""
+    microsoftClientSecretProfessional: ""
+    microsoftClientIdNurse: ""
+    microsoftClientSecretNurse: ""
+    sentryDsn: ""
+    googleMapsGeocodeApiKey: ""
+    firebaseApiKey: ""
