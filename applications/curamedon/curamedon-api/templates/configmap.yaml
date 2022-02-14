@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-configs" (include "curamedon-api.fullname" .) }}
+data:
+  APP_ENV: {{ .Values.app.configs.appEnv | quote }}
+  APP_NAME: {{ .Values.app.configs.appName | quote }}
+  TRUSTED_HOSTS: {{ .Values.app.configs.trustedHosts | quote }}
+  TRUSTED_PROXIES: "127.0.0.1,REMOTE_ADDR"
+  CORS_ALLOW_ORIGIN: {{ .Values.app.configs.corsAllowOrigin | quote }}
+  MERCURE_SUBSCRIBE_URL: {{ .Values.app.configs.mercurePubSubUrl | quote }}
+  MERCURE_PUBLISH_URL: {{ .Values.app.configs.mercurePubSubUrl | quote }}
+  ENABLE_SMS_TEST_MODE: {{ .Values.app.configs.enableSmsTestMode | quote }}
+  SMS_PROVIDER: {{ .Values.app.configs.smsProvider | quote }}
+  CUSTOMERS_API_HOST: {{ .Values.app.configs.customerApiHost | quote }}
+  PROFESSIONALS_API_HOST: {{ .Values.app.configs.professionalApiHost | quote }}
+  CAREGIVERS_API_HOST: {{ .Values.app.configs.caregiverApiHost | quote }}
+  MANAGERS_API_HOST: {{ .Values.app.configs.managerApiHost | quote }}
+  ASSISTANTS_API_HOST: {{ .Values.app.configs.assistantApiHost | quote }}
+  INTERNAL_API_HOST: {{ .Values.app.configs.internalApiHost | quote }}
+  WEB_HOOKS_HOST: {{ .Values.app.configs.webHooksHost | quote }}
+  UPLOADS_SERVICE_HOST: {{ .Values.app.configs.uploadsServiceHost | quote }}
+  INTERNAL_UPLOADS_SERVICE_HOST: {{ .Values.app.configs.uploadsServiceHost | quote }}
+  PUBLIC_ASSETS_HOST: {{ .Values.app.configs.publicAssetsHost | quote }}
+  PUBLIC_UPLOADS_CDN_HOST: ""
+  VIDEO_CALL_HOST: {{ .Values.app.configs.videoCallHost | quote }}
+  VIDEO_CALL_WEBSOCKET_HOST: {{ .Values.app.configs.videoCallWebsocketHost | quote }}
+  ENVIRONMENT_NAME: {{ .Values.app.configs.environmentName | quote }}
+  JWT_TTL: {{ .Values.app.configs.jwtTtl | quote }}
+  JWT_REFRESH_TTL: {{ .Values.app.configs.jwtRefreshTtl | quote }}
+  APPOINTMENT_REQUEST_TTL: {{ .Values.app.configs.appointmentRequestTtl | quote }}
+  SUPPORT_EMAIL: {{ .Values.app.configs.supportEmail | quote }}
+  NO_REPLY_EMAIL: {{ .Values.app.configs.noReplyEmail | quote }}
+  SALES_EMAIL: {{ .Values.app.configs.salesEmail | quote }}
+  ENABLE_API_DOCUMENTATION: {{ .Values.app.configs.enableApiDocumentation | quote }}
+  ENABLE_TWO_FACTOR_AUTH: {{ .Values.app.configs.enable2Fa | quote }}
+  FIREBASE_DOMAIN: {{ .Values.app.configs.firebaseDomain | quote }}
+  AVAILABILITY_BEFORE_CONSULTATION_START_MINUTES: {{ .Values.app.configs.availabilityBeforeConsultationStart | quote }}
+  ESANTE_PRESCRIPTION_MICROSERVICE_ENDPOINT: {{ .Values.app.configs.prescriptionEndpoint | quote }}
+  ESANTE_PRESCRIPTION_MICROSERVICE_SOURCE: {{ .Values.app.configs.prescriptionMicroserviceSource | quote }}
+  EXTERNAL_CALENDAR_MANUAL_REFRESH_AWAITANCE_SECONDS: {{ .Values.app.configs.externalCalendarManualRefreshAwaitanceSeconds | quote }}
+  ENABLE_DATABASE_ENCRYPTION: {{ .Values.app.configs.enableDatabaseEncryption | quote }}
+  VIDEO_CALL_PATH: /call
+  EMAIL_ACTION_BACKGROUND_COLOUR: {{ .Values.app.configs.emailActionButtonBackgroundColour | quote }}
+  JWT_SECRET_KEY: /srv/api/config/jwt/private.pem
+  JWT_PUBLIC_KEY: /srv/api/config/jwt/public.pem
+  OAUTH2_PRIVATE_KEY: /srv/api/config/oauth2/private.key
+  OAUTH2_PUBLIC_KEY: /srv/api/config/oauth2/public.key

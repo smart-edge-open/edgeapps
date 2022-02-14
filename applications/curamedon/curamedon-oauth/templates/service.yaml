@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "curamedon-oauth.fullname" . }}
+  labels:
+    {{- include "curamedon-oauth.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "curamedon-oauth.selectorLabels" . | nindent 4 }}

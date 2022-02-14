@@ -1,0 +1,65 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "%s-consumer" (include "curamedon-api.fullname" .) }}
+  labels:
+    app.kubernetes.io/name: {{ printf "%s-consumer" (include "curamedon-api.name" .) }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.consumer.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ printf "%s-consumer" (include "curamedon-api.name" .) }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.consumer.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ printf "%s-consumer" (include "curamedon-api.name" .) }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "curamedon-api.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.consumer.podSecurityContext | nindent 8 }}
+      containers:
+        - name: "queue-consumer"
+          securityContext:
+            {{- toYaml .Values.consumer.securityContext | nindent 12 }}
+          image: "{{ .Values.php.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MESSENGER_ASYNC_TRANSPORT_DSN
+              value: {{ printf "redis://%s/messages" (include "curamedon-api.redisHost" .)}}
+            - name: ELASTIC_SEARCH_HOST
+              value: {{ include "curamedon-api.elasticsearchHost" . }}
+            - name: DATABASE_URL
+              value: {{ printf "mysql://%s:%s@%s/%s" .Values.app.secrets.dbUser .Values.app.secrets.dbPassword (include "curamedon-api.mysqlHost" .) .Values.app.secrets.dbName }}
+          envFrom:
+            - secretRef:
+                name: {{ printf "%s-secrets" (include "curamedon-api.fullname" .) }}
+            - configMapRef:
+                name: {{ printf "%s-configs" (include "curamedon-api.fullname" .) }}
+          resources:
+            {{- toYaml .Values.consumer.resources | nindent 12 }}
+      {{- with .Values.consumer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.consumer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.consumer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

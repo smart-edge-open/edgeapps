@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+# Default values for curamedon-chat.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  # <harbor ip>:30003/telemedicine/chat
+  repository: ""
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "2.1.1"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  tls:
+    - secretName: telemedicine-curamedon-chat-prod-tls-cert
+      # Chat host name should be listed here
+      # - chat.your.domain
+      hosts: []
+  # should contain configuration for each domain like below
+  # - host: "chat.your.domain"
+  #   paths:
+  #     - path: "/"
+  #       pathType: Prefix
+  hosts: []
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: "0.2"
+  #   memory: 256M
+  # requests:
+  #   cpu: "0.2"
+  #   memory: 256M
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Application specific settings
+app:
+  configs:
+    appEnv: "prod"
+    appHost: "https://chat.openness.curamedon.com"
+    internalApiHost: "https://internal-api.openness.curamedon.com"
+    metricsExporterPort: "9253"
+    jwtTtl: "300"
+  secrets:
+    internalApiBasicAuth: "Y2hhdF9hcHA6RTVIQzM2OVJlRWVGSw=="
+    jwtPublicKeyContent: "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUE0azlXQVY5OGtNbDdVTkhvRW1aUgpkRWw3QjEvU0IwOHRYK2g3ZlVkTVN1TjFORVVVRHZWMGxndG5aTy81alNGdXl1L0VMc1FadGx2dFJjUnJpREhjCklvamhTTVFXbzQyYXRCUVZmZzFOc2M1QXd1dThHSVNmR3JSMWZVeDRGRG5kNUZHTE5TZEF3Z1IrNWZTL1VzZ3kKQkI4Q3h3ME5OVFBoV2ZsUVNOTHh4RmE2QkJ0SEZxVDNlTjhHR3RTcm1vUFcxeHI5K21rK09zS0pxMzdnb3FnSwoycFJHWjNFaTh5a0Vpb1A4dWtCK1NPOXJ0QWU0aXpqaVl3OGoxWTRGajZ1c2w5MzNjVlJNcnNubHRYNmhkaWFPCnlQTTNVNGVndElWbEtRenpWcHNBOWtWbUYrSTZmeVNnelJkR1M5Y1JIT3NPaDJLdmlVUTRteGNqOTF5djl0cm0KVklzQU1sYUlFd1hrZERHaDVRMVF5SGp6NWxvemE2cStjUWdEdENINGFDTzV5cVpNa1paUVNya2J1MG1XYkZXZQp0RVFBQ2tVeHIvMzV4WlgrdGxjWXlBYS9OckxJRS95NVgyaThGZTFoSGpYS1h5cVFnRFpNaU5XblVkalBXYkRNCkZTL3plRy9EWG9pSEppTjFkT3djdzhFSjMwczZsak1ldkxqYTVTL0YxNEZVUlEvUVR1VTZzbmt5ZkREcW96SGQKeWVUMFZwdEJxSnZyYzIyb3FZOURyeU1yM29oTGJvcGl2SzFOUDNFK1hYSUNlaGxqY3ppRUZncWhnRXZtdUQxawpNNmFLY1BjdHFIdG1aYWFZOEc4Q0Q4V2QwNGtGcEMzdnJ1T0xUNlBGSk0zZ2ZyMW1hN1M1eXZCN1o3OXZvbk1hCmx4UDRrb0cxWlIzVzdzOURzN1lZUFdrQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ=="
