@@ -15,12 +15,12 @@ This Helm chart was tested on Intel Smart Edge Open Kubernetes cluster (release 
 Prepare `values.override.yaml`. See `Parameters` section to find out which parameters
 should be provided or overriden. To install the chart with the release name `caregiver-app`:
 
-> helm install -n telemedicine -f values.override.yaml caregiver-app .
+> helm install -n smartedge-apps -f values.override.yaml caregiver-app .
 
 ## Uninstalling the Nurse App
 To uninstall/delete the `caregiver-app` deployment:
 
-> helm uninstall -n telemedicine caregiver-app
+> helm uninstall -n smartedge-apps caregiver-app
 
 ## Parameters
 

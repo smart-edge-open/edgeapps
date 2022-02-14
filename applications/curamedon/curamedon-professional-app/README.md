@@ -15,12 +15,12 @@ This Helm chart was tested on Intel Smart Edge Open Kubernetes cluster (release 
 Prepare `values.override.yaml`. See `Parameters` section to find out which parameters
 should be provided or overriden. To install the chart with the release name `professional-app`:
 
-> helm install -n telemedicine -f values.override.yaml professional-app .
+> helm install -n smartedge-apps -f values.override.yaml professional-app .
 
 ## Uninstalling the Professional App
 To uninstall/delete the `professional-app` deployment:
 
-> helm uninstall -n telemedicine professional-app
+> helm uninstall -n smartedge-apps professional-app
 
 ## Parameters
 

@@ -15,12 +15,12 @@ This Helm chart was tested on Intel Smart Edge Open Kubernetes cluster (release 
 Prepare `values.override.yaml`. See `Parameters` section to find out which parameters
 should be provided or overriden. To install the chart with the release name `customer-app`:
 
-> helm install -n telemedicine -f values.override.yaml customer-app .
+> helm install -n smartedge-apps -f values.override.yaml customer-app .
 
 ## Uninstalling the Patient App
 To uninstall/delete the `customer-app` deployment:
 
-> helm uninstall -n telemedicine customer-app
+> helm uninstall -n smartedge-apps customer-app
 
 ## Parameters
 

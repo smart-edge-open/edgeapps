@@ -13,18 +13,17 @@ This Helm chart was tested on Intel Smart Edge Open Kubernetes cluster (release 
 - Installed and configured Redis
 - Installed and configured Elasticsearch
 - Installed and configured Mercure Hub
-- Namespace `telemedicine` created previously
 
 ## Installing the Chart
 Prepare `values.override.yaml`. See `Parameters` section to find out which parameters
 should be provided or overriden. To install the chart with the release name `api`:
 
-> helm install -n telemedicine -f values.override.yaml api .
+> helm install -n smartedge-apps -f values.override.yaml api .
 
 ## Uninstalling the Chart
 To uninstall/delete the `api` deployment:
 
-> helm uninstall -n telemedicine api
+> helm uninstall -n smartedge-apps api
 
 ## Parameters
 

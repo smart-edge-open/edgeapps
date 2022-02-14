@@ -16,12 +16,12 @@ Prepare `values.override.yaml`. See `Parameters` section to find out which param
 should be provided or overriden. To install the chart with the release name `manager-app`:
 
 
-> helm install -n telemedicine -f values.override.yaml manager-app .
+> helm install -n smartedge-apps -f values.override.yaml manager-app .
 
 ## Uninstalling the Manager App
 To uninstall/delete the `manager-app` deployment:
 
-> helm uninstall -n telemedicine manager-app
+> helm uninstall -n smartedge-apps manager-app
 
 ## Parameters
 

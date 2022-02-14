@@ -15,12 +15,12 @@ This Helm chart was tested on Intel Smart Edge Open Kubernetes cluster (release 
 Prepare `values.override.yaml`. See `Parameters` section to find out which parameters
 should be provided or overriden. To install the chart with the release name `chat`:
 
-> helm install -n telemedicine -f values.override.yaml chat .
+> helm install -n smartedge-apps -f values.override.yaml chat .
 
 ## Uninstalling the Chart
 To uninstall/delete the `chat` deployment:
 
-> helm uninstall -n telemedicine chat
+> helm uninstall -n smartedge-apps chat
 
 ## Parameters
 

@@ -16,12 +16,12 @@ This Helm chart was tested on Intel Smart Edge Open Kubernetes cluster (release 
 Prepare `values.override.yaml`. See `Parameters` section to find out which parameters
 should be provided or overriden. To install the chart with the release name `oauth`:
 
-> helm install -n telemedicine -f values.override.yaml oauth .
+> helm install -n smartedge-apps -f values.override.yaml oauth .
 
 ## Uninstalling the Chart
 To uninstall/delete the `oauth` deployment:
 
-> helm uninstall -n telemedicine oauth
+> helm uninstall -n smartedge-apps oauth
 
 ## Parameters
 

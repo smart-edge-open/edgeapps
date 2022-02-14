@@ -16,12 +16,12 @@ This Helm chart was tested on Intel Smart Edge Open Kubernetes cluster (release 
 Prepare `values.override.yaml`. See `Parameters` section to find out which parameters
 should be provided or overriden. To install the chart with the release name `uploads`:
 
-> helm install -n telemedicine -f values.override.yaml uploads .
+> helm install -n smartedge-apps -f values.override.yaml uploads .
 
 ## Uninstalling the Chart
 To uninstall/delete the `uploads` deployment:
 
-> helm uninstall -n telemedicine uploads
+> helm uninstall -n smartedge-apps uploads
 
 ## Parameters
 

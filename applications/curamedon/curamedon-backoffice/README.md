@@ -16,12 +16,12 @@ This Helm chart was tested on Intel Smart Edge Open Kubernetes cluster (release 
 Prepare `values.override.yaml`. See `Parameters` section to find out which parameters
 should be provided or overriden. To install the chart with the release name `backoffice`:
 
-> helm install -n telemedicine -f values.override.yaml backoffice .
+> helm install -n smartedge-apps -f values.override.yaml backoffice .
 
 ## Uninstalling the Chart
 To uninstall/delete the `backoffice` deployment:
 
-> helm uninstall -n telemedicine backoffice
+> helm uninstall -n smartedge-apps backoffice
 
 ## Parameters
 

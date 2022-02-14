@@ -32,10 +32,6 @@ It is not recommended to use `hostPath` or `local` PV for production environment
 plugins to integrate with cloud storages (AWS, Azure etc.). At least one corresponding StorageClass that supports dynamic volume provisioning should be available by default.
 See details on https://kubernetes.io/docs/concepts/storage/storage-classes/
 
-### Create a namespace
-Run
-> kubectl create namespace telemedicine
-
 ### Install MySQL
 Use https://github.com/bitnami/charts/tree/master/bitnami/mysql to set up MySQL.
 Important thing to do is to configure timezone: we need to populate one system table with human-readable timezone names and setup default
