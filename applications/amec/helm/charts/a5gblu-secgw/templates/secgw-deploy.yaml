@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.secgwsvc" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: secgw
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.global.loadBalancerServiceIP.secgw }}
+  selector:
+    epc-mode: secgw
+  ports:
+    - name: vpn-isakmp
+      port: 500
+      targetPort: vpn-isakmp
+      protocol: UDP
+    - name: vpn-ike
+      port: 4500
+      targetPort: vpn-ike
+      protocol: UDP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.secgwegsvc" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: secgw
+spec:
+  selector:
+    epc-mode: secgw
+  clusterIP: "None"
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "a5gblu.chart" $ }}-secgw
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: secgw
+spec:
+  selector:
+    matchLabels:
+      epc-mode: secgw
+  serviceName: {{ include "a5gblu.secgwsvc" $ | quote }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        epc-mode: secgw
+    spec:
+      imagePullSecrets:
+      - name: a5gblu-artifact
+      containers:
+        - name: secgw
+          image: {{ include "a5gblu.secgw.imageUrl" $ }}
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 500
+              name: vpn-isakmp
+              protocol: UDP
+            - containerPort: 4500
+              name: vpn-ike
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /lib/modules
+              name: modules
+            - mountPath: /etc/ipsec.conf
+              name: serverconfig
+              subPath: "ipsec.conf"
+
+        - name: egressgw
+          image: {{ include "a5gblu.podgw.imageUrl" $ }}
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command:
+            - /bin/egress_route_gw.sh
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+              - NET_ADMIN
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+
+      volumes:
+        - name: modules
+          hostPath:
+            path: /lib/modules
+        - name: config
+          configMap:
+            defaultMode: 365
+            name: {{ include "a5gblu.configmapPrefix" $ }}-egress-cfg
+        - name: serverconfig
+          configMap:
+            defaultMode: 365
+            name: {{ include "a5gblu.configmapPrefix" $ }}-server-cfg
+

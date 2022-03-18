@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "a5gblu.configmapPrefix" $ }}-mme
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: mme
+data:
+  mme.yaml: |
+    logger:
+        file: /mnt/log/mme.log
+    
+    parameter:
+    
+    mme:
+        freeDiameter: /home/a5gblu/configmap/diameter-mme.conf
+        s1ap:
+                #dev: eth0        
+          dev: 127.0.0.1        
+        gtpc:
+                #dev: eth0        
+          dev: 127.0.0.1        
+        gummei:
+          plmn_id:
+            mcc: {{ .Values.mme.gummei.plmn_id.mcc }}
+            mnc: {{ .Values.mme.gummei.plmn_id.mnc }}
+          mme_gid: {{ .Values.mme.gummei.mme_gid }}
+          mme_code: {{ .Values.mme.gummei.mme_code }}
+        tai:
+          plmn_id:
+            mcc: {{ .Values.mme.tai.plmn_id.mcc }}
+            mnc: {{ .Values.mme.tai.plmn_id.mnc }}
+          tac: {{ .Values.mme.tai.tac }}
+        security:
+          integrity_order : [ EIA1, EIA2, EIA0 ]
+          ciphering_order : [ EEA0, EEA1, EEA2 ]
+        network_name:
+          full: A5gBlu
+    
+    sgw:
+        gtpc:
+          - name: {{ .Values.global.peer.sgwcServiceName }}
+    
+    smf:
+        gtpc:
+          - name: {{ .Values.global.peer.smfServiceName }}
+   

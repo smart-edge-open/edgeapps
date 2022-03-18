@@ -1,0 +1,22 @@
+# Default values for a5gblu-mme.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+vippool: "10.21.0.0/16"
+image: "a5gblu-secgw-x86_64"
+tag:   "v1.0.0"
+registryUrl: ""
+
+
+global:
+  image:
+    podgw:
+      name: "a5gblu-podgw-x86_64"
+      tag: "v1.0.0"
+      registryUrl: ""
+    pullPolicy: IfNotPresent
+  
+  loadBalancerServiceIP: 
+    secgw: "192.168.11.244"
+
+

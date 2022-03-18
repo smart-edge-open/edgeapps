@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: a5gblu-cleanup-job
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": hook-succeeded, hook-failed
+spec:
+  template: 
+    metadata:
+      name: a5gblu-cleanup-pod
+    spec:
+      containers:
+      - image: ubuntu
+        name: a5gblu-cleanup-container
+        command: ["/bin/bash", "-c", "rm -rf /mnt/*"]
+        volumeMounts:
+        - mountPath: /mnt
+          name: test-volume
+      restartPolicy: Never
+      volumes:
+      - name: test-volume
+        hostPath:
+          # directory location on host
+          path: /mnt/a5gblu-es
+          # this field is optional
+          type: Directory

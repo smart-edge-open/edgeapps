@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.webuisvc" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: webui
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.global.loadBalancerServiceIP.webui }}
+  #type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    epc-mode: webui
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "a5gblu.chart" . }}-webui
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      epc-mode: webui
+  template:
+    metadata:
+      labels:
+        epc-mode: webui
+    spec:
+      imagePullSecrets:
+      - name: a5gblu-artifact
+      containers:
+      - name: webui
+        image: {{ include "a5gblu.imageUrl" . }} 
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+        command: ["/bin/bash", "-c", "cd webui && npm ci --no-optional && npm run build && npm run dev"]
+        #command: ["/bin/bash", "-c", "cd webui && npm ci --no-optional && npm run build && npm run start"]
+        #command: ["/bin/bash", "-c", "sleep 36000"]
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DB_URI
+          value: "mongodb://{{ .Values.global.peer.mongoServiceName }}:27017/a5gblu?replicaSet=rs0"
+        - name: NODE_ENV
+          value: "dev"
+          #value: "production"
+        - name: HOSTNAME
+          value: 0.0.0.0        

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "a5gblu.configmapPrefix" . }}-pcrf
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: pcrf
+data:
+  pcrf.yaml: |
+    db_uri: mongodb://{{ .Values.global.peer.mongoServiceName }}/a5gblu?replicaSet=rs0
+    
+    logger:
+        file: /mnt/log/pcrf.log
+    
+    parameter:
+    
+    pcrf:
+        freeDiameter: /home/a5gblu/configmap/diameter-pcrf.conf

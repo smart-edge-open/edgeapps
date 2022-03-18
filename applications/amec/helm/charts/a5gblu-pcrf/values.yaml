@@ -1,0 +1,16 @@
+# Default values for a5gblu-mme.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  image:
+    name: "a5g-blu-x86_64"
+    # Overrides the image tag whose default is the chart Version.
+    tag: "1.0.0"
+    registryUrl: ""
+    pullPolicy: IfNotPresent
+  
+  peer:
+    mongoServiceName: "a5gblu-mongo-1-0-0-service-mongo"
+    smfServiceName: "a5gblu-smf-1-0-0-service-smf"
+

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "a5gblu.configmapPrefix" . }}-sgwu
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: sgw-u
+data:
+  sgwu.yaml: |
+    logger:
+        file: /mnt/log/sgwu.log
+
+    parameter:
+        no_ipv6: true
+
+    sgwu:
+        gtpu:
+           addr: 0.0.0.0 
+           advertise: {{ .Values.global.loadBalancerServiceIP.s1u }}
+           #dev: eth0
+        pfcp:
+           addr: 0.0.0.0 
+           #dev: eth0

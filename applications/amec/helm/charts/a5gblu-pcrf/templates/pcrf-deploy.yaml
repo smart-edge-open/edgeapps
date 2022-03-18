@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.pcrfsvc" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: pcrf
+spec:
+  ports:
+  - name: gx
+    port: 3868
+    protocol: TCP
+  selector:
+    epc-mode: pcrf
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ include "a5gblu.chart" . }}-pcrf
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: pcrf
+spec:
+  replicas: 1
+  serviceName: {{ include "a5gblu.pcrfsvc" . | quote }}
+  selector:
+    matchLabels:
+      epc-mode: pcrf
+  template:
+    metadata:
+      labels:
+        epc-mode: pcrf
+    spec:
+      imagePullSecrets:
+      - name: a5gblu-artifact
+      containers:
+        - name: pcrf
+          image: {{ include "a5gblu.imageUrl" . }} 
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["/home/a5gblu/bin/a5gblu-pcrfd", "-c", "/home/a5gblu/configmap/pcrf.yaml"]
+          volumeMounts:
+          - name: a5gblu-pcrf-config
+            mountPath: /home/a5gblu/configmap/pcrf.yaml
+            subPath: "pcrf.yaml"
+          - name: a5gblu-pcrf-diameter
+            mountPath: /home/a5gblu/configmap/diameter-pcrf.conf
+            subPath: "diameter-pcrf.conf"            
+          - name: a5gblu-storage-log
+            mountPath: /mnt/log
+{{ include "a5gblu.fluentbitSidecarDef" . | indent 8 }}
+      volumes:
+        - name: a5gblu-pcrf-config
+          configMap:
+            name: a5gblu-pcrf-config
+            name: {{ include "a5gblu.configmapPrefix" . }}-pcrf
+        - name: a5gblu-pcrf-diameter
+          configMap:
+            name: {{ include "a5gblu.configmapPrefix" . }}-pcrf-diameter
+        - name: a5gblu-storage-log
+          emptyDir: {}

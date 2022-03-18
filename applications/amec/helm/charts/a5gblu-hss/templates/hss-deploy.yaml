@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.hsssvc" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: hss
+spec:
+  ports:
+  - name: s6a
+    port: 3868
+    protocol: TCP
+  selector:
+    epc-mode: hss
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ include "a5gblu.chart" . }}-hss
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: hss
+spec:
+  replicas: 1 
+  serviceName: {{ include "a5gblu.hsssvc" . | quote }} 
+  selector:
+    matchLabels:
+      epc-mode: hss
+  template:
+    metadata:
+     labels:
+        epc-mode: hss
+        level: pod
+    spec:
+      imagePullSecrets:
+      - name: a5gblu-artifact
+      containers:
+        - name: hss
+          image: {{ include "a5gblu.imageUrl" . }}
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["/home/a5gblu/bin/a5gblu-hssd", "-c", "/home/a5gblu/configmap/hss.yaml"]
+          #command: ["/bin/bash", "-c", "sleep 36000"]
+          volumeMounts:
+          - name: a5gblu-hss-config
+            mountPath: /home/a5gblu/configmap/hss.yaml
+            subPath: "hss.yaml"
+          - name: a5gblu-hss-diameter
+            mountPath: /home/a5gblu/configmap/diameter-hss.conf
+            subPath: "diameter-hss.conf"            
+          - name: a5gblu-storage-log
+            mountPath: /mnt/log
+{{ include "a5gblu.fluentbitSidecarDef" . | indent 8 }}
+      volumes:
+      - name: a5gblu-hss-config
+        configMap:
+          name: {{ include "a5gblu.configmapPrefix" . }}-hss
+      - name: a5gblu-hss-diameter
+        configMap:
+          name: {{ include "a5gblu.configmapPrefix" . }}-hss-diameter
+      - name: a5gblu-storage-log
+        emptyDir: {}
