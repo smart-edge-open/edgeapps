@@ -1,3 +1,4 @@
+# Copyright (c) 2022 A5G Networks Inc.
 apiVersion: v2
 name: a5gblu-sgwc
 description: A Helm chart for Kubernetes

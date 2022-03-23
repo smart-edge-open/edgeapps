@@ -1,3 +1,6 @@
+{{- /*
+Copyright A5G Networks Inc.
+ */}}
 {{/*
 Create chart name and version as used by the chart label.
 */}}
