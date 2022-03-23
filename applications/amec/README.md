@@ -23,7 +23,6 @@ $ helm get all <helm-release-name>
 ```shell
 $ helm uninstall <helm-release-name>
 ```
-```
 ## **Where to Purchase**
 ### Contact
 https://a5gnet.com/contact/
