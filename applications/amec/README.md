@@ -1,5 +1,6 @@
 ```text
-# Copyright (c) 2022 A5G Networks Inc.
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2022 A5G Networks Inc.
 ```
 # **Autonomous Mobile Edge Connect (AMEC)**
 A5G Networks Inc. is a leader and innovator in autonomous mobile network infrastructure software. A5G Networks is pioneering secure and scalable 4G, 5G and Wi-Fi autonomous software to enable smart connectivity for distributed network of networks. 

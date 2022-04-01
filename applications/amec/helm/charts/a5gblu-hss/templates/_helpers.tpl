@@ -1,4 +1,5 @@
 {{- /*
+SPDX-License-Identifier: Apache-2.0
 Copyright A5G Networks Inc.
  */}}
 {{/*
