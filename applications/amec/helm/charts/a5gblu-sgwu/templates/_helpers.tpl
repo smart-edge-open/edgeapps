@@ -1,6 +1,6 @@
 {{- /*
 SPDX-License-Identifier: Apache-2.0
-Copyright A5G Networks Inc.
+Copyright (c) 2022 A5G Networks Inc.
  */}}
 {{/*
 Create chart name and version as used by the chart label.
