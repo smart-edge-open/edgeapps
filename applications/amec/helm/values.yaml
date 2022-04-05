@@ -1,0 +1,169 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+# Default values for blutest.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+tags:
+  4g: true
+
+a5gblu-mme:
+  enabled: true
+  mme:
+    gummei:
+      plmn_id:
+        mcc: "002"
+        mnc: "01"
+      mme_gid: 2
+      mme_code: 1
+    tai:
+      plmn_id:
+        mcc: "002"
+        mnc: "01"
+      tac: 12345
+ 
+a5gblu-upf:
+  enabled: true
+  upf:
+    subnet:
+      - addr: 10.45.0.1/16
+        apn: internet
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+a5gblu-sgwc:
+  enabled: true
+
+a5gblu-sgwu:
+  enabled: true
+
+a5gblu-hss:
+  enabled: true
+
+a5gblu-pcrf:
+  enabled: true
+
+a5gblu-smf:
+  enabled: true
+
+a5gblu-nrf:
+  enabled: true
+
+a5gblu-webui:
+  enabled: true
+
+a5gblu-mongo:
+  enabled: true
+  mongoPvc: a5gblu-mongo-pvc
+
+a5gblu-secgw:
+  # If you change enable/disable, also match the global variable secgwEnabled
+  enabled: true
+  vippool: "10.21.0.0/16"
+  serverSubnet: "172.20.0.0/16,172.30.0.0/16,192.168.11.240/28,192.168.11.224/28"
+  image: "a5gnet.jfrog.io/default-docker-virtual/a5gblu-secgw-x86_64"
+  tag: "v1.0.0"
+  registryUrl: ""
+
+a5gblu-es:
+  enabled: true
+
+elasticsearch:
+  #fullnameOverride: "a5gblu-es"
+  clusterName: "a5gblu-es"
+  replicas: 1
+  extraEnvs:
+    - name: ELASTIC_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: a5gblu-admin-credentials
+          key: password
+    - name: ELASTIC_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: a5gblu-admin-credentials
+          key: username
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 1Gi
+    storageClassName: a5gblu-es-sc
+    #resources:
+    #requests:
+    #  cpu: "400m"
+    #  memory: "256Mi"
+    #limits:
+    #  cpu: "500m"
+    #  memory: "500Mi"
+
+kibana:
+  elasticsearchHosts: "http://a5gblu-es-master:9200"
+  extraEnvs:
+    - name: 'ELASTICSEARCH_USERNAME'
+      valueFrom:
+        secretKeyRef:
+          name: a5gblu-admin-credentials
+          key: username
+    - name: 'ELASTICSEARCH_PASSWORD'
+      valueFrom:
+        secretKeyRef:
+          name: a5gblu-admin-credentials
+          key: password
+  service:
+    type: LoadBalancer
+    loadBalancerIP: "192.168.11.245"
+
+global:
+  userplaneNode: "bit-wk2"
+  secgwEnabled: true
+
+  image:
+    name: "a5gnet.jfrog.io/default-docker-virtual/a5gblu-apps-x86_64"
+    tag: "v1.0.0"
+    registryUrl: ""
+    pullPolicy: IfNotPresent
+    podgw:
+      name: "a5gnet.jfrog.io/default-docker-virtual/a5gblu-podgw-x86_64"
+      tag: "v1.0.0"
+      registryUrl: ""
+    pullPolicy: IfNotPresent
+  
+  loadBalancerServiceIP:
+    s1c:   "192.168.11.241"
+    s1u:   "192.168.11.242"
+    webui: "192.168.11.243"
+    secgw: "192.168.11.244"
+
+#  macvlanConfigForDataPath:
+#    interfaceName: "ens40" 
+#    sgwu:
+#      ip: "192.168.0.110"
+#      cidr: "24"
+#    upf:
+#      ip: "192.168.0.120"
+#      cidr: "24"
+
+  peer:
+    mmeServiceName: "a5gblu-mme-1-0-0-service-mme"
+    sgwcServiceName: "a5gblu-sgwc-1-0-0-service-sgwc"
+    sgwuServiceName: "a5gblu-sgwu-1-0-0-service-sgwu"
+    smfServiceName: "a5gblu-smf-1-0-0-service-smf"
+    upfServiceName: "a5gblu-upf-1-0-0-service-upf"
+    hssServiceName: "a5gblu-hss-1-0-0-service-hss"
+    pcrfServiceName: "a5gblu-pcrf-1-0-0-service-pcrf"
+    mongoServiceName: "a5gblu-mongo-1-0-0-service-mongo"
+    nrfServiceName: "a5gblu-nrf-1-0-0-service-nrf"
+    esServiceName: "a5gblu-es-master"
+    #esServiceName: "a5gblu-es-headless"
+    esServicePort: 9200
+
+  sidecar:
+    fluentbit:
+      enabled: true
+      image: a5gnet.jfrog.io/default-docker-virtual/a5gblu-fluentbit-x86_64:v1.0.0
+      resources:
+        limits:
+          cpu: 100m
+          memory: 200Mi

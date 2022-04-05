@@ -1,0 +1,90 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v2
+name: a5gblu
+description: A Helm chart for Kubernetes
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 1.0.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "1.0.0"
+
+dependencies:
+    - name: a5gblu-mme
+      version: 1.0.0
+      condition: a5gblu-mme.enabled
+      tags:
+          - 4g
+    - name: a5gblu-sgwc
+      version: 1.0.0
+      condition: a5gblu-sgwc.enabled
+      tags:
+          - 4g
+    - name: a5gblu-sgwu
+      version: 1.0.0
+      condition: a5gblu-sgwu.enabled
+      tags:
+          - 4g
+    - name: a5gblu-smf
+      version: 1.0.0
+      condition: a5gblu-smf.enabled
+      tags:
+          - 4g
+    - name: a5gblu-upf
+      version: 1.0.0
+      condition: a5gblu-upf.enabled
+      tags:
+          - 4g
+    - name: a5gblu-hss
+      version: 1.0.0
+      condition: a5gblu-hss.enabled
+      tags:
+          - 4g
+    - name: a5gblu-pcrf
+      version: 1.0.0
+      condition: a5gblu-pcrf.enabled
+      tags:
+          - 4g
+    - name: a5gblu-mongo
+      version: 1.0.0
+      condition: a5gblu-mongo.enabled
+      tags:
+          - 4g
+    - name: a5gblu-nrf
+      version: 1.0.0
+      condition: a5gblu-nrf.enabled
+      tags:
+          - 4g
+    - name: a5gblu-secgw
+      version: 1.0.0
+      condition: a5gblu-secgw.enabled
+      tags:
+          - 4g
+    - name: elasticsearch
+      version: 7.15.0
+      # repository: https://helm.elastic.co
+      condition: a5gblu-es.enabled
+      tags:
+          - 4g
+    - name: kibana
+      version: 7.15.0
+      # repository: https://helm.elastic.co
+      condition: a5gblu-es.enabled
+      tags:
+          - 4g

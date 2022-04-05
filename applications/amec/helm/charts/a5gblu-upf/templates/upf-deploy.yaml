@@ -1,0 +1,77 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.upfsvc" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: upf
+spec:
+  clusterIP: None   
+  selector:
+    epc-mode: upf    
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: StatefulSet 
+metadata:
+  name: {{ include "a5gblu.chart" . }}-upf
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: upf
+spec:
+  replicas: 1
+  serviceName: {{ include "a5gblu.upfsvc" . | quote }}
+  selector:
+    matchLabels:
+      epc-mode: upf
+  template:
+    metadata:          
+      labels:
+        epc-mode: upf
+        kubernetes.io/hostname: {{ .Values.global.userplaneNode }}
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: {{ .Values.global.userplaneNode }}
+      imagePullSecrets:
+      - name: a5gblu-artifact
+      containers:
+        - name: upf
+          image: {{ include "a5gblu.imageUrl" . }} 
+          securityContext:
+            privileged: true
+            #sysctls:
+            #- name: net.ipv6.conf.all.disable_ipv6
+            #  value: 0
+            capabilities:
+              add: ["NET_ADMIN"]
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - ip tuntap add name ogstun mode tun;
+              ip addr add 10.45.0.1/16 dev ogstun;
+              sysctl -w net.ipv6.conf.all.disable_ipv6=0;
+              ip addr add cafe::1/64 dev ogstun;
+              ip link set ogstun up;
+              sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward";
+              iptables -A INPUT -i ogstun -j ACCEPT;
+              iptables -t nat -A POSTROUTING -s 10.45.0.0/16 -o eth0 -j MASQUERADE;
+              /home/a5gblu/bin/a5gblu-upfd -c /home/a5gblu/configmap/upf.yaml;
+          volumeMounts:
+          - name: a5gblu-upf-config
+            mountPath: /home/a5gblu/configmap/upf.yaml
+            subPath: "upf.yaml"
+          - mountPath: /dev/net/tun
+            name: dev-net-tun            
+          - name: a5gblu-storage-log
+            mountPath: /mnt/log
+{{ include "a5gblu.fluentbitSidecarDef" . | indent 8 }}
+      volumes:
+        - name: a5gblu-upf-config
+          configMap:
+            name: {{ include "a5gblu.configmapPrefix" . }}-upf
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+        - name: a5gblu-storage-log
+          emptyDir: {}

@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.sgwcsvc" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: sgw-c
+spec: 
+  clusterIP: None 
+  ports:
+  - name: s11
+    port: 2123
+    protocol: UDP
+    targetPort: 2123
+  selector:
+    epc-mode: sgw-c      
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ include "a5gblu.chart" . }}-sgw-c
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: sgw-c
+spec:
+  replicas: 1
+  serviceName: {{ include "a5gblu.sgwcsvc" . | quote }}
+  selector:
+    matchLabels:
+      epc-mode: sgw-c
+  template:
+    metadata:
+      labels:
+        epc-mode: sgw-c
+    spec:
+      imagePullSecrets:
+      - name: a5gblu-artifact
+      containers:
+        - name: sgwc
+          image: {{ include "a5gblu.imageUrl" . }} 
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["/home/a5gblu/bin/a5gblu-sgwcd", "-c", "/home/a5gblu/configmap/sgwc.yaml"]
+          #command: ["/bin/bash", "-c", "sleep 3600000"]
+          volumeMounts:
+            - name: a5gblu-sgwc-config
+              mountPath: /home/a5gblu/configmap/sgwc.yaml
+              subPath: "sgwc.yaml"
+            - name: a5gblu-storage-log
+              mountPath: /mnt/log
+{{ include "a5gblu.podgwSidecarDef" . | indent 8 }}
+{{ include "a5gblu.fluentbitSidecarDef" . | indent 8 }}
+      volumes:
+        - name: a5gblu-sgwc-config
+          configMap:
+            name: {{ include "a5gblu.configmapPrefix" . }}-sgwc
+        - name: a5gblu-storage-log
+          emptyDir: {}
+{{ include "a5gblu.podgwSidecarVolumeDef" . | indent 8 }}

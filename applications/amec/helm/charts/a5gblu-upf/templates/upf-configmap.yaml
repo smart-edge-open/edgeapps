@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: a5gblu-upf-config
+  name: {{ include "a5gblu.configmapPrefix" . }}-upf
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: upf
+data:
+  upf.yaml: |
+    logger:
+        file: /mnt/log/upf.log
+
+    upf:
+        pfcp:
+           dev: 127.0.0.1
+        gtpu:
+           dev: 127.0.0.1
+        subnet:
+          {{- range .Values.upf.subnet }}
+          - addr: {{ .addr }}
+            apn: {{ .apn }}
+          {{- end }}    
+        dns: 
+          {{- range .Values.upf.dns }}
+          - {{ . }}
+          {{- end }}    

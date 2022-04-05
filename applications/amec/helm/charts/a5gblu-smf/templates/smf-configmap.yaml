@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "a5gblu.configmapPrefix" . }}-smf
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    epc-mode: smf
+data:
+  smf.yaml: |
+    logger:
+        file: /mnt/log/smf.log
+
+    parameter:
+        no_ipv6: true
+
+    smf:
+        sbi:
+           dev: 127.0.0.1 
+        gtpc:
+           dev: 127.0.0.1 
+        gtpu:
+           dev: 127.0.0.1 
+        pfcp:
+           dev: 127.0.0.1 
+        subnet:
+         - addr: 10.45.0.1/16
+           apn: internet
+        dns:
+          - 8.8.8.8
+          - 8.8.4.4
+        mtu: 1400
+        freeDiameter: /home/a5gblu/configmap/diameter-smf.conf
+
+    nrf:
+      sbi:
+      - name: 
+        - {{ .Values.global.peer.nrfServiceName }}
+        port: 7777
+
+    upf:
+       pfcp:
+       - name: {{ .Values.global.peer.upfServiceName }}
+         apn: internet

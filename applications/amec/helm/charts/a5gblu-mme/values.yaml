@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+# Default values for a5gblu-mme.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+mme:
+  gummei:
+    plmn_id:
+      mcc: "002"
+      mnc: "01"
+    mme_gid: 2
+    mme_code: 1
+  tai:
+    plmn_id:
+      mcc: "002"
+      mnc: "01"
+    tac: 12345
+
+global:
+  image:
+    name: "a5g-blu-x86_64"
+    # Overrides the image tag whose default is the chart Version.
+    tag: "1.0.0"
+    registryUrl: ""
+    pullPolicy: IfNotPresent
+  
+  loadBalancerServiceIP: 
+    s1c: "172.16.153.242"
+
+  peer:
+    sgwcServiceName: "a5gblu-1-0-0-service-sgwc"
+    smfServiceName: "a5gblu-1-0-0-service-smf"
+    hssServiceName: "a5gblu-1-0-0-service-hss"
+

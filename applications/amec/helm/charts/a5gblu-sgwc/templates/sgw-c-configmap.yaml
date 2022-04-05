@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "a5gblu.configmapPrefix" . }}-sgwc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: sgw-c
+data:
+  sgwc.yaml: |
+    logger:
+        file: /mnt/log/sgwc.log
+
+    parameter:
+        no_ipv6: true
+
+    sgwc:
+        gtpc:
+                #dev: eth0
+           dev: 127.0.0.1
+        pfcp:
+                #dev: eth0
+           dev: 127.0.0.1
+
+    sgwu:
+      pfcp:
+        - name: {{ .Values.global.peer.sgwuServiceName }}
+          apn: internet    

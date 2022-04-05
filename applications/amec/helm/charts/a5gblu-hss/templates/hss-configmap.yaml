@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "a5gblu.configmapPrefix" . }}-hss
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: hss
+data:
+  hss.yaml: |
+    db_uri: mongodb://{{- .Values.global.peer.mongoServiceName -}}/a5gblu?replicaSet=rs0
+    
+    logger:
+        file: /mnt/log/hss.log
+    
+    parameter:
+    
+    hss:
+        freeDiameter: /home/a5gblu/configmap/diameter-hss.conf

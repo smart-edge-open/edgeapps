@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.nrfsvc" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: nrf
+spec:
+  selector:
+    epc-mode: nrf
+  ports:
+    - protocol: TCP
+      port: 7777   
+      targetPort: 80
+---    
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "a5gblu.chart" . }}-nrf
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: nrf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      epc-mode: nrf
+  template:
+    metadata:
+      labels:
+        epc-mode: nrf
+    spec:   
+      imagePullSecrets:
+      - name: a5gblu-artifact
+      containers:
+        - name: nrf
+          image: {{ include "a5gblu.imageUrl" . }} 
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["/home/a5gblu/bin/a5gblu-nrfd", "-c", "/home/a5gblu/configmap/nrf.yaml"]
+          volumeMounts:
+            - name: a5gblu-nrf-config
+              mountPath: /home/a5gblu/configmap/nrf.yaml
+              subPath: "nrf.yaml"
+            - name: a5gblu-storage-log
+              mountPath: /mnt/log
+{{ include "a5gblu.fluentbitSidecarDef" . | indent 8 }}
+      volumes:
+        - name: a5gblu-nrf-config
+          configMap:
+            name: {{ include "a5gblu.configmapPrefix" . }}-nrf
+        - name: a5gblu-storage-log
+          emptyDir: {}

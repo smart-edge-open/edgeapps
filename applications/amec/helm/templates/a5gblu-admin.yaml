@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: a5gblu-admin-credentials
+type: Opaque
+data:
+  # admin admin
+  username: YWRtaW4K
+  password: YWRtaW4K
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: a5gblu-artifact
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2E1Z25ldC5qZnJvZy5pbyI6eyJ1c2VybmFtZSI6ImE1Zy10Y3RzIiwicGFzc3dvcmQiOiJBNWd0Y3RzMTIiLCJlbWFpbCI6ImE1Z3RjdHNAYTVnbmV0LmNvbSIsImF1dGgiOiJZVFZuTFhSamRITTZRVFZuZEdOMGN6RXkifX19
