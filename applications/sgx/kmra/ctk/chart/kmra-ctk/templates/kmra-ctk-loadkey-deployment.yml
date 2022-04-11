@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      annotations:
+        sgx.intel.com/quote-provider: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Release.Name }}
+      initContainers:
+      - name: init-tmpfs
+        image: "{{ .Values.ctk_loadkey.init.image.repo }}/{{ .Values.ctk_loadkey.init.image.name }}:{{ .Values.ctk_loadkey.init.image.tag }}"
+        command: ['sh', '-c', "rm -rf /opt/intel/cryptoapitoolkit/tokens/*"]
+      containers:
+      - name: {{ .Release.Name }}
+        image: "{{ .Values.ctk_loadkey.main.image.repo }}/{{ .Values.ctk_loadkey.main.image.name }}:{{ .Values.ctk_loadkey.main.image.tag }}"
+        imagePullPolicy: {{ .Values.ctk_loadkey.main.image.pullPolicy }}
+        ports:
+        - name: ctk-loadkey
+          containerPort: {{ .Values.ctk_loadkey.main.port }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-env-cm
+        volumeMounts:
+        - name: mtls
+          mountPath: /opt/intel/ca
+          readOnly: true
+        - name: sgx-qcnl-conf
+          mountPath: /etc/sgx_default_qcnl.conf
+          subPath: sgx_default_qcnl.conf
+          readOnly: true
+        - name: tmpfs
+          mountPath: /tmp
+          subPath: tmp
+        - name: tmpfs
+          mountPath: /opt/intel/cryptoapitoolkit/tokens
+          subPath: tokens
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+            sgx.intel.com/epc: "512Ki"
+          requests:
+            cpu: 200m
+            memory: 200Mi
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: {{ .Values.ctk_loadkey.sgx_prv_gid }}
+          readOnlyRootFilesystem: true
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - kmra
+      volumes:
+      - name: mtls
+        secret:
+          secretName: {{ .Release.Name }}-tls
+          items:
+          - key: tls.key
+            path: ctk_loadkey.key
+          - key: tls.cert
+            path: ctk_loadkey.crt
+          - key: ca.cert
+            path: ca.crt
+      - name: sgx-qcnl-conf
+        configMap:
+          name: {{ .Release.Name }}-qcnl-conf
+      - name: tmpfs
+        emptyDir:
+          medium: Memory
+          sizeLimit: 64Mi
+
