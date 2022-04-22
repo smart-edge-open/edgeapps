@@ -109,7 +109,7 @@ database:
     storageHostPath: "/tmp/uniconfig"
 
 demo-workflows:
-  enabled: true
+  enabled: false
   fullnameOverride: "demo-workflows"
   sample-topology:
     enabled: true
