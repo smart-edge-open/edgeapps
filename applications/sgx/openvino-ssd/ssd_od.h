@@ -34,9 +34,9 @@ private:
     InputInfo::Ptr inputInfo;
 
 public:
-    int load_model(const std::string &modelFile);
+	int load_model(const std::string &modelFile);
     int object_detection(const std::string &imageFileIn, 
     					 const std::string &imageFileOut);
-    SSDObjectDetection();
+
 };
 
