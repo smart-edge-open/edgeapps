@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021-2022 Intel Corporation
+
+---
+
+# nseKernel holds values needed for nse-kernel deployment
+nseKernel:
+  metadata:
+    name: "nse-kernel"
+    labels: "nse-kernel"
+  container:
+    nse:
+      name: "nse"
+      image: "ghcr.io/networkservicemesh/cmd-nse-icmp-responder:v1.2.0"
+      imagePullPolicy: "IfNotPresent"
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "40Mi"
+        limits:
+          memory: "80Mi"
+          cpu: "200m"
+      env:
+        nsmCidrPrefix: "172.16.1.100/31"
+        logLevel: "TRACE"
+    nginx:
+      name: "nginx"
+      image: "networkservicemesh/nginx"
+      imagePullPolicy: "IfNotPresent"
+  nodeSelector:
+    labelName: "kubernetes.io/hostname"
+    # NOTE: labelValue must be populated with NSE node's hostname
+    labelValue: ""
+
+# nseFirewall holds values needed for nse-firewall-vpp deployment
+nseFirewall:
+  metadata:
+    name: "nse-firewall-vpp"
+    labels: "nse-firewall-vpp"
+  container:
+    name: "nse"
+    image: "ghcr.io/networkservicemesh/cmd-nse-firewall-vpp:v1.2.0"
+    imagePullPolicy: "IfNotPresent"
+    env:
+      logLevel: "TRACE"
+    resources:
+      requests:
+        cpu: "150m"
+      limits:
+        memory: "450Mi"
+        cpu: "500m"
+
+# passthroughApp holds values needed for nse-passthrough apps deployments
+passthroughApp:
+  metadata:
+    name: "nse-passthrough"
+    labels: "nse-firewall-vpp"
+  container:
+    name: "nse"
+    image: "ghcr.io/networkservicemesh/cmd-nse-firewall-vpp:v1.2.0"
+    imagePullPolicy: "IfNotPresent"
+    resources:
+      requests:
+        cpu: "150m"
+      limits:
+        memory: "450Mi"
+        cpu: "500m"
+
+# networkService holds values needed for the NetworkService
+networkService:
+  metadata:
+    name: "nse-composition"
+
+# client holds values needed for creating a client deployment
+client:
+  metadata:
+    name: "alpine"
+    labels: "alpine"
+  container:
+    name: "alpine"
+    image: "alpine:3.15.0"
+    imagePullPolicy: "IfNotPresent"
+    stdin: "true"
+    tty: "true"
+  nodeSelector:
+    labelName: "kubernetes.io/hostname"
+    # NOTE: labelValue must be populated with the client node's hostname
+    labelValue: ""
+  kernelInterfaceName: "nsm-1"

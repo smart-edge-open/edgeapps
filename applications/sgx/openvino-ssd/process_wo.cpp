@@ -76,8 +76,6 @@ int main(int argc, char* argv[]) {
 ProcessWorkOrder::ProcessWorkOrder(const std::string in_image_dir, 
                                    const std::string out_image_dir)
         :in_image_dir(in_image_dir),out_image_dir(out_image_dir) {  
-    this->ssd = SSDObjectDetection();
-
 }
 
 /**

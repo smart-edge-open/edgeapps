@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Intel Corporation
+
+---
+http_proxy: "<http_proxy>"
+https_proxy: "<https_proxy>"
+no_proxy: "<no_proxy>"
+
+ctk_loadkey:
+  main:
+    image:
+      repo: "docker.io"
+      name: "intel/ctk_loadkey"
+      tag: "v2.1"
+      pullPolicy: IfNotPresent
+    port:  "8082"
+    hostname: "0.0.0.0"
+  init:
+    image:
+      repo: "docker.io"
+      name: "busybox"
+      tag: "1.35"
+      pullPolicy: IfNotPresent
+  node_port: "30032"
+  pccs_port: ""
+  pccs_hostname: ""
+  apphsm_port: ""
+  apphsm_hostname: ""
+  sgx_prv_gid: "1002"
+  use_secure_cert: "False"
+  client_token: "client_token"
+  client_key_label: "client_key_priv"
+  test_unique_uid: "unique_id_1234"
+  default_user_pin: "1234"
+  default_so_pin: "12345678"

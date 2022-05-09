@@ -145,6 +145,6 @@ With a Cloud Native approach, the EII application can be deployed on multiple no
 The PCB demo sample application when deployed on OpenNESS creates an impactful edge computing use case that utilizes the capability of OpenNESS and EII.
 
 ## Reference
-- [OpenNESS Architecture]( https://github.com/smart-edge-open/specs/blob/master/doc/architecture.md)
+- [OpenNESS Architecture]( https://github.com/open-ness/specs/blob/master/doc/architecture.md)
 - [Intel’s Edge Insights for Industrial](https://www.intel.com/content/www/us/en/internet-of-things/industrial-iot/edge-insights-industrial.html)
 

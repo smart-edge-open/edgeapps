@@ -119,6 +119,7 @@ RUN git clone https://github.com/openvinotoolkit/open_model_zoo.git $MODEL_DIR \
 RUN  cd $MODEL_DIR/tools/downloader && python3 ./downloader.py \
      --name ssd300 -o /home/openvino/$MODEL_DIR
 
+RUN ls -lAR /home/openvino/$MODEL_DIR
 # Stage 5 - Build model file
 FROM openmodel_clone as build_model
 
