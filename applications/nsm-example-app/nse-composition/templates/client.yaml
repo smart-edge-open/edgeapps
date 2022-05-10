@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Intel Corporation
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Values.client.metadata.name }}
+  labels:
+    app: {{ .Values.client.metadata.labels }}
+  annotations:
+    networkservicemesh.io: "kernel://{{ .Values.networkService.metadata.name }}/{{ .Values.client.kernelInterfaceName }}" 
+spec:
+  containers:
+  - name: {{ .Values.client.container.name }}
+    image: {{ .Values.client.container.image }}
+    imagePullPolicy: {{ .Values.client.container.imagePullPolicy }}
+    stdin: {{ .Values.client.container.stdin }}
+    tty: {{ .Values.client.container.tty }}
+  nodeSelector:
+    {{ .Values.client.nodeSelector.labelName }} : {{ .Values.client.nodeSelector.labelValue }}
+

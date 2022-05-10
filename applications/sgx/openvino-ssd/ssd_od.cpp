@@ -36,11 +36,6 @@
 // Thickness of a line (in pixels) to be used for bounding boxes.
 #define BBOX_THICKNESS 2
 
-SSDObjectDetection::SSDObjectDetection(){
-    this-> objectSize = 0;
-    this-> maxProposalCount = 0;
-}
-
 /**
 *  Inference Engine load model.
 *
@@ -117,7 +112,7 @@ int SSDObjectDetection::load_model(const std::string &modelFile) {
             }
         }
 
-        if (inputInfo == nullptr && inputsInfo.begin() != inputsInfo.end()) {
+        if (inputInfo == nullptr) {
             inputInfo = inputsInfo.begin()->second;
         }
         // -------------------------------------------------------------------
@@ -127,11 +122,9 @@ int SSDObjectDetection::load_model(const std::string &modelFile) {
 
         OutputsDataMap outputsInfo(network.getOutputsInfo());
        
-        DataPtr outputInfo = *(new DataPtr());
+        DataPtr outputInfo;
 
-	if (outputsInfo.begin() != outputsInfo.end()){
-            outputInfo = outputsInfo.begin()->second;
-	}
+        outputInfo = outputsInfo.begin()->second;
         outputName = outputInfo->getName();
         // SSD has an additional post-processing DetectionOutput layer
         // that simplifies output filtering, try to find it.
@@ -272,21 +265,19 @@ int SSDObjectDetection::object_detection(const std::string &imageFileIn,
 
         if (imInfoInputName != "") {
             Blob::Ptr input2 = infer_request.GetBlob(imInfoInputName);
+            auto imInfoDim = inputsInfo.find(imInfoInputName)->second->getTensorDesc().getDims()[1];
 
-	    if (inputsInfo.find(imInfoInputName) != inputsInfo.end()){
-                auto imInfoDim = inputsInfo.find(imInfoInputName)->second->getTensorDesc().getDims()[1];
-                // Fill input tensor with values.
-                float *p = input2->buffer().as<PrecisionTrait<Precision::FP32>::value_type*>();
+            // Fill input tensor with values.
+            float *p = input2->buffer().as<PrecisionTrait<Precision::FP32>::value_type*>();
 
-                for (size_t image_id = 0; image_id < std::min(imagesData.size(), batchSize); ++image_id) {
-                    auto dims = inputsInfo[imageInputName]->getTensorDesc().getDims();
-                    p[image_id * imInfoDim + 0] = static_cast<float>(dims[2]);
-                    p[image_id * imInfoDim + 1] = static_cast<float>(dims[3]);
-                    for (size_t k = 2; k < imInfoDim; k++) {
-                        p[image_id * imInfoDim + k] = 1.0f;  // all scale factors are set to 1.0
-                    }
+            for (size_t image_id = 0; image_id < std::min(imagesData.size(), batchSize); ++image_id) {
+                auto dims = inputsInfo[imageInputName]->getTensorDesc().getDims();
+                p[image_id * imInfoDim + 0] = static_cast<float>(dims[2]);
+                p[image_id * imInfoDim + 1] = static_cast<float>(dims[3]);
+                for (size_t k = 2; k < imInfoDim; k++) {
+                    p[image_id * imInfoDim + k] = 1.0f;  // all scale factors are set to 1.0
                 }
-	    }
+            }
         }
         // -------------------------------------------------------------------
 

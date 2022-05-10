@@ -101,10 +101,4 @@ func callOpenVINO(model string, accl string, cpuset string) {
 	if err := cmd.Start(); err != nil {
 		log.Fatal("Failed to run OpenVINO process:", err)
 	}
-
-	wg.Wait()
-
-	if err := cmd.Wait(); err != nil {
-		log.Println(err)
-	}
 }

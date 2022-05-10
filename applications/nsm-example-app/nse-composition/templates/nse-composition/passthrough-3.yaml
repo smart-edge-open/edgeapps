@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Intel Corporation
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.passthroughApp.metadata.labels }}
+  name: "{{ .Values.passthroughApp.metadata.name }}-3"
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.passthroughApp.metadata.labels }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.passthroughApp.metadata.labels }}
+        "spiffe.io/spiffe-id": "true"
+    spec:
+      containers:
+        - name: {{ .Values.passthroughApp.container.name }}
+          image:  {{ .Values.passthroughApp.container.image }}
+          imagePullPolicy:  {{ .Values.passthroughApp.container.imagePullPolicy }}
+          env:
+            - name: NSM_SERVICE_NAME
+              value:  {{ .Values.networkService.metadata.name }} 
+            - name: NSM_LABELS
+              value: app:passthrough-3
+            - name: SPIFFE_ENDPOINT_SOCKET
+              value: unix:///run/spire/sockets/agent.sock
+            - name: NSM_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NSM_CONNECT_TO
+              value: unix:///var/lib/networkservicemesh/nsm.io.sock
+          volumeMounts:
+            - mountPath: /run/spire/sockets
+              name: spire-agent-socket
+              readOnly: true
+            - mountPath: /var/lib/networkservicemesh
+              name: nsm-socket
+              readOnly: true
+          resources:
+            requests:
+              cpu: {{ .Values.passthroughApp.container.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.passthroughApp.container.resources.limits.memory }}
+              cpu: {{ .Values.passthroughApp.container.resources.limits.cpu }}
+      volumes:
+        - hostPath:
+            path: /run/spire/sockets
+            type: Directory
+          name: spire-agent-socket
+        - hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate
+          name: nsm-socket

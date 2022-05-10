@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Intel Corporation
+
+---
+
+apiVersion: networkservicemesh.io/v1
+kind: NetworkService
+metadata:
+  name: {{ .Values.networkService.metadata.name }}
+spec:
+  payload: ETHERNET
+  matches:
+    - source_selector:
+        app: firewall
+      routes:
+        - destination_selector:
+            app: passthrough-1
+    - source_selector:
+        app: passthrough-1
+      routes:
+        - destination_selector:
+            app: passthrough-2
+    - source_selector:
+        app: passthrough-2
+      routes:
+        - destination_selector:
+            app: passthrough-3
+    - source_selector:
+        app: passthrough-3
+      routes:
+        - destination_selector:
+            app: gateway
+    - routes:
+        - destination_selector:
+            app: firewall
