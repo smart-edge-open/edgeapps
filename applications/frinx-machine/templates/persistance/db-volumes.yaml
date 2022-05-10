@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Frinx s. r. o.
+
+{{- range values .Values.database}}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .instance }}-db-pvc
+spec:
+  storageClassName: {{ tpl (include "db.storageClass" .) $ }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  {{- if and .storageHostPath (not .storageClass) }}
+  volumeName: {{ .instance }}-db-pv
+  {{- end }}
+
+{{- if and .storageHostPath (not .storageClass) }}
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ tpl (include "db.storageClass" .) $ }}
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .instance }}-db-pv
+spec:
+  storageClassName: {{ tpl (include "db.storageClass" .) $ }}
+  capacity:
+    storage: 10Gi
+  persistentVolumeReclaimPolicy: Delete
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ tpl .storageHostPath $ -}} /{{ .instance }}-db-pv
+    type: DirectoryOrCreate
+{{- end }}
+{{- end }}
