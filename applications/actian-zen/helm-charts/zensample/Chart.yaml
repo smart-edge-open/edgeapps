@@ -4,10 +4,10 @@
 apiVersion: v2
 name: zensample
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: 1.0.0
 description: Sample Zen Client Application
 dependencies:
    - name: actianzen
-     version: 0.1.0
+     version: 0.3.0
      repository: "file://../actianzen"

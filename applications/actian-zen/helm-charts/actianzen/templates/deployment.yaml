@@ -34,8 +34,27 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.name }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: ZEN_ACCEPT_EULA
+            value: "YES"
+          - name: ZEN_PRODUCT
+            value: "Enterprise"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /data
+            name: zendata
+          - mountPath: /logs
+            name: zenlogs
+      volumes:
+      - name: zendata
+        hostPath:
+            path: {{ .Values.paths.data }}{{ include "actianzen.fullname" . }}
+            type: DirectoryOrCreate
+      - name: zenlogs
+        hostPath:
+            path: {{ .Values.paths.logs }}{{ include "actianzen.fullname" . }}
+            type: DirectoryOrCreate
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

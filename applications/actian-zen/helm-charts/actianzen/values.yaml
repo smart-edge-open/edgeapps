@@ -2,12 +2,14 @@
 # Copyright (c) 2020 Actian Corporation
 
 replicaCount: 1
-
 image:
   name: actianzen
   pullPolicy: IfNotPresent
   tag: "latest"
 serviceType: NodePort
+paths:
+  data: /mnt/zen/data/
+  logs: /mnt/zen/logs/
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
