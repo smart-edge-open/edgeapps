@@ -8,7 +8,7 @@ Actian Zen Edge Data Management is a single, secure, modular, and scalable solut
 For more information on Actian Zen please visit the [Actian Zen product website](https://www.actian.com/data-management/zen-embedded-database/).
 
 # Application Overview
-Two helm charts are provided in the 'helm-charts' directory to assist with Zen deployments in an OpenNESS environment: an Actian Zen database chart and a sample application chart. The 'actianzen' chart will deploy the Actian Zen database as a service in the OpenNESS Kubernetes environment with a 30 day trial license. The 'zensample' chart deploys a simple ODBC web application that communicates with a Zen database. The Zen sample chart has the Zen database chart configured as a dependency which will deploy both the Zen database and the sample application containers when installed.
+Two helm charts are provided in the 'helm-charts' directory to assist with Zen deployments in an Intel® Smart Edge Open Developer Experience Kit environment: an Actian Zen database chart and a sample application chart. The 'actianzen' chart will deploy the Actian Zen database as a service in the Intel® Smart Edge Open Developer Experience Kit Kubernetes environment with a 30 day trial license. The 'zensample' chart deploys a simple ODBC web application that communicates with a Zen database. The Zen sample chart has the Zen database chart configured as a dependency which will deploy both the Zen database and the sample application containers when installed.
 
 ## Deploying the Zen Database and Sample Application
 
