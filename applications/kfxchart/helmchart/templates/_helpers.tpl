@@ -1,3 +1,6 @@
+#SPDX-License-Identifier: Apache-2.0
+#Copyright (c) 2022 Kfx Circuits & Systems Private Limited
+
 {{/*
 Expand the name of the chart.
 */}}
