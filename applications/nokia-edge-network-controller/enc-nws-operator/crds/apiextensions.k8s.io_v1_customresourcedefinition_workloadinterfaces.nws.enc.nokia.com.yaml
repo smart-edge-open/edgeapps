@@ -1,0 +1,184 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: workloadinterfaces.nws.enc.nokia.com
+spec:
+  group: nws.enc.nokia.com
+  names:
+    kind: WorkloadInterface
+    listKind: WorkloadInterfaceList
+    plural: workloadinterfaces
+    singular: workloadinterface
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Switch ID
+      jsonPath: .spec.switch-interface.sys-name
+      name: Switch
+      type: string
+    - description: Port ID
+      jsonPath: .spec.switch-interface.port-id
+      name: Port ID
+      type: string
+    - description: Ready
+      jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: Ready
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha2
+    schema:
+      openAPIV3Schema:
+        description: WorkloadInterface is the Schema for the workloadinterfaces API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: WorkloadInterfaceSpec defines the desired state of WorkloadInterface
+            properties:
+              additional-config:
+                description: RawAdditionalConfig contains additional configuration
+                  data passed transparently from the CNI config, for use in templates.
+                  Raw is the underlying serialization of this object.
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              server-interface:
+                description: ServerInterface contains information on the serverinterface
+                  (optional)
+                properties:
+                  interface:
+                    description: Interface is de host OS interface name
+                    type: string
+                  interface-pci-id:
+                    description: IntfPciID is de PCI ID for the interface
+                    type: string
+                  node:
+                    description: Node is the name of the node (server) on for which
+                      this interface definition is defined
+                    type: string
+                  vf-id:
+                    description: VfID is the ID of the Virtual Function on the interface,
+                      in case of a SR-IOV interface.
+                    type: integer
+                  vf-pci-id:
+                    description: VfPciID is the PCI ID for the VF
+                    type: string
+                  vlan:
+                    description: VlanID is the ID of the VLAN to be configured on
+                      the switch port
+                    maximum: 4094
+                    minimum: 0
+                    type: integer
+                type: object
+              subnet:
+                description: Subnet is the Subnet to which the port should be attached
+                type: string
+              switch-interface:
+                description: SwitchInterface contains information on the corresponding
+                  switch interface (optional)
+                properties:
+                  port-id:
+                    description: PortID is the port identifier of the switch/router
+                      on which the workload interface has to be configured
+                    type: string
+                  sys-name:
+                    description: SysName is the system name of the switch/router on
+                      which the workload interface has to be configured
+                    type: string
+                type: object
+              templates:
+                description: Templates contains a list of keys for templates that
+                  should be selected from the WorkloadInterface template ConfigMap
+                items:
+                  type: string
+                type: array
+            required:
+            - templates
+            type: object
+          status:
+            description: WorkloadInterfaceStatus defines the observed state of WorkloadInterface
+            properties:
+              conditions:
+                items:
+                  description: copied from https://github.com/kubernetes/apimachinery/blob/v0.22.0/pkg/apis/meta/v1/types.go#L1398
+                  properties:
+                    lastTransitionTime:
+                      description: lastTransitionTime is the last time the condition
+                        transitioned from one status to another. This should be when
+                        the underlying condition changed.  If that is not known, then
+                        using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: message is a human readable message indicating
+                        details about the transition. This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    reason:
+                      description: reason contains a programmatic identifier indicating
+                        the reason for the condition's last transition. Producers
+                        of specific condition types may define expected values and
+                        meanings for this field, and whether the values are considered
+                        a guaranteed API. The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                        --- Many .condition.type values are consistent across resources
+                        like Available, but because arbitrary conditions can be useful
+                        (see .node.status.conditions), the ability to deconflict is
+                        important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+              refs:
+                items:
+                  type: string
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

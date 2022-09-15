@@ -1,0 +1,13 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+replicaCount: 2
+
+enc_nws_operator:
+  images:
+    enc_nws_controller:
+      registry: <YOUR_DOCKER_REGISTRY>
+      repository: enc-nws-controller
+      tag: "22.6-20220630020526"
+#imagePullSecrets:
+# - name: "<YOUR_SECRET_NAME>"

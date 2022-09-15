@@ -1,0 +1,18 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: enc-nwi-selfsigned-ca
+  namespace: enc-nwi-system
+spec:
+  commonName: enc-nwi-selfsigned-ca
+  duration: 43800h
+  isCA: true
+  issuerRef:
+    name: enc-nwi-selfsigned-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  secretName: enc-nwi-selfsigned-ca-secret

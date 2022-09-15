@@ -1,0 +1,16 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: enc-nwi-serving-cert
+  namespace: enc-nwi-system
+spec:
+  dnsNames:
+  - enc-nwi-webhook-service.enc-nwi-system.svc
+  - enc-nwi-webhook-service.enc-nwi-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: enc-nwi-selfsigned-issuer
+  secretName: webhook-server-cert

@@ -1,0 +1,18 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: enc-nwi-client-proxy-certificate
+  namespace: enc-nwi-system
+spec:
+  dnsNames:
+  - enc-nwi-gnmi-proxy-srl.enc-nwi-system
+  duration: 17520h
+  issuerRef:
+    name: enc-nwi-ca-issuer
+  secretName: enc-nwi-proxy-client-certificate-secret
+  secretTemplate:
+    labels:
+      name: proxy-client-certificate

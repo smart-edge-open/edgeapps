@@ -1,0 +1,70 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: enc-nws-manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - nwi.enc.nokia.com
+  resources:
+  - srlinuxconfigs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - nwi.enc.nokia.com
+  resources:
+  - srlinuxconfigs/status
+  verbs:
+  - get
+- apiGroups:
+  - nwi.enc.nokia.com
+  resources:
+  - srosconfigs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - nwi.enc.nokia.com
+  resources:
+  - srosconfigs/status
+  verbs:
+  - get
+- apiGroups:
+  - nws.enc.nokia.com
+  resources:
+  - workloadinterfaces
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - nws.enc.nokia.com
+  resources:
+  - workloadinterfaces/status
+  verbs:
+  - get
+  - patch
+  - update
