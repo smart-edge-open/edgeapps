@@ -1,3 +1,7 @@
+SPDX-License-Identifier: Apache-2.0
+
+Copyright (c) 2022 Nokia Corporation
+
 # Nokia Edge Network Controller
 
 ## Overview
@@ -5,6 +9,8 @@
 The Nokia Edge Network Controller provides a cloud-native network automation function designed to address the unique needs of edge clouds. It enables your network engineering, architecture and operations teams to collaborate through a common NetOps approach and gives them a simple and flexible way to automate IP network design and configuration.  
 
 Use the Kubernetes paradigm and API to make it easy for your applications to consume network resources in the edge cloud.  
+
+Edge Network Controller version 22.6 was tested on Smart Edge Developer Experience Kit 21.12
 
 ## Edge Network Controller architecture 
 
@@ -29,4 +35,13 @@ Edge Network Controller (ENC) Network Scaler CNI Plugin — NwS CNI Plugin for s
 ## Install instructions
 In the release bundles you find installation instructions in the *docs/* folder with each component.
 
-Copyright (c) 2022 Nokia Corporation
+## Obtaining the container images
+Retrieve Container Images from: [Nokia Customer portal](https://customer.nokia.com/s/product2/01t3h000002naAXAAY/nsp-network-orchestration)
+
+## Additional information
+More about Edge Network Controller: [Edge Network Controller product info](https://www.nokia.com/networks/ip-networks/edge-network-controller/).
+For more product inquiries, [connect with Nokia Sales](https://www.nokia.com/networks/connect-with-sales/) 
+
+
+
+
