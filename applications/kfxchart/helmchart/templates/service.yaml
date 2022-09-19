@@ -1,0 +1,18 @@
+#SPDX-License-Identifier: Apache-2.0
+#Copyright (c) 2022 Kfx Circuits & Systems Private Limited
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kfxchart.fullname" . }}
+  labels:
+    {{- include "kfxchart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "kfxchart.selectorLabels" . | nindent 4 }}
