@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v2
+name: udr
+version: 1.0.0
+description: Helm Chart of 5G Unified Data Repository 
+maintainers:
+  - name: Lawrence Luo
+    email: lawrenceluo@astri.org  
+type: application

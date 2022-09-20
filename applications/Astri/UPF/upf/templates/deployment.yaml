@@ -1,0 +1,153 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "upf.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "upf.fullname" . }}
+  template:
+    metadata:
+      annotations:
+        {{- if eq $.Values.vpp.n4.podIPAddr true }}
+        k8s.v1.cni.cncf.io/networks: {{ .Values.vpp.n3.sriovNetworkName }}, {{ .Values.vpp.n6.sriovNetworkName }}
+        {{- else }}
+        k8s.v1.cni.cncf.io/networks: {{ .Values.vpp.n3.sriovNetworkName }}, {{ .Values.vpp.n6.sriovNetworkName }}, {{ .Values.vpp.n4.vf.sriovNetworkName }}
+        {{- end }}
+      labels:
+        app: {{ include "upf.fullname" . }}
+    spec:
+      nodeSelector: {{- .Values.nodeSelector | toYaml | nindent 8 }}
+      initContainers:
+      # This init container initializes VPP core dumps.
+      - name: vpp-init
+        image: "{{ .Values.vpp.image.repository }}:{{ .Values.vpp.image.tag }}"
+        imagePullPolicy: {{ .Values.vpp.image.pullPolicy }}
+        command:
+          - /bin/bash
+        args:
+          - -c
+          - |
+            sudo set -eu
+            sudo sysctl -w debug.exception-trace=1
+            sudo sysctl -w kernel.core_pattern="/var/crash/%e-%t"
+            ulimit -c unlimited
+        resources:
+          {{- toYaml .Values.vpp.initresources | nindent 12 }}
+        volumeMounts:
+          - name: var-crash
+            mountPath: /var/crash
+      containers:
+      - name: vpp-c
+        image: "{{ .Values.vpp.image.repository }}:{{ .Values.vpp.image.tag }}"
+        imagePullPolicy: {{ .Values.vpp.image.pullPolicy }}
+        command: [ "/bin/sh", "-c" ]
+        args: [ "sudo sed -i -r '18d' /usr/bin/vpp-start.sh; bash -x /etc/startscript/start-annotation.sh" ]
+        env:
+        - name: EDGE_APP_NETWORK
+          value: {{ .Values.vpp.edgeAppNetworks }}
+        - name: UE_NETWORK
+          value: {{ .Values.vpp.ueNetworks }}
+        - name: VETHPEERHOSTADDR
+          value: {{ .Values.vpp.vethPeerHostAddress }}
+        - name: VETHPEERVPPADDR
+          value: {{ .Values.vpp.vethPeerVppAddress }}
+        volumeMounts:
+        - mountPath: /hugepages-1Gi
+          name: hugepage-1gi
+        - mountPath: /etc/default/grub
+          name: grub
+        - mountPath: /dev
+          name: dev-mount
+        - mountPath: /dev/shm
+          name: shm
+        - mountPath: /lib/modules
+          name: lib-modules
+        - name: sys-bus-pci
+          mountPath: /sys/bus/pci
+        - name: var-run
+          mountPath: /var/run
+        - name: tmp
+          mountPath: /tmp
+        - name: log
+          mountPath: /var/log/vpp/
+        - name: secret-license
+          mountPath: /etc/vpp/licensefile
+        - name: var-crash
+          mountPath: /var/crash
+        - name: upf-conf
+          readOnly: false
+          mountPath: /etc/upfconf
+        - name: start-annotation
+          readOnly: false
+          mountPath: /etc/startscript
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - sudo /usr/bin/pre-stop.sh
+        securityContext:
+          privileged: true
+        resources:
+          {{- toYaml .Values.vpp.resources | nindent 12 }}
+      - name: vpp-agent-c
+        image: "{{ .Values.vppagent.image.repository }}:{{ .Values.vppagent.image.tag }}"
+        imagePullPolicy: {{ .Values.vppagent.image.pullPolicy }}
+        command: [ "/bin/bash", "-c" ]
+        args: [ "sudo /usr/bin/redis-server /etc/redis/redis.conf & sudo vpp-agent -config-dir=\"/etc/vpp-agent\"" ]
+        securityContext:
+          privileged: true
+        resources:
+          {{- toYaml .Values.vppagent.resources | nindent 12 }}
+        volumeMounts:
+        - name: var-run
+          mountPath: /run
+        - mountPath: /dev/shm
+          name: shm
+      volumes:
+      - emptyDir:
+          medium: HugePages-1Gi
+        name: hugepage-1gi
+      - name: dev-mount
+        hostPath:
+          path: /dev
+      - name: shm
+        hostPath:
+          path: /dev/shm
+      - name: sys-bus-pci
+        hostPath:
+          path: /sys/bus/pci
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+      - hostPath:
+          path: /etc/default/grub
+          type: ""
+        name: grub
+      - name: var-run
+        emptyDir:
+          medium: Memory
+      - name: var-crash
+        hostPath:
+          path: /var/crash
+      - name: log
+        hostPath:
+          path: /var/log/vpp/
+      - name: tmp
+        emptyDir:
+          medium: Memory
+      - name: upf-conf
+        configMap:
+          name: upf-conf
+      - name: secret-license
+        secret:
+          secretName: {{ .Values.vpp.licenseSecret }}
+      - name: start-annotation
+        configMap:
+          name: start-annotation

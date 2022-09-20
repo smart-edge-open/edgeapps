@@ -1,0 +1,98 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "smf.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.smf.replicaCount }}
+  selector:
+    matchLabels:
+      app: smf
+  template:
+    metadata:
+      annotations:
+      {{- if .Values.smf.networks.enabled }}
+         k8s.v1.cni.cncf.io/networks: {{ .Values.smf.networks.name }}
+      {{- end }}
+      labels:
+        app: smf
+    spec:
+      {{- if eq (include "globalEnabled" .) "true" }}
+      nodeSelector: {{- .Values.global.nodeSelector | toYaml | nindent 8 }}
+      {{- else }}
+      nodeSelector: {{- .Values.smf.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "smf.fullname" . }}
+          image: "{{ .Values.smf.image.repository }}:{{ .Values.smf.image.tag }}"
+          imagePullPolicy: {{ .Values.smf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c" ]
+          args: [ "sudo /usr/local/bin/smf -s -c /etc/smf/config/smf.conf -l /etc/smf/config/asn.log.properties -t" ]
+          volumeMounts:
+            - name: smf-log
+              mountPath: /var/log/smf
+            - name: core-path
+              mountPath: /tmp/cores
+            - name: smf-xml
+              mountPath: /etc/smf/xml
+            - name: secret-license
+              mountPath: /etc/smf/licensefile
+            - name: smf-conf
+              mountPath: /etc/smf/config  
+            - name: devmem
+              mountPath: /dev/mem
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep smf
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep smf
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+          resources:
+            {{ toYaml .Values.smf.resources | nindent 12 }}
+      {{- if .Values.smf.tolerations }}
+        tolerations:
+          {{ toYaml .Values.smf.tolerations | indent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.smf.terminationGracePeriodSeconds }}
+
+      volumes:
+      - name: smf-log
+        hostPath:
+          path: /var/log/smf/smf.log
+      - name: core-path
+        hostPath:
+          path: /home/ubuntu/core-dump
+      - name: smf-xml
+        configMap:
+          name: smf-xml
+      - name: devmem
+        hostPath: 
+          path: /dev/mem
+      - name: smf-conf
+        configMap: 
+          name: smf-conf          
+      - name: secret-license
+        secret:
+          {{- if eq (include "globalEnabled" .) "true" }}
+          secretName: {{ .Values.global.licenseSecret }}
+          {{- else }}
+          secretName: {{ .Values.smf.licenseSecret }}
+          {{- end }}

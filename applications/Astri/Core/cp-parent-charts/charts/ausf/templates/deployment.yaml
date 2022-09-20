@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ausf.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.ausf.replicaCount }}
+  selector:
+    matchLabels:
+      app: ausf
+  template:
+    metadata:
+      labels:
+        app: ausf
+    spec:
+      {{- if eq (include "globalEnabled" .) "true" }}
+      nodeSelector: {{- .Values.global.nodeSelector | toYaml | nindent 8 }}
+      {{- else }}
+      nodeSelector: {{- .Values.ausf.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "ausf.fullname" . }}
+          image: "{{ .Values.ausf.image.repository }}:{{ .Values.ausf.image.tag }}"
+          imagePullPolicy: {{ .Values.ausf.image.pullPolicy }} 
+          command: [ "/bin/sh", "-c" ]
+          args: [ "sudo /usr/local/bin/ausf -s -c /etc/ausf/config/ausf.conf -l /etc/ausf/config/asn.log.properties -t" ]
+          volumeMounts:
+            - name: ausf-log
+              mountPath: /var/log/ausf
+            - name: ausf-xml
+              mountPath: /etc/ausf/xml
+            - name: secret-license
+              mountPath: /etc/ausf/licensefile
+            - name: devmem
+              mountPath: /dev/mem
+            - name: ausf-conf
+              mountPath: /etc/ausf/config  
+          ports:
+            - containerPort: 38412
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep ausf
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep ausf
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+          resources:
+            {{ toYaml .Values.ausf.resources | nindent 12 }}
+      {{- if .Values.ausf.tolerations }}
+        tolerations:
+          {{ toYaml .Values.ausf.tolerations | indent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.ausf.terminationGracePeriodSeconds }}
+
+      volumes:
+       - name: ausf-log
+         hostPath:
+           path: /var/log/ausf
+       - name: devmem
+         hostPath:
+           path: /dev/mem
+       - name: ausf-conf
+         configMap:
+           name: ausf-conf
+       - name: ausf-xml
+         configMap:
+           name: ausf-xml
+       - name: secret-license
+         secret:
+           {{- if eq (include "globalEnabled" .) "true" }}
+           secretName: {{ .Values.global.licenseSecret }}
+           {{- else }}
+           secretName: {{ .Values.ausf.licenseSecret }}
+           {{- end }}

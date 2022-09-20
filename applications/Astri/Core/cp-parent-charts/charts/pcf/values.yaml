@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+# Default values for pcf_charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+pcf:
+  ## If false, pcf will not be installed
+  enabled: true
+
+  ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
+  replicaCount: 1
+
+  ## pcf container name
+  name: pcf
+
+  #  annotations: k8s.v1.cni.cncf.io/networks: pcf-n1, pcf-nn
+  annotations: {}
+
+  ## pcf container image
+  image:
+    repository: astri.org/5g/pcf
+    tag: v22.03-rc0
+    pullPolicy: IfNotPresent
+
+  # podIP is used to configure the IP address of Pod's calico network interface
+  podIP: 10.245.216.129
+
+  dnsRedirectEnable: false
+
+  ## network interfaces configurations for PCF
+  networkInterfaces:
+    n7Http2Server: 10.245.216.129
+    n7Http2ServerPort: 7081
+    n7Http2Client: 10.245.216.129
+    n7Http2ClientPort: 7082
+
+    n15Http2Server: 10.245.216.129
+    n15Http2ServerPort: 7080
+
+
+  ## PCF Node selector for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  nodeSelector: 
+    kubernetes.io/hostname: controller  
+
+    
+  ## Node tolerations for server scheduling to nodes with taints
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations: []
+    #- key: "key"
+    #  operator: "Equal|Exists"
+    #  value: "value"
+    #  effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+  ## Annotations to be added to configcontroller pods
+  podAnnotations: {}
+    # iam.amazonaws.com/role: worker
+
+  ## pcf service
+  service:
+    annotations: {}
+    labels: {}
+    clusterIP: ""
+
+    ## List of IP addresses at which the configcontroller service is available
+    ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+    externalIPs: []
+    
+    name_n7: n7
+    servicePort_n7: 7081
+    name_n15: n15
+    servicePort_n15: 7080
+    
+    type: ClusterIP
+
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m 
+
+  terminationGracePeriodSeconds: 30
+  licenseSecret: license-controller

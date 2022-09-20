@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v2
+name: ausf
+version: 1.0.0
+description: A Helm Charts for AUSF of 5G
+maintainers:
+  - name: Xue Feng
+    email: xuefeng@astri.org
+  - name: Lawrence Luo
+    email: lawrenceluo@astri.org    
+type: application    
