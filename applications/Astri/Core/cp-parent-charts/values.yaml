@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+### Global Values for subcharts  ###
+### Calico IP Addresses for AMF, AUSF, PCF, SMF, UDM and UDR Pods
+global: 
+  # If upf N4 IP is using calico CNI, set upfN4IP: ""; if upf N4 IP is using VF, set upfN4IP with  N4  VF IP
+  upfN4IP: ""
+  #upfN4IP: 192.168.23.177
+
+  nodeSelector:
+    kubernetes.io/hostname: controller
+  licenseSecret: license-controller
+
+### Sub Charts Specific Values ###
+amf:
+  # Set enabled to false to disable amf deployment and vice versa
+  enabled: true
+  amf: 
+    image:
+      repository: astri.org/5g/amf
+      tag: v22.07-rc1
+
+ausf:
+  # Set enabled to false to disable ausf deployment and vice versa
+  enabled: true
+  ausf: 
+    image:
+      repository: astri.org/5g/ausf
+      tag: v22.05-rc0
+
+pcf:
+  # Set enabled to false to disable pcf deployment and vice versa
+  enabled: true
+  pcf:
+    image:
+      repository: astri.org/5g/pcf
+      tag: v22.05-rc0
+    dnsRedirectEnable: false
+
+smf:
+  # Set enabled to false to disable smf deployment and vice versa
+  enabled: true
+  smf:
+    image:
+      repository: astri.org/5g/smf
+      tag: v22.06-rc1
+
+udm:
+  # Set enabled to false to disable udm deployment and vice versa
+  enabled: true
+  udm:
+    image:
+      repository: astri.org/5g/udm
+      tag: v22.05-rc0
+
+udr:
+  # Set enabled to false to disable udr deployment and vice versa
+  enabled: true
+  udr: 
+    image:
+      repository: astri.org/5g/udr
+      tag: v22.03-rc0

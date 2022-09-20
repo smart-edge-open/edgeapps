@@ -1,0 +1,282 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "pcf.fullname" . }}
+  name: pcf-conf
+data:
+  pcf.conf: |
+    <ngc>
+  
+      <!--N7-local-server-ipv4: N7-Interface IPAddr between PCF with SMF, PCF as HTTP2 Server
+          N7-local-server-port: N7-Interface port between PCF with SMF, PCF as HTTP2 Server
+          N7-local-client-ipv4: N7-Interface between PCF with SMF, PCF as HTTP2 Client
+          N7-local-client-port: N7-Interface between PCF with SMF, PCF as HTTP2 Client
+          N15-local-server-ipv4: N15-Interface between PCF and AF
+          N15-local-server-port: N15-Interface between PCF and AF
+          test-client-ipv4-sm:  Internal use for testing
+          test-client-port-sm: Internal use for testing
+          sm_policy_xml_file: predefined policy rules
+          udr_subscription_example_xml_file: predefined policy rules-->
+     
+      <ifcfg N7-local-service-name="cp-pcf.{{ .Release.Namespace }}" N7-local-server-port="{{ .Values.pcf.networkInterfaces.n7Http2ServerPort }}" N7-local-host="localhost" N7-local-client-port="{{ .Values.pcf.networkInterfaces.n7Http2ClientPort }}" N15-service-name="cp-pcf.{{ .Release.Namespace }}" N15-local-server-port="{{ .Values.pcf.networkInterfaces.n15Http2ServerPort }}" sm_policy_xml_file="./xml/predefined-sm-policy-rules.xml" am_predefined-policy-file="./xml/am-policy-data.xml" smf-apiroot="" amf-apiroot="" udm-apiroot="" pcf-apiroot=""/>      
+    </ngc>
+  asn.log.properties: |-
+    #
+    # Default Log Level is info
+    #
+    log4cplus.rootLogger=error, console, file
+    
+    ####################################
+    # Subsystem Log Level Control
+    log4cplus.logger.syslib=debug, console, file
+    log4cplus.logger.framework=debug, console, file
+    #log4cplus.logger.framework.modal=error, console, file
+    #log4cplus.logger.framework.model=error, console, file
+    #log4cplus.logger.framework.stat=error, console, file
+    #log4cplus.logger.framework.adapter=error, console, file
+    #log4cplus.logger.framework.adapter.CompoundTLV=error, console, file
+    #log4cplus.logger.framework.session.UDPSession=error, console, file
+    #log4cplus.logger.framework.db=error, console, file
+    #log4cplus.logger.framework.dao=error, console, file
+    #log4cplus.logger.framework.serialization=error, console, file
+    #log4cplus.logger.framework.cprecovery=error, console, file
+    #log4cplus.logger.coreapp.asfa=error, console, file
+    #log4cplus.logger.db=error, console, file
+    #log4cplus.logger.protocol=debug, console, file
+    log4cplus.logger.pcf=debug, console, file
+    #log4cplus.logger.syslib.security=debug, console, file
+
+    
+    # Custom Log Level Control -
+    # Note: log4cplus.additivity.xxx=false will remove duplicated logs.
+    #
+    log4cplus.additivity.syslib=false
+    log4cplus.additivity.framework=false
+    log4cplus.additivity.db=false
+    log4cplus.additivity.protocol=false
+    log4cplus.additivity.pcf=false
+    
+    #
+    # Logging to Console
+    #
+    log4cplus.appender.console=log4cplus::ConsoleAppender
+    log4cplus.appender.console.layout=log4cplus::PatternLayout
+    log4cplus.appender.console.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n
+    #log4cplus.appender.console.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.console.filters.1.StringToMatch=90:90:00:00:00:01
+    #log4cplus.appender.console.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.console.filters.2=log4cplus::spi::DenyAllFilter
+    
+    #
+    # Logging to Logfiles
+    #
+    log4cplus.appender.file=log4cplus::RollingFileAppender
+    log4cplus.appender.file.MaxFileSize=6000KB
+    log4cplus.appender.file.MaxBackupIndex=10
+    #log4cplus.appender.file.File=${WAGRMMROOT}/log/asn.log
+    log4cplus.appender.file.File=/var/log/pcf/pcf.log
+    log4cplus.appender.file.layout=log4cplus::PatternLayout
+    log4cplus.appender.file.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n
+    #log4cplus.appender.file.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.file.filters.1.StringToMatch=90:90:00:00:00:02
+    #log4cplus.appender.file.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.file.filters.2=log4cplus::spi::DenyAllFilter      
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "pcf.fullname" . }}
+  name: pcf-xml
+data:
+  predefined-sm-policy-rules.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <pcf-rules-profile>
+        <PcReqTriggers size="2">
+            <triggers triggerId="triggerList1" value="SE_AMBR_CH"/>
+            <triggers triggerId="triggerList2" value="SE_AMBR_CH,RES_MO_RE"/>
+        </PcReqTriggers>
+        <QosData size="1">
+            <qos qosId="qos1" qos_5qi="5" priorityLevel="8" preemptCap="MAY_PREEMPT" preemptVuln="PREEMPTABLE"/>
+        </QosData>
+        <TcData size="1">
+        {{- if eq $.Values.pcf.dnsRedirectEnable true }}
+            <tc tcId="tc0" flowStatus="ENABLED" redirectEnabled="true" redirectAddressType="IPV4_ADDR" redirectServerAddress="10.10.1.1" />
+        {{- else }}
+            <tc tcId="tc0" flowStatus="ENABLED" redirectEnabled="false" redirectAddressType="IPV4_ADDR" redirectServerAddress="10.10.1.1" />
+        {{- end }}
+        </TcData>
+        <FlowInfos size="1">
+            <flowList size="1" flowListId="flowList1">
+                <flowInfo descriptions="permit out ip from 0.0.0.0/0 53 to assigned"/>
+            </flowList>
+        </FlowInfos>
+        <QosIds size="1">
+            <list qosListId="qosList1" size="1">
+                <qosId value="qos1"/>
+            </list>
+        </QosIds>
+        <TcIds size="1">
+            <list tcListId="tcList0" size="1">
+                <tcId value="tc0"/>
+            </list>
+        </TcIds>
+        <PccRule size="1">
+            <pcc pccRuleId="pcc1" type="dynamic" precedence="19" qosListId="qosList1" flowListId="flowList1" tcListId="tcList0"/>
+        </PccRule>
+        <PccIds size="1">
+            <list pccListId="pccList1" size="1">
+                <pccId value="pcc1"/>
+            </list>
+        </PccIds>
+        <SessionRule size="1">
+            <session sessionRuleId="11" sessionAmbrUl="200" sessionAmbrDl="200" def5qi="9" priorityLevel="8" preemptCap="PREEMPTABLE" preemptVuln="PREEMPTABLE"/>
+        </SessionRule>
+        <SmPolicyDecision size="1">
+            <decision sst="1" dnn="default" tac="any" sessionRuleId="11" pccListId="pccList1"/>
+        </SmPolicyDecision>
+        <LocalPolicyProfile/>
+    </pcf-rules-profile>
+
+  udr-policy-subscription-example.xml: |
+    <udr-profiles>
+      <udr-profile name="udr-profile" size="2" sst="1" sd="45" dnn="dnn">
+        <ue-entry supi="466920001" fqi="1" sessionAmbrUL="1000" sessionAmbrDL="1000" defaultSscMode="1">
+          <allowedPduSessionTypeList size="2">
+            <pduSessionType type="ipv4"/>
+            <pduSessionType type="ipv6"/>
+          </allowedPduSessionTypeList>
+          
+          <allowedSscModeList size="2">
+            <sscMode mode="2"/>
+            <sscMode mode="3"/>
+          </allowedSscModeList>
+          
+        </ue-entry>
+        <ue-entry supi="466920002" fqi="9" defaultSscMode="1" defaultSessionType="ethernet" iwkEpsInd="true" ladnIndicator="true" arpPriorityLevel="3" arpPreemptionCap="cap" arpPreemptionVul="vul" d5qiResourceType="type" d5qiPacketDelayBudget="32" d5qiPacketErrRate="32" d5qiPriorityLevel="32" d5qiAverWindow="32" d5qMaxDataBurstVol="32" nd5qiPriorityLevel="32" nd5qiAverWindow="32" nd5qiMaxDataBurstVol="32" sessionAmbrUL="1000" sessionAmbrDL="1000" _3GppChargingCharacteristics="charging" staticIpv4Addr="1.1.1.2" staticIpv6Addr="" staticIpv6Prefix="1:::::1" upIntegr="upI" upConfid="upC"/>
+      </udr-profile>
+    </udr-profiles>
+
+  sm-policy-data.xml: |
+    <pcf-decision>
+  
+      <QosData size="5">
+        <qos qosId="qos1" qos_5qi="1" arp="8" maxbrUl="10" maxbrDl="10" gbrUl="5" gbrDl="5"/>
+        <qos qosId="qos4" qos_5qi="4" arp="8" maxbrUl="10" maxbrDl="10" gbrUl="5" gbrDl="5"/>
+        <qos qosId="qos6" qos_5qi="6" arp="8"/>
+        <qos qosId="qos8" qos_5qi="8" arp="8"/>
+        <qos qosId="qos9" qos_5qi="9" arp="8" reflectiveQos="false"/>
+      </QosData>
+      
+      <TcData size="2">
+        <tc tcId="tc1" trafficSteeringPolIdUl="123"/>
+        <tc tcId="tc2" trafficSteeringPolIdUl="456"/>
+        <tc tcId="tc3" trafficSteeringPolIdUl="345"/>
+      </TcData>
+      
+      <FlowInfos size="3">
+        <flowList size="2" flowListId="flowList1">
+          <flowInfo descriptions="permit out 1 from 1.2.3.4 to 5.6.7.8"/>
+          <flowInfo descriptions="permit in 1 from 10.1.1.11/22 2000-2010 to 10.1.1.12/23 2003-2020"/>
+        </flowList>
+        
+        <flowList size="2" flowListId="flowList2">
+          <flowInfo descriptions="permit out ip from any 0-65535 to any 0-65535"/>
+          <flowInfo descriptions="permit in ip from any 0-65535 to any 0-65535"/>
+        </flowList>
+        
+        <flowList size="2" flowListId="flowList3">
+          <flowInfo descriptions="permit out 17 from any 0-65535 to any 0-65535"/>
+          <flowInfo descriptions="permit in 17 from any 0-65535 to any 0-65535"/>
+        </flowList>
+      </FlowInfos>
+      
+      <QosIds size="3">
+        <list qosListId="qosList1" size="1">
+          <qosId value="qos9"/>
+        </list>
+        
+        <list qosListId="qosList2" size="1">
+          <qosId value="qos8"/>
+        </list>
+        
+        <list qosListId="qosList3" size="1">
+          <qosId value="qos1"/>
+        </list>
+      </QosIds>
+      
+      <TcIds size="3">
+        <list tcListId="tcList1" size="1">
+          <tcId value="tc1"/>
+        </list>
+        
+        <list tcListId="tcList2" size="1">
+          <tcId value="tc2"/>
+        </list>
+        
+        <list tcListId="tcList3" size="1">
+          <tcId value="tc3"/>
+        </list>
+      </TcIds>
+      
+      <PccRule size="7">
+        <pcc pccRuleId="pcc1" type="dynamic" appId="1001" precedence="10" qosListId="qosList1"/>
+        <pcc pccRuleId="pcc2" type="dynamic" appId="1002" precedence="8" qosListId="qosList2"/>
+        <pcc pccRuleId="pcc3" type="dynamic" appId="1003" precedence="9" qosListId="qosList3"/>
+        <pcc pccRuleId="pcc4" type="dynamic" appId="1001" precedence="9" qosListId="qosList1"/>
+        <pcc pccRuleId="pcc11" type="dynamic" flowListId="flowList1" precedence="19" qosListId="qosList1"/>
+        <pcc pccRuleId="pcc12" type="dynamic" flowListId="flowList2" precedence="18" qosListId="qosList2"/>
+        <pcc pccRuleId="pcc13" type="dynamic" flowListId="flowList3" precedence="10" qosListId="qosList3"/>
+        <pcc pccRuleId="pcc5" type="dynamic" appId="1003" precedence="8" qosListId="qosList2" tcListId="tcList3"/>
+        <pcc pccRuleId="pcc6" type="predefined"/>
+      </PccRule>
+      
+      <SessionRule size="2">
+        <session sessionRuleId="1" sessionAmbrUl="100" sessionAmbrDl="100" def5qi="9" defArp="8"/>
+        <session sessionRuleId="2" sessionAmbrUl="100" sessionAmbrDl="100" def5qi="9" defArp="10"/>
+      </SessionRule>
+      
+      <PccIds size="2">
+        <list pccListId="pccList2" size="3">
+          <pccId value="pcc11"/>
+          <pccId value="pcc12"/>
+          <pccId value="pcc13"/>
+        </list>
+        
+        <list pccListId="pccList1" size="1">
+          <pccId value="pcc11"/>
+        </list>
+      </PccIds>
+      
+      <SmPolicyDecision size="2">
+        <decision tac="0x51" dnn="default" ssc="1" sessionRuleId="1" pccListId="pccList2"/>
+        <decision tac="0x52" dnn="default" ssc="1" sessionRuleId="2" pccListId="pccList2"/>
+      </SmPolicyDecision>
+    </pcf-decision>
+
+  am-ue-policy.xml: |
+    <pcf-profiles>
+      <user-list size="1">
+        <ue-policy-data ue-supi="466920100001101" am-policy-index="1"/>
+        <ue-policy-data ue-supi="466929999999002" am-policy-index="1"/>
+      </user-list>
+    </pcf-profiles>
+
+  am-policy-data.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <pcf-profiles> 
+      <am-policy size="2">
+        <am-policy-entry index="1001" rfsp-index="123" service-area-type="allowed" tai-size="1">
+          <tai-entry tai-mcc="466" tai-mnc="92" tai-tac="81"/>
+        </am-policy-entry>
+      </am-policy>
+    </pcf-profiles>
+
+ 

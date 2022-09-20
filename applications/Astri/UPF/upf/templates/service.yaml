@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: upf-agent
+spec:
+  type: NodePort
+  selector:
+    app: upf-agent
+  ports:
+  - protocol: TCP
+    port: 9191
+    targetPort: 9191
+
+metadata:
+  name: upf-service
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: UDP
+    port: 8805
+    targetPort: 8805
+  selector:
+    app: upf

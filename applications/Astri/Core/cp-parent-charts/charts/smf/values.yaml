@@ -1,0 +1,116 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+# Default values for 5g_charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+smf:
+  ## If false, smf will not be installed
+  enabled: true
+
+  ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
+  replicaCount: 1
+
+  ## smf container name
+  name: smf
+  annotations: {}
+
+  ## smf container image
+  image:
+    repository: astri.org/5g/smf
+    tag: v22.03-rc0
+    pullPolicy: IfNotPresent
+
+  ## networks configures the network resources to be used, set enabled: false to use default CNI option (e.g. calico, flannel)
+  networks:
+    enabled: false
+    name: ""
+
+  # podIP is used to configure the IP address of Pod's calico network interface
+  podIP: 10.245.216.130
+
+  ## network interfaces configurations for SMF
+  networkInterfaces:
+    n4PfcpServer: 10.245.216.130
+    n4PfcpServerPort: 8806
+
+    n11Http2Server: 10.245.216.130
+    n11Http2ServerPort: 3124
+    n11Http2Client: 10.245.216.130
+    n11Http2ClientPort: 2133
+
+    n10Http2Client: 10.245.216.130
+    n10Http2ClientPort: 2133
+
+    n7Http2Client: 10.245.216.130
+    n7Http2ClientPort: 2133
+
+    amfIp: 10.245.216.128
+    amfPort: 81
+
+    udmIp: 10.245.216.131
+    udmPort: 3123
+    udmNotiServer: 10.245.216.130
+    udmNotiPort: 8014
+
+    pcfIp: 10.245.216.129
+    pcfPort: 7081
+    pcfNotiServer: 10.245.216.130
+    pcfNotiPort: 8013
+
+    upf1Ip: 192.168.120.120
+
+  ## SMF Node selector for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  nodeSelector: 
+    kubernetes.io/hostname: controller
+
+  ## Node tolerations for server scheduling to nodes with taints
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations: []
+    #- key: "key"
+    #  operator: "Equal|Exists"
+    #  value: "value"
+    #  effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+  ## Annotations to be added to configcontroller pods
+  podAnnotations: {}
+    # iam.amazonaws.com/role: worker
+
+  ## smf service
+  service:
+    annotations: {}
+    labels: {}
+    clusterIP: ""
+
+    ## List of IP addresses at which the configcontroller service is available
+    ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+    externalIPs: []
+
+    name_n11: n11
+    servicePort_n11: 3124
+    name_n7: n7
+    servicePort_n7: 8013
+    name_n10: n10
+    servicePort_n10: 8014
+
+    type: ClusterIP
+
+   # resources: 
+   # We usually recommend not to specify default resources and to leave this as a conscious
+   # choice for the user. This also increases chances charts run on environments with little
+   # resources, such as Minikube. If you do want to specify resources, uncomment the following
+   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.   
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m 
+
+
+  ## Smf server pod termination grace period
+  ##
+  terminationGracePeriodSeconds: 30
+  licenseSecret: license-controller

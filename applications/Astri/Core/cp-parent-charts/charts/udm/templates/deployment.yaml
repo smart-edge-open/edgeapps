@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "udm.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.udm.replicaCount }}
+  selector:
+    matchLabels:
+      app: udm
+  template:
+    metadata:
+      labels:
+        app: udm
+    spec:
+      {{- if eq (include "globalEnabled" .) "true" }}
+      nodeSelector: {{- .Values.global.nodeSelector | toYaml | nindent 8 }}
+      {{- else }}
+      nodeSelector: {{- .Values.udm.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}   
+      containers:
+        - name: {{ template "udm.fullname" . }}
+          image: "{{ .Values.udm.image.repository }}:{{ .Values.udm.image.tag }}"
+          imagePullPolicy: {{ .Values.udm.image.pullPolicy }}
+          command: [ "/bin/sh", "-c" ]
+          args: [ "sudo /usr/local/bin/udm -s -c /etc/udm/config/udm.conf -l /etc/udm/config/asn.log.properties -t" ]
+          volumeMounts:              
+            - name: udm-log
+              mountPath: /var/log/udm
+            - name: udm-xml
+              mountPath: /etc/udm/xml
+            - name: secret-license
+              mountPath: /etc/udm/licensefile
+            - name: devmem
+              mountPath: /dev/mem
+            - name: udm-conf
+              mountPath: /etc/udm/config
+          ports:
+            - containerPort: 8080
+          resources:
+            {{ toYaml .Values.udm.resources | nindent 12 }}
+      {{- if .Values.udm.tolerations }}
+        tolerations:
+          {{ toYaml .Values.udm.tolerations | indent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.udm.terminationGracePeriodSeconds }}
+
+      volumes:
+      - name: udm-log
+        hostPath:
+          path: /var/log/udm
+      - name: devmem
+        hostPath:
+          path: /dev/mem
+      - name: udm-conf
+        configMap:
+          name: udm-conf
+      - name: udm-xml
+        configMap:
+          name: udm-xml
+      - name: secret-license
+        secret:
+          {{- if eq (include "globalEnabled" .) "true" }}
+          secretName: {{ .Values.global.licenseSecret }}
+          {{- else }}
+          secretName: {{ .Values.udm.licenseSecret }}
+          {{- end }}

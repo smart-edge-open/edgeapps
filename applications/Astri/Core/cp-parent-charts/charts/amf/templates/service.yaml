@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.amf.service.annotations }}
+  annotations:
+{{ toYaml .Values.amf.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "amf.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.amf.service.type }}
+{{- if .Values.amf.service.clusterIP }}
+  clusterIP: {{ .Values.amf.service.clusterIP }}
+{{- end }}
+{{- if .Values.amf.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.amf.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.amf.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.amf.service.loadBalancerIP }}
+{{- end }}
+{{- if .Values.amf.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{- range $cidr := .Values.amf.service.loadBalancerSourceRanges }}
+    - {{ $cidr }}
+  {{- end }}
+{{- end }}
+  ports:
+    - name: {{ .Values.amf.service.name_n2 }}
+      port: {{ .Values.amf.service.servicePort_n2 }}
+      targetPort: {{ .Values.amf.service.servicePort_n2 }}
+      protocol: SCTP
+    - name: {{ .Values.amf.service.name_n11 }}
+      port: {{ .Values.amf.service.servicePort_n11 }}
+      targetPort: {{ .Values.amf.service.servicePort_n11 }}
+      protocol: TCP  
+    - name: {{ .Values.amf.service.name_n8 }}
+      port: {{ .Values.amf.service.servicePort_n8 }}
+      targetPort: {{ .Values.amf.service.servicePort_n8 }}
+      protocol: TCP 
+    - name: {{ .Values.amf.service.name_n15 }}
+      port: {{ .Values.amf.service.servicePort_n15 }}
+      targetPort: {{ .Values.amf.service.servicePort_n15 }}
+      protocol: TCP  
+  selector:
+    app: amf

@@ -1,0 +1,175 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "ausf.fullname" . }}
+  name: ausf-conf
+data:
+  ausf.conf: |
+    <ngc>
+      <!--ausfCfgComponent: Load ausf Configuration besides interfaces
+            ausf-name: The name of the ausf node.-->
+      <ausfcfg ausf-name="ASTRI 5GC AUSF" ausf-capacity="100" ausf-apiroot=""/>
+      <!--Http2Component - N11 interface component
+            bind-port: Bind port for listening Http2 messages.-->
+
+      <http2 http2-service-name="cp-ausf.{{ .Release.Namespace }}" http2-server-port="{{ .Values.ausf.networkInterfaces.http2ServerPort }}" http2-local-host="localhost" http2-client-port="{{ .Values.ausf.networkInterfaces.http2ClientPort }}" http2-udm-service-name="cp-udm.{{ .Release.Namespace }}" http2-udm-port="{{ .Values.ausf.networkInterfaces.http2UdmPort }}" udm-apiroot=""/>
+    </ngc>
+
+  asn.log.properties: |    
+    #
+    # Default Log Level is info
+    #
+    log4cplus.rootLogger=info, console, file
+    
+    ####################################
+    # Subsystem Log Level Control
+    log4cplus.logger.syslib=error, console, file
+    log4cplus.logger.framework=error, console, file
+    log4cplus.logger.framework.modal=error, console, file
+    log4cplus.logger.framework.model=error, console, file
+    log4cplus.logger.framework.stat=error, console, file
+    #log4cplus.logger.framework.adapter=error, console, file
+    #log4cplus.logger.framework.adapter.CompoundTLV=error, console, file
+    #log4cplus.logger.framework.session.UDPSession=error, console, file
+    #log4cplus.logger.framework.db=error, console, file
+    #log4cplus.logger.framework.dao=error, console, file
+    #log4cplus.logger.framework.serialization=error, console, file
+    log4cplus.logger.framework.cprecovery=error, console, file
+    #log4cplus.logger.coreapp.asfa=error, console, file
+    log4cplus.logger.db=error, console, file
+    log4cplus.logger.protocol=error, console, file
+    log4cplus.logger.ausf=error, console, file
+    
+    # Custom Log Level Control -
+    # Note: log4cplus.additivity.xxx=false will remove duplicated logs.
+    #
+    log4cplus.additivity.syslib=false
+    log4cplus.additivity.framework=false
+    log4cplus.additivity.db=false
+    log4cplus.additivity.protocol=false
+    log4cplus.additivity.ausf=false
+    
+    #
+    # Logging to Console
+    #
+    log4cplus.appender.console=log4cplus::ConsoleAppender
+    log4cplus.appender.console.layout=log4cplus::PatternLayout
+    log4cplus.appender.console.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n
+    #log4cplus.appender.console.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.console.filters.1.StringToMatch=90:90:00:00:00:01
+    #log4cplus.appender.console.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.console.filters.2=log4cplus::spi::DenyAllFilter
+    
+    #
+    # Logging to Logfiles
+    #
+    log4cplus.appender.file=log4cplus::RollingFileAppender
+    log4cplus.appender.file.MaxFileSize=6000KB
+    log4cplus.appender.file.MaxBackupIndex=10
+    #log4cplus.appender.file.File=${WAGRMMROOT}/log/asn.log
+    log4cplus.appender.file.File=/var/log/ausf/ausf.log
+    log4cplus.appender.file.layout=log4cplus::PatternLayout
+    log4cplus.appender.file.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n
+    #log4cplus.appender.file.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.file.filters.1.StringToMatch=90:90:00:00:00:02
+    #log4cplus.appender.file.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.file.filters.2=log4cplus::spi::DenyAllFilter  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "ausf.fullname" . }}
+  name: ausf-xml
+data:
+  guami-example.xml: |
+    <guami-profiles>
+      <guami-profile name="amf-guami-profile" size="1">
+        <!--Guami : plmnid + amfid(AMF Region ID(16bits), AMF Set ID(4bits), AMF Pointer(4bits), 6 hexadecimal charaters)-->
+        <guami-entry index="1" mcc="466" mnc="92" amf-regionid="1111" amf-setid="1" amf-pointer="1"/>
+      </guami-profile>
+    </guami-profiles>
+
+  udm-smf-selection-example.xml: |
+    <udm-profile nf-type="2">
+      <smf-select-subscription-list size="2">
+        <subscribed-snssai-info-entry index="1" snssai-sst="1" snssai-sd="1" dnn-size="2">
+          <dnn-info-entry dnn-index="11" dnn-name="default" default-dnn-ind="1" lbo-roaming-allowed="0"/>
+          <dnn-info-entry dnn-index="12" dnn-name="public" default-dnn-ind="0" lbo-roaming-allowed="0"/>
+        </subscribed-snssai-info-entry>
+        
+        <subscribed-snssai-info-entry index="2" snssai-sst="2" snssai-sd="1" dnn-size="2">
+          <dnn-info-entry dnn-index="21" dnn-name="private" default-dnn-ind="0" lbo-roaming-allowed="0"/>
+          <dnn-info-entry dnn-index="22" dnn-name="internet" default-dnn-ind="0" lbo-roaming-allowed="0"/>
+        </subscribed-snssai-info-entry>
+      </smf-select-subscription-list>
+    </udm-profile>
+    
+  nrf-example.xml: |
+    <nf-selection-profiles>
+      <!--NRF UDM AMF SMF AUSF NEF PCF-->
+      
+      <nf-selection-profile mcc="466" mnc="92" size="4">
+        <nf-entry nf-type="smf" serving-area="string" dnn="default" nf-ip="192.168.120.32" port="80"/>
+        <nf-entry nf-type="smf" serving-area="string" dnn="public" nf-ip="192.168.120.32" port="80"/>
+        <nf-entry nf-type="ausf" nf-ip="192.168.120.32" port="80"/>
+        <nf-entry nf-type="udm" nf-ip="192.168.120.33" port="80"/>
+      </nf-selection-profile>
+    </nf-selection-profiles>
+
+  pcf-am-policy-data-example.xml: |
+    <pcf-profiles>
+      <am-policy size="0">
+        <am-policy-entry index="1" rfsp-index="123" service-area-type="allowed" max-allowed-tais="12" tai-size="2">
+          <tai-entry tai-mcc="466" tai-mnc="92" tai-tac="11"/>
+          <tai-entry tai-mcc="466" tai-mnc="92" tai-tac="12"/>
+        </am-policy-entry>
+        
+        <am-policy-entry index="2" rfsp-index="123" service-area-type="non-allowed" tai-size="2">
+          <tai-entry tai-mcc="466" tai-mnc="92" tai-tac="11"/>
+          <tai-entry tai-mcc="466" tai-mnc="92" tai-tac="12"/>
+        </am-policy-entry>
+      </am-policy>
+    </pcf-profiles>
+
+  ausf-example.xml: |
+    <op-profile>
+      <!--ueid; aka-method : 5G_AKA_CONFIRMATION is 1, EAP AKA PRIME is 2; _links: array; 5gAuthData: AV5GAka EaPayload;    AV5gAka: rand xresStar auth kausf;  ConfirmationData: resStar-->
+      
+      <ki-profile op="12 34 56 78 90 12 34 56 12 34 56 78 90 12 34 56" amf="80 00" vector-size="2" ue-size="1">
+        <ue-ki ue-supi="466920100001101" ue-usim-key="12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12" aka-algorithm="1"/>
+        <ue-ki ue-supi="466920100001102" ue-usim-key="12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12" aka-algorithm="1"/>
+      </ki-profile>
+    </op-profile>
+
+  udm-am-subscription-data-example.xml: |
+    <udm-profile nf-type="2">
+      <am-subscription name="am-subscription" size="1">
+        <am-entry index="1" subscribed-ue-ambr-ul="1024" subscribed-ue-ambr-dl="1024" rat-restriction="1,3" periodic-registrate-timer="60" priority-service-ind="0">
+          <area-restriction-list size="0">
+            <restriction-entry area-restriction-type="1" tac-list="11,12,13" tac-code="11" max-number-tas="2" rat-type="1"/>
+            <restriction-entry area-restriction-type="1" tac-list="21,22,23" tac-code="11" max-number-tas="2" rat-type="1"/>
+          </area-restriction-list>
+        </am-entry>
+      </am-subscription>
+    </udm-profile>
+
+  udm-ue-example.xml: |
+    <udm-profile nf-type="2">
+      <user-profile name="user-proflie" size="2">
+        <user-subscription ue-supi="466920100001103" am-subscription-index="1" subscribed-snssai-info-index-list="1"/>
+        <user-subscription ue-supi="466920100001104" am-subscription-index="1" subscribed-snssai-info-index-list="1"/>
+        <user-subscription ue-supi="466920100001105" am-subscription-index="2" subscribed-snssai-info-index-list="1"/>
+      </user-profile>
+    </udm-profile>
+
+  pcf-ue-example.xml: |
+    <pcf-profiles>
+      <user-list size="1">
+        <ue-policy-data ue-supi="466920100001101" am-policy-index="1"/>
+      </user-list>
+    </pcf-profiles>

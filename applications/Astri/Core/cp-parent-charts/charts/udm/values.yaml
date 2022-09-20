@@ -1,0 +1,90 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+# Default values for udm_charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+udm:
+  ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
+  replicaCount: 1
+
+  ## udm container name
+  name: udm
+
+  #  annotations: k8s.v1.cni.cncf.io/networks: udm-n1, udm-nn
+  annotations: {}
+
+  ## udm container image
+  image:
+    repository: astri.org/5g/udm
+    tag: v22.03-rc0
+    pullPolicy: IfNotPresent
+
+  # podIP is used to configure the IP address of Pod's calico network interface
+  podIP: 10.245.216.131
+
+  ## network interfaces configurations for UDM
+  networkInterfaces:
+    Http2Server: 10.245.216.131
+    Http2ServerPort: 3123
+    Http2Client: 10.245.216.131
+    Http2ClientPort: 3122
+    
+    udrClient: 10.245.216.131
+    udrClientPort: 3121
+    udrServer: 10.245.216.111
+    udrServerPort: 8866
+    udrNotiServer: 10.245.216.131
+    udrNotiServerPort: 3124 
+
+
+  ## UDM Node selector for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  nodeSelector: 
+    kubernetes.io/hostname: controller  
+
+  ## Node tolerations for server scheduling to nodes with taints
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations: []
+    #- key: "key"
+    #  operator: "Equal|Exists"
+    #  value: "value"
+    #  effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+  ## Annotations to be added to configcontroller pods
+  podAnnotations: {}
+    # iam.amazonaws.com/role: worker
+
+  service:
+    annotations: {}
+    labels: {}
+    clusterIP: ""
+
+    ## List of IP addresses at which the configcontroller service is available
+    ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+    externalIPs: []
+
+    name: n13n8n10
+    type: ClusterIP
+    servicePort: 3123
+
+  ## ConfigMap override where fullname is {{.Release.Name}}-{{.Values.alertmanager.configMapOverrideName}}
+  ## Defining configMapOverrideName will cause templates/alertmanager-configmap.yaml
+  ## to NOT generate a ConfigMap resource
+  configMapOverrideName: ""
+
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m 
+
+  terminationGracePeriodSeconds: 30
+  licenseSecret: license-controller
