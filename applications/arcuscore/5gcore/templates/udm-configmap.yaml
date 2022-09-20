@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.udm.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "5gcore.fullname" . }}-udm-cm-1
+  labels:
+    app: {{ template "5gcore.name" . }}-udm
+    {{- include "5gcore.labels" . | nindent 4 }}
+data:
+  5gc_sys.conf: |-
+{{ .Files.Get "scripts/udm/5gc_sys.conf" | indent 4 }}
+  ambr.conf: |-
+{{ .Files.Get "scripts/udm/ambr.conf" | indent 4 }}
+  arfb.conf: |-
+{{ .Files.Get "scripts/udm/arfb.conf" | indent 4 }}
+  dnn.conf: |-
+{{ .Files.Get "scripts/udm/dnn.conf" | indent 4 }}
+  nssai.conf: |-
+{{ .Files.Get "scripts/udm/nssai.conf" | indent 4 }}
+  qos.conf: |-
+{{ .Files.Get "scripts/udm/qos.conf" | indent 4 }}
+  sar.conf: |-
+{{ .Files.Get "scripts/udm/sar.conf" | indent 4 }}
+  snssai.conf: |-
+{{ .Files.Get "scripts/udm/snssai.conf" | indent 4 }}
+  udm.key: |-
+{{ .Files.Get "scripts/udm/udm.key" | indent 4 }}
+  udm.pem: |-
+{{ .Files.Get "scripts/udm/udm.pem" | indent 4 }}
+  z1_udm: |-
+{{ .Files.Get "scripts/udm/z1_udm" | indent 4 }}
+  udm_profile: |-
+{{ .Files.Get "scripts/udm/udm_profile" | indent 4 }}
+{{- end }}

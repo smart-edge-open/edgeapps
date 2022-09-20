@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021-2022 Intel Corporation
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.nseFirewall.metadata.name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.nseFirewall.metadata.labels }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.nseFirewall.metadata.labels }}
+        "spiffe.io/spiffe-id": "true"
+    spec:
+      containers:
+        - name: {{ .Values.nseFirewall.container.name }}
+          image: {{ .Values.nseFirewall.container.image }}
+          imagePullPolicy: {{ .Values.nseFirewall.container.imagePullPolicy }}
+          env:
+            - name: NSM_SERVICE_NAME
+              value:  {{ .Values.networkService.metadata.name }}
+            - name: NSM_LABELS
+              value: app:firewall
+            - name: SPIFFE_ENDPOINT_SOCKET
+              value: unix:///run/spire/sockets/agent.sock
+            - name: NSM_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NSM_LOG_LEVEL
+              value: {{ .Values.nseFirewall.container.env.logLevel }}
+            - name: NSM_CONNECT_TO
+              value: unix:///var/lib/networkservicemesh/nsm.io.sock
+          volumeMounts:
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+            - name: nsm-socket
+              mountPath: /var/lib/networkservicemesh
+              readOnly: true
+            - mountPath: /etc/vppagent-firewall/config.yaml
+              subPath: config.yaml
+              name: vppagent-firewall-config-volume
+          resources:
+            requests:
+              cpu: {{ .Values.nseFirewall.container.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.nseFirewall.container.resources.limits.memory }}
+              cpu: {{ .Values.nseFirewall.container.resources.limits.cpu }}
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: Directory
+        - name: nsm-socket
+          hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate
+        - name: vppagent-firewall-config-volume
+          configMap:
+            name: vppagent-firewall-config-file
+

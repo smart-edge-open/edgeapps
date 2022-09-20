@@ -5,7 +5,17 @@
 
 
 - name: Build EIS common docker images
-  shell: "docker-compose build {{ eis_base_images_names }}"
+  shell: source {{ eis_sources_dir }}/build/.env; docker-compose build {{ eis_base_images_names }}
   args:
     chdir: "{{ eis_sources_dir }}/build"
   changed_when: true
+
+- name: Push common images to Docker Registry
+  command : "docker push {{ docker_registry_address }}{{ item }}:{{ eis_version }}"
+  with_items:
+    - ia_video_common
+    - ia_common
+    - ia_openvino_base
+    - ia_eisbase
+  changed_when: true
+

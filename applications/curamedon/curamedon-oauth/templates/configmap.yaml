@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-configs" (include "curamedon-oauth.fullname" .) }}
+data:
+  APP_ENV: {{ .Values.app.configs.appEnv | quote }}
+  ENABLE_TWO_FACTOR_AUTH: {{ .Values.app.configs.enable2Fa | quote }}
+  ENABLE_DATABASE_ENCRYPTION: {{ .Values.app.configs.enableDatabaseEncryption | quote }}
+  ENABLE_SMS_TEST_MODE:  {{ .Values.app.configs.enableSmsTestMode | quote }}
+  SMS_PROVIDER:  {{ .Values.app.configs.smsProvider | quote }}
+  ENVIRONMENT_NAME: {{ .Values.app.configs.environmentName | quote }}
+  OAUTH2_PRIVATE_KEY: /srv/api/config/oauth2/private.key
+  OAUTH2_PUBLIC_KEY: /srv/api/config/oauth2/public.key

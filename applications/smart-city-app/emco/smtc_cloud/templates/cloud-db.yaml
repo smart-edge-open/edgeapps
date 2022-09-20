@@ -1,0 +1,148 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+{{- if contains $.Values.buildScope "cloud" }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "smtc.db.name" . }}-service
+  labels:
+    app: {{ include "smtc.db.name" . }}
+spec:
+  ports:
+  - port: 9200
+    protocol: TCP
+    name: dsl
+  - port: 9300
+    protocol: TCP
+    name: transport
+  selector:
+    app: {{ include "smtc.db.name" . }}
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "smtc.db.name" . }}
+  labels:
+     app: {{ include "smtc.db.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "smtc.db.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "smtc.db.name" . }}
+        database: "yes"
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: {{ include "smtc.db.name" . }}
+{{- if (len $.Values.connector.cloudHost) }}
+          image: {{ $.Values.registryPrefix }}smtc_database_tunnelled:latest
+{{- else }}
+          image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.1
+{{- end }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          env:
+            {{- if eq (int .Values.noffices) 1 }}
+            - name: "cluster.name"
+              value: "db-cluster"
+            - name: "node.name"
+              value: "cloud-db"
+            - name: "node.master"
+              value: "true"
+            - name: "node.data"
+              value: "true"
+            - name: "node.attr.zone"
+              value: "cloud"
+            - name: "ES_JAVA_OPTS"
+              value: "-Xms2048m -Xmx2048m"
+{{- if (len .Values.connector.cloudHost) }}
+            - name: "transport.port"
+              value: "9300"
+            - name: "transport.host"
+              value: "0.0.0.0"
+            - name: "transport.publish_host"
+              value: "localhost"
+            - name: "transport.publish_port"
+              value: "{{ $.Values.connector.cloudTransportPort }}"
+            - name: "REVERSE_TUNNEL1"
+              value: "{{ $.Values.connector.cloudHost }}:{{ $.Values.connector.cloudQueryPort }} localhost:9200"
+            - name: "REVERSE_TUNNEL2"
+              value: "{{ $.Values.connector.cloudHost }}:{{ $.Values.connector.cloudTransportPort }} localhost:9300"
+{{- range $scenarioIdx, $scenarioName := $.Values.scenario }}
+{{- $args := dict "scenarioName" $scenarioName "Values" $.Values }}
+{{- range $officeIdx := until ( int ( include "smtc.noffices" $args ) ) }}
+{{- $officeIdx2 := add (mul $officeIdx (len $.Values.scenario)) $scenarioIdx }}
+            - name: "FORWARD_TUNNEL{{ $officeIdx2 }}"
+              value: "{{ $.Values.connector.cloudHost }}:{{ add $.Values.connector.officeTransportPort $officeIdx2 }} localhost:{{ add $.Values.connector.officeTransportPort $officeIdx2 }}"
+{{- end }}
+{{- end }}
+{{- end }}
+            {{- else }}
+            - name: "discovery.type"
+              value: "single-node"
+            {{- end }}
+            - name: "action.auto_create_index"
+              value: "0"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+{{- if (len .Values.connector.cloudHost) }}
+            - mountPath: /etc/hostkey
+              name: hostkey
+              readOnly: true
+{{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/bin/curl","-X","DELETE","http://localhost:9200/offices"]
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      initContainers:
+        - name: init-volume-sysctl
+          image: busybox:latest
+          command: ["sh","-c","sysctl -w vm.max_map_count=262144 && ulimit -n 65535 && ulimit -u 4096"]
+          securityContext:
+            privileged: true
+      volumes:
+          - name: timezone
+            hostPath:
+                path: /etc/localtime
+                type: File
+{{- if (len .Values.connector.cloudHost) }}
+          - name: hostkey
+            secret:
+                secretName: tunnel-secret
+                defaultMode: 0440
+{{- end }}
+      {{ include "smtc.platform.node-selector" . }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: database
+                  operator: In
+                  values:
+                  - "yes"
+              topologyKey: "kubernetes.io/hostname"
+
+{{- end }}

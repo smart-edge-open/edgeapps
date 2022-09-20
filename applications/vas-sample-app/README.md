@@ -14,7 +14,7 @@ Copyright (c) 2020 Intel Corporation
 ## Introduction
 
 This sample application demonstrates the Video Analytics Services (VAS) consumer sample application deployment and execution on the OpenNESS edge platform with VAS enabled.
-For more information on VAS itself, please see [OpenNESS Video Analytics Services](https://github.com/open-ness/specs/blob/master/doc/applications/openness_va_services.md).
+For more information on VAS itself, please see [OpenNESS Video Analytics Services](https://github.com/smart-edge-open/specs/blob/master/doc/applications/openness_va_services.md).
 
 ## Directory Structure
 - `/cmd` : Application source files.
@@ -81,6 +81,8 @@ vas-cons-app    6m41s   openness.org/certsigner   system:serviceaccount:default:
     $ kubectl get pods | grep vas-cons-app
     vas-cons-app-7b8c9f87d8-79vnq          1/1     Running   0          39s
     ```
+
+> **NOTE** Sample application is performing actions and is closing when done. K8s restarts the sample application. After few restarts K8s marks sample application state as CrashLoopBackOff. It is caused by limited lifetime of sample application.
 
 2. Check the pod's logs, results should look similar to the following:
     ```shell

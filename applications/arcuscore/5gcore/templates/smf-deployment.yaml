@@ -1,0 +1,114 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.smf.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "5gcore.fullname" . }}-smf
+  labels:
+    app: {{ template "5gcore.name" . }}-smf
+    {{- include "5gcore.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.smf.replicaCount }}
+  selector:
+    matchLabels:
+      appname: {{ template "5gcore.name" . }}-smf
+      release: {{ $.Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        appname: {{ template "5gcore.name" . }}-smf
+        release: {{ $.Release.Name | quote }}
+    spec:
+      ## init container to verify if volume mount has happened and modify the applicable IP addresses in the configuration files
+#      hostNetwork: true
+      initContainers:
+        - name: init-container-smf
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          imagePullPolicy: "{{ .Values.busybox.image.pullPolicy }}"
+
+          ##The IP 192.168.1.232 in config file needs to be substituted with the host IP on which smf is intended to be run. 172.27.58.19 is IP on host in the below example.
+          #command: ['sh', '-c', "sleep 2; cp /var/tmp/smf_conf.yaml /usr/local/etc/smf/; sed -i -e s/192.168.1.232/172.27.58.19/g /usr/local/etc/smf/smf_conf.yaml"]
+          ##Use below if using kubernetes CNI for the SMF
+          command: ['sh', '-c', "sleep 2; POD_IP=`hostname -i`; echo $POD_IP > /usr/local/etc/smf/license/pod_ip.txt; cp /var/tmp/smf_conf.yaml /usr/local/etc/smf/; sed -i -e s/192.168.1.232/$POD_IP/g /usr/local/etc/smf/smf_conf.yaml"]
+
+      #     resources:
+      #       {}
+          volumeMounts:
+            - name: varlog
+              mountPath: "/var/log"
+              readOnly: true
+            - name: usrlocaletcsmflicense
+              mountPath: "/usr/local/etc/smf/license"
+            - name: etclocaltime
+              mountPath: "/etc/localtime"
+              readOnly: true
+            - name: smf-config-vol
+              mountPath: /var/tmp
+            - name: smf-cache
+              mountPath: /usr/local/etc/smf
+      containers:
+        - name: 5gcore-smf-container
+          {{- if .Values.smf.image.sha }}
+          image: "{{ .Values.smf.image.repository }}:{{ .Values.smf.image.tag }}@sha256:{{ .Values.smf.image.sha }}"
+          {{- else }}
+          image: "{{ .Values.smf.image.repository }}:{{ .Values.smf.image.tag }}"
+          {{- end }}
+          imagePullPolicy: "{{ .Values.smf.image.pullPolicy }}"
+          ports:
+            - containerPort: 4100
+#              hostPort: 4100
+              protocol: TCP
+              name: smf-mml
+            - containerPort: 8080
+#              hostPort: 8080
+              protocol: TCP
+              name: smf-http
+            - containerPort: 4957
+#              hostPort: 4957
+#              protocol: UDP
+              name: smf-snmp
+#            - containerPort: 8805
+#              hostPort: 8805
+##              protocol: UDP
+#              name: smf-n4
+#            - containerPort: 2123
+#              hostPort: 2123
+##              protocol: UDP
+#              name: smf-n4
+          volumeMounts:
+            - name: varlog
+              mountPath: "/var/log"
+#              readOnly: true
+            - name: usrlocaletcsmflicense
+              mountPath: "/usr/local/etc/smf/license"
+            - name: etclocaltime
+              mountPath: "/etc/localtime"
+              readOnly: true
+            - name: smf-config-vol
+              mountPath: /var/tmp
+            - name: smf-cache
+              mountPath: /usr/local/etc/smf
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: usrlocaletcsmflicense
+          hostPath:
+            path: /usr/local/etc/smf/license
+        - name: etclocaltime
+          hostPath:
+            path: /etc/localtime
+        - name: smf-config-vol
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: {{ template "5gcore.fullname" . }}-smf-cm-1
+        - name: smf-cache
+          emptyDir: {}
+      {{- with .Values.smf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.smf.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "5gcore.fullname" . }}-smf-cm-1
+  labels:
+    app: {{ template "5gcore.name" . }}-smf
+    {{- include "5gcore.labels" . | nindent 4 }}
+data:
+  smf_conf.yaml: |-
+{{ .Files.Get "scripts/smf/smf_conf.yaml" | indent 4 }}
+{{- end }}

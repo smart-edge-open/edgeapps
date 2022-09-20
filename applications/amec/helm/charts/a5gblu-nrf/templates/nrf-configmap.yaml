@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "a5gblu.configmapPrefix" . }}-nrf
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: nrf
+data:
+  nrf.yaml: |
+    logger:
+        file: /mnt/log/nrf.log
+
+    nrf:
+        sbi:
+          addr:
+            - 127.0.0.1
+          port: 7777

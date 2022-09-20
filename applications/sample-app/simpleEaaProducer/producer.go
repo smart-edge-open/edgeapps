@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/open-ness/edgeapps/applications/sample-app/common"
+	"github.com/smart-edge-open/edgeapps/applications/sample-app/common"
 	"github.com/pkg/errors"
 )
 

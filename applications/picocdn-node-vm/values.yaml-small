@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 NetPico LAbs Pvt. Ltd.(picoNETS) 
+
+PersistentVolume:
+  rootfs:
+    size: "100Gi"
+    path: "/var/vd/vol0"
+    imgSrc: "https://demo.picocdn.net/installer/picoCDN7-latest.qcow2"
+  cacheDisks:
+    cache0:
+      size: "100Gi"
+      path: "/var/vd/vol1"
+
+cdnVM:
+  # numCores default 4
+  numCores: 4
+
+  # memory default 4096M
+  memory: 16384M
+
+cdnService:
+  nodePort: 30020
+

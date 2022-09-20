@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+{{- if .Values.ingress.enabled -}}
+{{- $httpPort := .Values.service.http.port -}}
+{{- $rtmpPort := .Values.service.rtmp.port -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ .Values.openness.heatmapId }}
+  labels:
+    app: {{ .Values.openness.heatmapId }}
+    vendor: kibernetika
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              serviceName: heatmap-{{ .Values.openness.heatmapId }}
+              servicePort: {{ $httpPort }}
+        {{- end }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Albora Technologies Ltd.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "product.fullname" . -}}-refstation-manager
+  labels:
+    io.albora.product: {{ include "product.fullname" . }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      io.albora.product: {{ include "product.fullname" . }}
+      io.albora.service: refstation-manager
+  template:
+    metadata:
+      labels:
+        io.albora.product: {{ include "product.fullname" . }}
+        io.albora.service: refstation-manager
+    spec:
+      {{- include "container.pullSecret" . }}
+      containers:
+        - name: refstation-manager
+          {{- if $image := .Values.service.refStationManager }}
+          image: " {{- include "docker.path" . -}}
+                   {{- include "docker.image" $image -}} "
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: "api"
+              protocol: TCP
+              containerPort: {{ int .Values.apiPort }}
+          env:
+            - name: AWS_DEPLOYMENT_ENABLED
+              value: " {{- .Values.awsEnabled -}} "
+            - name: TELEMETRY_REPORTER
+              value: " {{- .Values.telemetry -}} "
+            - name: SERVICE_PORT
+              value: " {{- .Values.apiPort -}} "
+            - name: DATABASE_HOST
+              value: " {{- include "product.fullname" . -}}-refstationmanagerpostgresql"
+            - name: DATABASE_USERNAME
+              value: " {{- .Values.refstationmanagerpostgresql.postgresqlUser -}} "
+            - name: DATABASE_NAME
+              value: " {{- .Values.refstationmanagerpostgresql.postgresqlDatabase -}} "
+            {{- if .Values.refstationmanagerpostgresql.postgresqlPassword }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "product.fullname" . -}}-secrets
+                  key: refstationmanagerpostgresql.password
+            {{- end }}
+      initContainers:
+      - name: ensure-db-running
+        image: postgres:13.2
+        command: ['sh', '-c', 
+          'until pg_isready -h {{ include "product.fullname" . -}}-refstationmanagerpostgresql -p {{ .Values.refstationmanagerpostgresql.service.port -}}; 
+          do echo waiting for database; sleep 2; done;']

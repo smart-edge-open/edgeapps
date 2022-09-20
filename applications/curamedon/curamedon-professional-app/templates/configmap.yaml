@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-configs" (include "curamedon-professional-app.fullname" .) }}
+data:
+  PROFESSIONAL_API_URL: {{ .Values.app.configs.apiUrl | quote }}
+  CHAT_SERVICE_URL: {{ .Values.app.configs.chatUrl | quote }}
+  VIDEO_CONSULTATION_SDK_URL: {{ .Values.app.configs.videoSdkUrl | quote }}
+  ASSETS_BASE_PATH: ""
+  PUBLIC_ASSETS_BASE_PATH: ""
+  SENTRY_ENVIRONMENT: {{ .Values.app.configs.environmentName | quote }}

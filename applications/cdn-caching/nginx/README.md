@@ -86,7 +86,7 @@ Extra setup is not required when using the control interface for data / content 
 
 #### Setting up the SR-IOV interface
 
-1. Please refer to the link for setting up the SR-IOV interface: [Setting up SR-IOV for network edge](https://github.com/open-ness/specs/blob/master/doc/enhanced-platform-awareness/openness-sriov-multiple-interfaces.md#sriov-for-network-edge)
+1. Please refer to the link for setting up the SR-IOV interface: [Setting up SR-IOV for network edge](https://github.com/smart-edge-open/specs/blob/master/doc/building-blocks/enhanced-platform-awareness/openness-sriov-multiple-interfaces.md#sriov-for-network-edge)
 
 2. Set the "sriov" helm key to "True" to enable the sriov annotations and NFD features in the deployment specification.
 

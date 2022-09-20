@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Modaviti eMarketing Private Limited
+
+apiVersion: v2
+name: orbo-image-enhancement
+type: application
+version: 0.1.0
+description: A Helm chart for ORBO AI Image Enhancement
+appVersion: 1.1.0

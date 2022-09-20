@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2020 Intel Corporation
+
+---
+- name: 'Update end point'
+  replace:
+      path: '{{ eis_sources_dir }}/build/k8s/eis-k8s-deploy.yml'
+      regexp: 'videoanalytics:'
+      replace: 'pythonsafetygearanalytics:'
+  when: demo_type == 'safety'
+
+- name: 'Update end point'
+  replace:
+      path: '{{ eis_sources_dir }}/build/k8s/eis-k8s-deploy.yml'
+      regexp: 'pythonsafetygearanalytics:'
+      replace: 'videoanalytics:'
+  when: demo_type == 'pcb'
+
+- name: Deploy eis pod
+  shell:  source {{ eis_sources_dir }}/build/.env; kubectl apply -f eis-k8s-deploy.yml
+  args:
+    chdir: "{{ eis_sources_dir }}/build/k8s"
+  changed_when: true
+
+- name: delete ia_visualizer pod
+  command: kubectl -n eis delete deployment deployment-visualizer
+  when: display_visualizer_host == false
+  ignore_errors: yes
+

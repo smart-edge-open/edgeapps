@@ -5,7 +5,7 @@
 
 # check democfg directory
 
-BASE_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+BASE_PATH="$( cd "$(dirname "$0")" && pwd -P )"
 
 echo "Starting check whether certification and configuraiton files exsit in the democfg" 
 if [ -d "${BASE_PATH}/democfg/agent-cert" ];  then 

@@ -40,7 +40,7 @@ printHelp()
   echo -e "\t-b bandwidth"
   echo -e "\t-p number of ports provided"
   echo -e "\t-i phisical addresses of ports to be used in testing example: "0000:86:00.1 0000:86:00.2""
-  exit 1 
+  exit 1
 
 }
 
@@ -102,7 +102,7 @@ setEnvPorts()
       DEF_DU_P2="0000:"${vfs[1]}
       DEF_RU_P1="0000:"${vfs[2]}
       DEF_RU_P2="0000:"${vfs[3]}
-      ;;  
+      ;;
     "du" )
       DEF_DU_P1="0000:"${vfs[0]}
       DEF_DU_P2="0000:"${vfs[1]}
@@ -127,7 +127,7 @@ procModeReq()
       if [ -z "$p2" ]; then
         p2=$DEF_DU_P2
       fi
-    
+
       if [ -z "$p3" ]; then
         p3=$DEF_RU_P1
       fi
@@ -177,8 +177,7 @@ runTestScripts()
 
   p=0
   for pid in $pids; do
-    wait "$pid"
-    if [ $? -eq 0 ]; then
+    if wait "$pid"; then
       echo -e "\tProcess $pid running ${scripts[$p]} exited with a status $?"
     else
       echo -e "\tProcess $pid running ${scripts[$p]} failed with a status $?"
@@ -218,7 +217,7 @@ run()
   if [ "$tc" -gt 0 ]; then
     cmd=$cmd$tc"/"
   fi
-    
+
   for ((i=1; i<len+1; i++))
   do
     portIndex=$i
@@ -236,8 +235,7 @@ run()
 
   p=0
   for pid in $pids; do
-    wait "$pid"
-    if [ $? -eq 0 ]; then
+    if wait "$pid"; then
       echo -e "\tProcess $pid running ${scripts[$p]} exited with a status $?"
     else
       echo -e "\tProcess $pid running ${scripts[$p]} failed with a status $?"
@@ -248,64 +246,60 @@ run()
 
 testDuRu()
 {
-  scripts=( $CONFIG_FILE_DU $CONFIG_FILE_RU )
-  cd "$XRAN_DIR/app"
+  scripts=( "$CONFIG_FILE_DU" "$CONFIG_FILE_RU" )
+  cd "$XRAN_DIR/app" || exit 1
   run "${scripts[0]}"
 }
 
 testDu()
 {
-  scripts=( $CONFIG_FILE_DU )
+  scripts=( "$CONFIG_FILE_DU" )
   run "${scripts[0]}"
 }
 
 testRu()
 {
-  scripts=( $CONFIG_FILE_RU )
+  scripts=( "$CONFIG_FILE_RU" )
   run "${scripts[0]}"
 }
 
 verifyTests()
 {
   if [[ "$mode" = "ru" ]] || [[ "$mode" = "ru-du" ]]; then
-    rm -f $RESULTS_DIR/o-ru-play_*
-    if [ $? -ne 0 ]; then
+    if ! rm -f $RESULTS_DIR/o-ru-play_*; then
       echo "Error while removing RU files"
       exit 1
     fi
-    cp "$XRAN_DIR"/app/logs/o-ru-* $RESULTS_DIR
-    if [ $? -ne 0 ]; then
+    if ! cp "$XRAN_DIR"/app/logs/o-ru-* $RESULTS_DIR; then
       echo "Error while coping RU files"
       exit 1
     fi
   fi
   if [[ "$mode" = "du" ]] || [[ "$mode" = "ru-du" ]]; then
-    rm -f $RESULTS_DIR/o-du-*
-    if [ $? -ne 0 ]; then
+    if ! rm -f $RESULTS_DIR/o-du-*; then
       echo "Error while removing DU files"
       exit 1
     fi
-    cp "$XRAN_DIR"/app/logs/o-du-* $RESULTS_DIR
-    if [ $? -ne 0 ]; then
+    if ! cp "$XRAN_DIR"/app/logs/o-du-* $RESULTS_DIR; then
       echo "Error while coping DU files"
       exit 1
      fi
   fi
   if [[ "$mode" = "ru" ]]; then
-    echo -e "\t$(date) RU test completed" 
+    echo -e "\t$(date) RU test completed"
     return
   fi
 
-  cd "$XRAN_DIR/app"
+  cd "$XRAN_DIR/app" || exit 1
 
-  echo "STEP 2: VERIFY TESTS RESULTS" 
+  echo "STEP 2: VERIFY TESTS RESULTS"
 
   python "$XRAN_DIR/app/test_verification.py" --ran "$tech" --cat "$cat" --testcase "$tc" --m_u "$mu"  --b "$bw" --verbose "$TEST_VERBOSE"
-  echo -e "\t$(date) xRAN sample app test and test verififaction completed"
+  echo -e "\t$(date) xRAN sample app test and test verification completed"
 
 }
 
-echo TEST CONFIGURATION: 
+echo TEST CONFIGURATION:
 
 #CHECKING ENVIRONMENT VARIABLES
 
@@ -332,7 +326,7 @@ do
     n ) tc="$OPTARG" ;;
     p ) portNum="$OPTARG" ;;
     i )
-      read -a ports <<< "$OPTARG"
+      read -ra ports <<< "$OPTARG"
       if [[ ${#ports[*]} -ne $portNum ]]; then
         echo -e "\t Received  ${#ports[*]} port(s), while awaiting $portNum"
       fi
@@ -365,9 +359,9 @@ printArgs
 
 #TEST
 
-echo "STEP 1: RUN TESTS" 
+echo "STEP 1: RUN TESTS"
 
-cd "$XRAN_DIR/app"
+cd "$XRAN_DIR/app" || exit 1
 case $mode in
   "ru-du" )
     echo -e "\t$(date) Starting RU and DU"

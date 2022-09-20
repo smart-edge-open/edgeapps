@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Intel Corporation
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.nseKernel.metadata.name }}
+  labels:
+    app: {{ .Values.nseKernel.metadata.labels }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.nseKernel.metadata.labels }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.nseKernel.metadata.labels }}
+        "spiffe.io/spiffe-id": "true"
+    spec:
+      containers:
+        - name: {{ .Values.nseKernel.container.nse.name }}
+          image: {{ .Values.nseKernel.container.nse.image }}
+          imagePullPolicy: {{ .Values.nseKernel.container.nse.imagePullPolicy }}
+          env:
+            - name: NSM_CIDR_PREFIX
+              value: {{ .Values.nseKernel.container.nse.env.nsmCidrPrefix }}
+            - name: NSM_SERVICE_NAMES
+              value: "nse-composition"
+            - name: NSM_REGISTER_SERVICE
+              value: "false"
+            - name: NSM_LABELS
+              value: "app:gateway"
+            - name: SPIFFE_ENDPOINT_SOCKET
+              value: unix:///run/spire/sockets/agent.sock
+            - name: NSM_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NSM_LOG_LEVEL
+              value: {{ .Values.nseKernel.container.nse.env.logLevel }}
+            - name: NSM_CONNECT_TO
+              value: unix:///var/lib/networkservicemesh/nsm.io.sock
+          volumeMounts:
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+            - name: nsm-socket
+              mountPath: /var/lib/networkservicemesh
+              readOnly: true
+          resources:
+            requests:
+              cpu: {{ .Values.nseKernel.container.nse.resources.requests.cpu }}
+              memory: {{ .Values.nseKernel.container.nse.resources.requests.memory }}
+            limits:
+              memory: {{ .Values.nseKernel.container.nse.resources.limits.memory }}
+              cpu: {{ .Values.nseKernel.container.nse.resources.limits.cpu }}
+        - name: {{ .Values.nseKernel.container.nginx.name }}
+          image: {{ .Values.nseKernel.container.nginx.image }}
+          imagePullPolicy: {{ .Values.nseKernel.container.nginx.imagePullPolicy }}
+      nodeSelector:
+        {{ .Values.nseKernel.nodeSelector.labelName }} : {{ .Values.nseKernel.nodeSelector.labelValue }}
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: Directory
+        - name: nsm-socket
+          hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate

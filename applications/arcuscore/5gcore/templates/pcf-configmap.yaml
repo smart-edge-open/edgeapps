@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.pcf.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "5gcore.fullname" . }}-pcf-cm-1
+  labels:
+    app: {{ template "5gcore.name" . }}-pcf
+    {{- include "5gcore.labels" . | nindent 4 }}
+data:
+  am_policy.json: |-
+{{ .Files.Get "scripts/pcf/am_policy.json" | indent 4 }}
+  pcc_rules.json: |-
+{{ .Files.Get "scripts/pcf/pcc_rules.json" | indent 4 }}
+  pcf_server.json: |-
+{{ .Files.Get "scripts/pcf/pcf_server.json" | indent 4 }}
+  sess_rules.json: |-
+{{ .Files.Get "scripts/pcf/sess_rules.json" | indent 4 }}
+  snmp.conf: |-
+{{ .Files.Get "scripts/pcf/snmp.conf" | indent 4 }}
+{{- end}}

@@ -3,8 +3,8 @@
 
 apiVersion: v2
 name: actianzen
-version: 0.1.0
-appVersion: 14.11.23
+version: 0.3.0
+appVersion: 15.00.53
 description: Helm chart for deploying Actian Zen Enterprise Server
 home: https://www.actian.com/data-management/zen-embedded-database/
 icon: https://www.actian.com/wp-content/uploads/2020/01/Actian-Logo-2020.png

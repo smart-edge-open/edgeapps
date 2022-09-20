@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Kibernetika, Inc. All rights reserved.
+apiVersion: v1
+kind: Service
+metadata:
+  name: heatmap-{{ .Values.openness.heatmapId }}
+  labels:
+    app: {{ .Values.openness.heatmapId }}
+    vendor: kibernetika
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ .Values.service.http.port }}
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: {{ .Values.service.rtmp.port }}
+    targetPort: 1935
+    protocol: TCP
+    name: rtmp
+  selector:
+    app: {{ .Values.openness.heatmapId }}
+    vendor: kibernetika

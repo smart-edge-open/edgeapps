@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 DeepSight AI Labs
+
+apiVersion: v2
+name: deepsight-supersecure
+type: application
+version: 2.0
+description: DeepSight SuperSecure Application
+appVersion: 2.0
+

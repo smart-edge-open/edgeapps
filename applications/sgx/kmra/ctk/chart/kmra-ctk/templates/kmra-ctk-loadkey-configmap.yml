@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Intel Corporation
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-env-cm
+  namespace: {{ .Release.Namespace }}
+data:
+  http_proxy: {{ .Values.http_proxy | default "" | quote }}
+  https_proxy: {{ .Values.https_proxy | default "" | quote }}
+  no_proxy: {{ .Values.no_proxy | default "" | quote }}
+  PCCS_PORT: {{ .Values.ctk_loadkey.pccs_port | quote }}
+  PCCS_HOSTNAME: {{ .Values.ctk_loadkey.pccs_hostname | quote }}
+  APPHSM_PORT: {{ .Values.ctk_loadkey.apphsm_port | quote }}
+  APPHSM_HOSTNAME: {{ .Values.ctk_loadkey.apphsm_hostname | quote }}
+  NGINX_HOSTNAME: {{ .Values.ctk_loadkey.main.hostname | quote }}
+  NGINX_PORT: {{ .Values.ctk_loadkey.main.port | quote }}
+  CLIENT_TOKEN: {{ .Values.ctk_loadkey.client_token | quote }}
+  CLIENT_KEY_LABEL: {{ .Values.ctk_loadkey.client_key_label | quote }}
+  TEST_UNIQUE_UID: {{ .Values.ctk_loadkey.test_unique_uid | quote }}
+  DEFAULT_USER_PIN: {{ .Values.ctk_loadkey.default_user_pin | quote }}
+  DEFAULT_SO_PIN: {{ .Values.ctk_loadkey.default_so_pin | quote }}

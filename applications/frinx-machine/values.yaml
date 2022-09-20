@@ -1,0 +1,116 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Frinx s. r. o.
+# Default values for FRINX-machine.
+
+krakend:
+  enabled: true
+  fullnameOverride: "krakend"
+
+frinx-frontend:
+  enabled: true
+  fullnameOverride: "frinx-frontend"
+
+postgresql:
+  enabled: true
+  fullnameOverride: "frinx-postgresql"
+  auth:
+    enablePostgresUser: true
+    username: postgresU
+    password: postgresP
+    database: uniresource
+  architecture: standalone
+  volumePermissions:
+    enabled: true
+  primary:
+    persistence:
+      existingClaim: "{{- include \"product.fullname\" . -}}-db-pvc"
+    initdb:
+      scripts:
+        init_db.sql: |
+          CREATE DATABASE schellar;
+          CREATE DATABASE conductor;
+          CREATE DATABASE inventory;
+
+uniresource:
+  enabled: true
+  fullnameOverride: "uniresource"
+  postgresql:
+    enabled: false
+  env:
+    PSQL_HOSTNAME: frinx-postgresql
+    RM_DB_CONNECTION_STRING: "postgres://postgresU:postgresP@frinx-postgresql:5432/uniresource?sslmode=disable"
+
+uniflow:
+  enabled: true
+  fullnameOverride: "workflow-proxy"
+  postgresql:
+    enabled: false
+  elasticsearch:
+    enabled: true
+    extraInitContainers:
+     - name: file-permissions
+       image: busybox
+       command: ['chown', '-R', '1000:1000', '/usr/share/elasticsearch/']
+       volumeMounts:
+       - mountPath: /usr/share/elasticsearch/data
+         name: elasticsearch-master
+       securityContext:
+         privileged: true
+         runAsUser: 0
+  env:
+    SPRING_DATASOURCE_HOSTNAME: frinx-postgresql
+    SPRING_DATASOURCE_URL: jdbc:postgresql://frinx-postgresql:5432/conductor?charset=utf8&parseTime=true&interpolateParams=true
+    CONDUCTOR_EXTERNAL_PAYLOAD_STORAGE_POSTGRES_URL: jdbc:postgresql://frinx-postgresql:5432/conductor?charset=utf8&parseTime=true&interpolateParams=true
+  schellarEnv:
+    POSTGRES_DATABASE_URL: "host=frinx-postgresql port=5432 user=postgresU password=postgresP database=schellar"
+
+inventory:
+  enabled: true
+  fullnameOverride: "inventory"
+  postgresql:
+    enabled: false
+  env:
+    POSTGRES_HOSTNAME: frinx-postgresql
+
+uniconfig-postgresql:
+  enabled: true
+  fullnameOverride: "uniconfig-postgresql"
+  auth:
+    enablePostgresUser: true
+    username: postgresU
+    password: postgresP
+    database: uniconfig
+  primary:
+    persistence:
+      existingClaim: "{{- include \"product.fullname\" . -}}-db-pvc"
+  volumePermissions:
+    enabled: true
+  architecture: standalone
+
+uniconfig:
+  enabled: true
+  fullnameOverride: "uniconfig"
+  postgresql:
+    enabled: false
+  dbPersistence:
+    connection_databaseLocations_host: "uniconfig-postgresql"
+    connection_dbName: "uniconfig"
+    connection_username: "postgresU"
+    connection_password: "postgresP"
+
+database:
+  frinx:
+    instance: frinx-postgresql
+    storageClass: null
+    storageHostPath: "/tmp/frinx"
+  uniconfig:
+    instance: uniconfig-postgresql
+    storageClass: null
+    storageHostPath: "/tmp/uniconfig"
+
+demo-workflows:
+  enabled: false
+  fullnameOverride: "demo-workflows"
+  sample-topology:
+    enabled: true
+    fullnameOverride: "sample-topology"

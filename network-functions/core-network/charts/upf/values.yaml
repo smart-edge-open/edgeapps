@@ -23,7 +23,7 @@ memory: 6Gi                 # Amount of memory to be reserved for the pod
 #node information
 node:
   name: upf-node          # Node on which the upf needs to be run
-  path: /root/upf         # Path on the node where the upf binary is stored
+  path: /home/nruser         # Path on the node where the upf binary is stored
 
 # upf configuration
 upf:

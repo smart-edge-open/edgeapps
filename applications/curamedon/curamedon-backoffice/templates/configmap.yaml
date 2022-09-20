@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Inno Barn. All rights reserved.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-configs" (include "curamedon-backoffice.fullname" .) }}
+data:
+  APP_ENV: {{ .Values.app.configs.appEnv | quote }}
+  TRUSTED_HOSTS: {{ .Values.app.configs.trustedHosts | quote }}
+  TRUSTED_PROXIES: "127.0.0.1,REMOTE_ADDR"
+  ENABLE_TWO_FACTOR_AUTH: {{ .Values.app.configs.enable2Fa | quote }}
+  ENABLE_DATABASE_ENCRYPTION: {{ .Values.app.configs.enableDatabaseEncryption | quote }}
+  ENABLE_SMS_TEST_MODE:  {{ .Values.app.configs.enableSmsTestMode | quote }}
+  SMS_PROVIDER:  {{ .Values.app.configs.smsProvider | quote }}
+  INTERNAL_API_HOST: {{ .Values.app.configs.internalApiHost | quote }}
+  ENVIRONMENT_NAME: {{ .Values.app.configs.environmentName | quote }}
+  GOOGLE_CACHE_TTL: {{ .Values.app.configs.googleAnalyticsCacheTtl | quote }}
+  GOOGLE_ANALYTICS_API_CREDENTIALS_PATH: /opt/app/config/google/service_account_creds.json

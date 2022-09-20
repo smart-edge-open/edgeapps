@@ -1,0 +1,75 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 A5G Networks Inc.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "a5gblu.mmesvc" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: mme
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.global.loadBalancerServiceIP.s1c }}
+  ports:
+  - name: s1ap
+    port: 36412
+    protocol: SCTP
+    targetPort: 36412
+  selector:
+    epc-mode: mme  
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ include "a5gblu.chart" $ }}-mme
+  namespace: {{ .Release.Namespace }}
+  labels:
+    epc-mode: mme
+spec:
+  replicas: 1
+  serviceName: {{ include "a5gblu.mmesvc" $ | quote }} 
+  selector:
+    matchLabels:
+      epc-mode: mme
+  template:
+    metadata:
+      labels:
+        epc-mode: mme
+    spec:
+      imagePullSecrets:
+      - name: a5gblu-artifact
+      containers:
+        - name: mme
+          image: {{ include "a5gblu.imageUrl" $ }}
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - ethtool -K eth0 tx-checksum-sctp off;
+              /home/a5gblu/bin/a5gblu-mmed -c /home/a5gblu/configmap/mme.yaml;
+          env:
+            - name: LD_LIBRARY_PATH
+              value: "/home/a5gblu/lib/x86_64-linux-gnu:/home/a5gblu/lib/x86_64-linux-gnu/freeDiameter:/usr/lib/x86_64-linux-gnu"
+          volumeMounts:
+          - name: a5gblu-mme-config
+            mountPath: /home/a5gblu/configmap/mme.yaml
+            subPath: "mme.yaml"
+          - name: a5gblu-mme-diameter
+            mountPath: /home/a5gblu/configmap/diameter-mme.conf
+            subPath: "diameter-mme.conf"             
+          - name: a5gblu-storage-log
+            mountPath: /mnt/log
+          securityContext:
+            capabilities:
+              add:
+                - all
+{{ include "a5gblu.fluentbitSidecarDef" . | indent 8 }}
+      volumes:
+        - name: a5gblu-mme-config
+          configMap:
+            name: {{ include "a5gblu.configmapPrefix" $ }}-mme
+        - name: a5gblu-mme-diameter
+          configMap:
+            name: {{ include "a5gblu.configmapPrefix" $ }}-mme-diameter
+        - name: a5gblu-storage-log
+          emptyDir: {}
+

@@ -8,7 +8,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"sync"
+	"strconv"
+	"strings"
 )
 
 // OpenVINO acceleration types
@@ -20,72 +21,84 @@ const (
 
 var cmd *exec.Cmd
 
-func callOpenVINO(model string, accl string) {
+func checkEnvVariable(number string) {
 
+	_, err := strconv.Atoi(number)
+	if err != nil {
+		log.Fatal("The invalid environment variable: OPENVINO_TASKSET_CPU")
+	}
+}
+
+func callOpenVINO(model string, accl string, cpuset string) {
+
+	var modelXML string
 	// validate accelerator type
 	switch accl {
 	case CPU:
+		modelXML = model + "/FP32/" + model + ".xml"
 	case MYRIAD:
 	case HDDL:
+		modelXML = model + "/FP16/" + model + ".xml"
 	default:
 		log.Println("ERROR: uknown acceleration type (" + accl + ")")
 		return
 	}
 
 	// kill already running process if not the first time
-	if cmd != nil {
-		err := cmd.Process.Kill()
-		if err != nil {
+	if cmd != nil && cmd.Process != nil {
+		if err := cmd.Process.Kill(); err != nil {
 			log.Fatal("Failed to kill OpenVINO process:", err)
 		}
 		_ = cmd.Wait()
 	}
 
-	var openvinoPath = "/root/omz_demos_build/intel64/Release/"
-	var openvinoCmd = "object_detection_demo_ssd_async"
+	openvinoPath := os.Getenv("APP_DIR")
+	openvinoCmd := "object_detection_demo_ssd_async.py"
 
-	var modelXML string
-	if accl == CPU {
-		modelXML = model + "/FP32/" + model + ".xml"
-	} else {
-		modelXML = model + "/FP16/" + model + ".xml"
+	checkEnvVariable(cpuset)
+
+	if err := os.Chdir(openvinoPath); err != nil {
+		log.Fatal("Failed to change directory:", err)
 	}
 
-	// get taskset cpu from env
-	openvinoTasksetCPU := os.Getenv("OPENVINO_TASKSET_CPU")
-
-	// #nosec
-	cmd = exec.Command("taskset", "-c", openvinoTasksetCPU,
-		openvinoPath+openvinoCmd, "-d", accl,
-		"-i", "rtp://127.0.0.1:5000?overrun_nonfatal=1",
+	cmd = exec.Command("taskset", "-c", cpuset,
+		"python3", openvinoCmd, "-d", accl,
+		"-i", "rtmp://127.0.0.1:5000/live/test.flv",
 		"-m", modelXML)
 
-	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
 
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	go func() {
-		if _, err := io.Copy(os.Stdout, stdout); err != nil {
-			log.Println(err)
+	go func(reader io.ReadCloser) {
+		bucket := make([]byte, 1024)
+		buffer := make([]byte, 100)
+		for {
+			num, err := reader.Read(buffer)
+			if err != nil {
+				if err == io.EOF || strings.Contains(err.Error(), "closed") {
+					err = nil
+				}
+				return
+			}
+			if num > 0 {
+				line := ""
+				bucket = append(bucket, buffer[:num]...)
+				tmp := string(bucket)
+				if strings.Contains(tmp, "\n") {
+					ts := strings.Split(tmp, "\n")
+					if len(ts) > 1 {
+						line = strings.Join(ts[:len(ts)-1], "\n")
+						bucket = []byte(ts[len(ts)-1])
+					} else {
+						line = ts[0]
+						bucket = bucket[:0]
+					}
+					log.Printf("%s\n", line)
+				}
+			}
 		}
-		wg.Done()
-	}()
-	go func() {
-		if _, err := io.Copy(os.Stderr, stderr); err != nil {
-			log.Println(err)
-		}
-		wg.Done()
-	}()
+	}(stderr)
 
 	if err := cmd.Start(); err != nil {
 		log.Fatal("Failed to run OpenVINO process:", err)
-	}
-
-	wg.Wait()
-
-	if err := cmd.Wait(); err != nil {
-		log.Println(err)
 	}
 }

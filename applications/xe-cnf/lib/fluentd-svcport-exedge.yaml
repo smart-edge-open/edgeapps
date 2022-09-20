@@ -1,0 +1,123 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Exium Inc.
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+service:
+  annotations: {}
+  type: ClusterIP
+  ports:
+    - name: "monitor-agent"
+      protocol: TCP
+      containerPort: 24220
+    - name: "forward-agent"
+      protocol: TCP
+      containerPort: 24224
+
+configMaps:
+  dpi.conf: |
+    <source>
+      @type tail
+      path /var/log/fluentd-buffers/upf/nta/nta*.csv
+      pos_file /fluentd/etc/upf.log.pos
+      refresh_interval 1
+      read_from_head true
+      tag UPF.DPI
+      <parse>
+        @type csv
+        keys time,supi,srcip,dstip,protocol,srcport,dstport,app,path,url,result
+        time_key time
+        time_format %Y-%m-%d %H:%M:%S.%N
+        time_type string
+        keep_time_key true
+        types time:time:%Y-%m-%d %H:%M:%S.%N
+        null_value_pattern ^$
+        null_empty_string  true
+      </parse>
+    </source>
+
+    <filter UPF.DPI*.**>
+      @type record_transformer
+      <record>
+        hproto null
+        lpath null
+        parturl null
+        parturl null
+        usertag none 
+        devtag none
+        tenant none
+        npath none.${record["path"]}
+        nurl null.${record["url"]}
+      </record>
+    </filter>
+
+    #<match UPF.DPI*.**>
+    #  @type rewrite_tag_filter
+    #  <rule>
+    #    key path 
+    #    pattern /^base.ip/
+    #    @label @BASEUPFDPI
+    #  </rule>
+    #</match>
+
+    <filter UPF.DPI*.**>
+      @type parser
+      key_name npath
+      reserve_data true
+      <parse>
+        @type regexp
+        #expression /^$|^([ ]*)(?:base.ip(?:\.([a-z|A-Z]*)(?:\.(?<hproto>[a-z|A-Z]*)(?:\.([^ ]*))?)?)?)?$/
+        expression /^none.(?:base.ip(?:\.([a-z|A-Z]*)(?:\.(?<hproto>[a-z|A-Z]*)(?:\.(?<lpath>[^ ]*))?)?)?)?$/
+      </parse>
+    </filter>
+
+    <filter UPF.DPI*.**>
+      @type parser
+      key_name supi 
+      reserve_data true
+      <parse>
+        @type regexp
+        expression /^(?:[a-z|A-Z|0-9|._%+]*-)?(?<usertag>[a-z|A-Z|0-9|._%+-]*)(?:!(?<devtag>[a-z|A-Z|0-9|._%+-]*))?@(?<tenant>[a-z|A-Z|0-9|_%+-]*).[a-z|A-Z|0-9|_%+-]*/ 
+      </parse>
+    </filter>
+
+    <filter UPF.DPI*.**>
+      @type parser
+      key_name nurl
+      reserve_data true
+      <parse>
+        @type regexp
+        expression /(?<parturl>(\w+)\.(?:(\w+))?)$/
+      </parse>
+    </filter>
+
+    <filter UPF.DPI*.**>
+      @type record_transformer
+      enable_ruby true
+      auto_typecast true
+      remove_keys app,srcip,dstip,dstip,url,srcport,dstport,hproto,protocol,path,npath,lpath,nurl,parturl
+      <record>
+        type event
+        proctype SessionFlow
+        exedgename "#{ENV['EXEDGE_NAME']}"
+        addlinfo ${{"app" => record["app"], "srcip" => record["srcip"], "dstip" => record["dstip"], "url" => record["url"], "protocol" => record["protocol"], "srcport" => record["srcport"], "dstport" => record["dstport"], "hproto" => record["hproto"], "path" => record["path"], "lpath" => record["lpath"], "parturl" => record["parturl"]}}
+      </record>
+    </filter>
+  output.conf: |
+    <match *.**>
+      @type forward
+      compress gzip
+      send_timeout 5s
+      recover_wait 10s
+      keepalive true
+      <server>
+        host "#{ENV['OUTPUT_HOST']}"
+        port "#{ENV['OUTPUT_PORT']}"
+      </server>
+    </match>
+autoscaling:
+  enabled: false
+  minReplicas: 1

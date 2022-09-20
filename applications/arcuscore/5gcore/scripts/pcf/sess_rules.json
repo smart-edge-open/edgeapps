@@ -1,0 +1,66 @@
+{
+	"__comment_1__": "SPDX-License-Identifier: Apache-2.0",
+	"__comment_2__": " Copyright (c) 2021 Blue Arcus Technologies, Inc",
+
+	"sessRules":	[{
+			"ruleId":	"internet",
+			"activate":	0,
+			"var5qi":	9,
+			"flowUsage":	0,
+			"ambrDl":	"5Gbps",
+			"ambrUl":	"1Gbps",
+			"arpPriorityLevel":	1,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	1
+		}, {
+			"ruleId":	"ims_sig",
+			"activate":	0,
+			"var5qi":	5,
+			"flowUsage":	1,
+			"ambrDl":	"200Kbps",
+			"ambrUl":	"50Kbps",
+			"arpPriorityLevel":	10,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	0
+		}, {
+			"ruleId":	"ftp",
+			"activate":	0,
+			"var5qi":	8,
+			"flowUsage":	0,
+			"ambrDl":	"200Mbps",
+			"ambrUl":	"50Mbps",
+			"arpPriorityLevel":	10,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	0
+		}, {
+			"ruleId":	"",
+			"activate":	0,
+			"var5qi":	0,
+			"flowUsage":	0,
+			"ambrDl":	"",
+			"ambrUl":	"",
+			"arpPriorityLevel":	0,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	0
+		}, {
+			"ruleId":	"",
+			"activate":	0,
+			"var5qi":	0,
+			"flowUsage":	0,
+			"ambrDl":	"",
+			"ambrUl":	"",
+			"arpPriorityLevel":	0,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	0
+		}, {
+			"ruleId":	"",
+			"activate":	0,
+			"var5qi":	0,
+			"flowUsage":	0,
+			"ambrDl":	"",
+			"ambrUl":	"",
+			"arpPriorityLevel":	0,
+			"arpPreemptCap":	0,
+			"arpPreemptVuln":	0
+		}]
+}

@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Blue Arcus Technologies, Inc
+
+{{- if .Values.udm.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "5gcore.fullname" . }}-hss-cm-1
+  labels:
+    app: {{ template "5gcore.name" . }}-udm
+    {{- include "5gcore.labels" . | nindent 4 }}
+data:
+  algo.conf: |-
+{{ .Files.Get "scripts/hss/algo.conf" | indent 4 }}
+  as.conf: |-
+{{ .Files.Get "scripts/hss/as.conf" | indent 4 }}
+  aucsel.conf: |-
+{{ .Files.Get "scripts/hss/aucsel.conf" | indent 4 }}
+  capset.conf: |-
+{{ .Files.Get "scripts/hss/capset.conf" | indent 4 }}
+  db_profile: |-
+{{ .Files.Get "scripts/hss/db_profile" | indent 4 }}
+  diamnodetpl.conf: |-
+{{ .Files.Get "scripts/hss/diamnodetpl.conf" | indent 4 }}
+  epsapn.conf: |-
+{{ .Files.Get "scripts/hss/epsapn.conf" | indent 4 }}
+  epsqos.conf: |-
+{{ .Files.Get "scripts/hss/epsqos.conf" | indent 4 }}
+  epsusertpl.conf: |-
+{{ .Files.Get "scripts/hss/epsusertpl.conf" | indent 4 }}
+  fd_server.conf: |-
+{{ .Files.Get "scripts/hss/fd_server.conf" | indent 4 }}
+  hss_config.xml: |-
+{{ .Files.Get "scripts/hss/hss_config.xml" | indent 4 }}
+  ifc.conf: |-
+{{ .Files.Get "scripts/hss/ifc.conf" | indent 4 }}
+  scscfset.conf: |-
+{{ .Files.Get "scripts/hss/scscfset.conf" | indent 4 }}
+  sp.conf: |-
+{{ .Files.Get "scripts/hss/sp.conf" | indent 4 }}
+  tp.conf: |-
+{{ .Files.Get "scripts/hss/tp.conf" | indent 4 }}
+  vntpl.conf: |-
+{{ .Files.Get "scripts/hss/vntpl.conf" | indent 4 }}
+{{- end}}

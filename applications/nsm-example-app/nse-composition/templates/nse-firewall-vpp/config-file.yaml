@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Intel Corporation
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vppagent-firewall-config-file
+data:
+  config.yaml: |
+    allow icmp:
+      ispermit: 1
+      proto: 1
+      srcportoricmptypelast: 65535
+      dstportoricmpcodelast: 65535
+    allow tcp8080:
+      ispermit: 1
+      proto: 6
+      srcportoricmptypelast: 65535
+      dstportoricmpcodefirst: 8080
+      dstportoricmpcodelast: 8080
+    forbid tcp80:
+      proto: 6
+      srcportoricmptypelast: 65535
+      dstportoricmpcodefirst: 80
+      dstportoricmpcodelast: 80
