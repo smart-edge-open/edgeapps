@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Astri Corporation
+
+# Default values for upf.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+upf:
+  replicaCount: 1 
+  image:
+    repository: 192.168.205.17/5g/upf
+    tag: 1.0.0
+    pullPolicy: IfNotPresent
+
+  # devices: A list of string - phisical functions, in sysfs pci address format. eg: device : 0000:09:00.0
+  # Domain:Bus:Device:Function 
+  # type: string - "netdevice"|"vfio"
+  networks:
+    - name: networkn-upf
+    - name: NWI0-N3N9
+      device: 0000:b7:00.0
+      # rate of the above device, unit Gbps. Only support 1, 10, 25, 40, 100
+      rate: 10
+    - name: NWI0-N6
+      device: 0000:b7:00.1
+      # rate of the above device, unit Gbps. Only support 1, 10, 25, 40, 100
+      rate: 10
+
+  N3IP: 192.168.120.51 
+  N3MASK: 24
+  N4IP: 192.168.130.41
+  N4MASK: 24
+  N6IP: 192.168.96.51
+  N6MASK: 24
+  TEIDRangeIndication: 2 
+
+  maincore: 0
+  worker: 1
+  rxqueue: 1
+
+  resources:
+    requests:
+      memory: 4096Mi
+      cpu: "2"
+    limits:
+      memory: 4096Mi
+      cpu: "2"
+      hugepages-2Mi: 256Mi
+
+upfagent:
+  image:
+    repository: 192.168.205.17/5g/upf-agent
+    tag: 1.0.0
+    pullPolicy: IfNotPresent
+  metricsinterval: 2000000000
+  alias: core-upf

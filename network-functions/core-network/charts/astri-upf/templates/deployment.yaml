@@ -1,0 +1,144 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 Astri Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "upf.fullname" . }}
+  labels:
+    env: test
+spec:
+  replicas: {{ .Values.upf.replicaCount }}
+  selector:
+    matchLabels:
+      env: test
+      app: upf-agent
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: {{"'["}}
+        {{- " " -}}
+        {{- $length := len .Values.upf.networks }}
+        {{- $found := false }}
+        {{- range $index, $network := .Values.upf.networks -}}
+          {{- if not $network.device -}}
+          {{- if eq $found true -}} {{- "," -}} {{- end -}}
+          {"name": {{- $network.name | quote -}}}
+          {{- end -}}
+        {{- end -}}
+        {{"]'"}}
+      labels:
+        env: test
+        app: upf-agent
+    spec:
+      initContainers:
+      # This init container initializes VPP core dumps.
+      - name: vpp-init
+        image: ubuntu:18.04
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+        args:
+          - -c
+          - |
+            set -eu
+            sysctl -w debug.exception-trace=1
+            sysctl -w kernel.core_pattern="/var/crash/%e-%t"
+            ulimit -c unlimited
+            echo 2 > /proc/sys/fs/suid_dumpable
+        resources: {}
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: var-crash
+            mountPath: /var/crash
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.upf.image.repository }}:{{ .Values.upf.image.tag }}"
+        imagePullPolicy: {{ .Values.upf.image.pullPolicy }}
+        command: [ "/bin/sh", "-c" ]
+        args: [ "sudo bash /etc/vpp/generate.sh; sudo /usr/bin/vpp -c /etc/vpp/startup.conf" ]
+        #args: [ "sudo bash +x /etc/vpp/generate.sh; while true; do sleep 300000; done;" ]
+        volumeMounts:
+        - mountPath: /hugepages
+          name: hugepage
+        - mountPath: /dev
+          name: dev-mount
+        - mountPath: /dev/shm
+          name: shm
+        - mountPath: /lib/modules
+          name: lib-modules
+        - mountPath: /sys
+          name: sys
+        - mountPath: /etc/vpp
+          name: vpp-conf
+          readOnly: false
+        - name: sys-bus-pci
+          mountPath: /sys/bus/pci
+        - name: var-run
+          mountPath: /var/run
+        - name: run
+          mountPath: /run
+        - name: tmp
+          mountPath: /tmp
+        securityContext:
+          runAsUser: 1000
+          privileged: true 
+          allowPrivilegeEscalation: true 
+        resources:
+          {{- toYaml .Values.upf.resources | nindent 12 }}
+      - name: upf-agent
+        image: "{{ .Values.upfagent.image.repository }}:{{ .Values.upfagent.image.tag }}"
+        imagePullPolicy: {{ .Values.upfagent.image.pullPolicy }}
+        env:
+        - name: MICROSERVICE_LABEL
+          value: {{ .Values.upfagent.alias }}
+        command: [ "/bin/bash", "-c" ]
+        args: [ "/usr/bin/redis-server /etc/redis/redis.conf & vpp-agent -config-dir=\"/opt/vpp-agent\"" ]
+        #args: [ "bash /etc/vpp/generate.sh; while true; do sleep 300000; done;" ]
+        volumeMounts:
+        - name: run
+          mountPath: /run
+        - mountPath: /dev/shm
+          name: shm
+        - mountPath: /opt/vpp-agent
+          name: agent-config
+          readOnly: false
+      volumes:
+      - name: hugepage
+        emptyDir:
+          medium: HugePages
+      - name: dev-mount
+        hostPath:
+          path: /dev
+      - name: shm
+        hostPath:
+          path: /dev/shm
+      - name: sys-bus-pci
+        hostPath:
+          path: /sys/bus/pci
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: run
+        hostPath:
+          path: /run
+      - name: var-run
+        hostPath:
+          path: /var/run
+      - name: var-crash
+        hostPath:
+          path: /var/crash
+      - name: vpp-conf
+        configMap:
+          name: vpp-conf
+      - name: agent-config
+        configMap:
+          name: agent-config
+      - name: tmp
+        emptyDir:
+          medium: Memory
+
