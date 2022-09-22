@@ -1,6 +1,7 @@
+```text
 SPDX-License-Identifier: Apache-2.0
-
 Copyright (c) 2022 Nokia Corporation
+```
 
 # Nokia Edge Network Controller
 
