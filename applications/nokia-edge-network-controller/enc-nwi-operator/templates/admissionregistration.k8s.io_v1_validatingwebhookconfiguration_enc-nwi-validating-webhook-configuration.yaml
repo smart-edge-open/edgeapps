@@ -1,0 +1,54 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: enc-nwi-system/enc-nwi-serving-cert
+  name: enc-nwi-validating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: enc-nwi-webhook-service
+      namespace: enc-nwi-system
+      path: /validate-nwi-enc-nokia-com-v1alpha2-srlinuxconfig
+  failurePolicy: Fail
+  name: vsrlinuxconfig.kb.io
+  rules:
+  - apiGroups:
+    - nwi.enc.nokia.com
+    apiVersions:
+    - v1alpha2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - srlinuxconfigs
+  sideEffects: None
+  timeoutSeconds: 30
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: enc-nwi-webhook-service
+      namespace: enc-nwi-system
+      path: /validate-nwi-enc-nokia-com-v1alpha2-srosconfig
+  failurePolicy: Fail
+  name: vsrosconfig.kb.io
+  rules:
+  - apiGroups:
+    - nwi.enc.nokia.com
+    apiVersions:
+    - v1alpha2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - srosconfigs
+  sideEffects: None
+  timeoutSeconds: 30

@@ -1,0 +1,17 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: enc-nws-controller-manager-metrics-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - name: metrics-service
+    port: 8080
+    targetPort: metrics
+  selector:
+    control-plane: controller-manager

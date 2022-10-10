@@ -1,0 +1,135 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: v1
+kind: ServiceAccount
+{{- if .Values.imagePullSecrets }}
+imagePullSecrets: {{ toYaml .Values.imagePullSecrets | nindent 2 }}
+{{- end }}
+metadata:
+  name: enc-nws
+  namespace: kube-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: enc-nws
+rules:
+  - apiGroups:
+      - 'nws.enc.nokia.com'
+    resources:
+      - 'workloadinterfaces'
+    verbs:
+      - '*'
+  - apiGroups:
+      - 'policy'
+    resources:
+      - 'podsecuritypolicies'
+    verbs:
+      - 'use'
+    resourceNames:
+      - privileged
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: enc-nws
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: enc-nws
+subjects:
+- kind: ServiceAccount
+  name: enc-nws
+  namespace: kube-system
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: enc-nws-config
+  namespace: kube-system
+  labels:
+    tier: node
+    app: enc-nws
+data:
+  logging-path: "/var/log/enc-nws.log"
+  run-path: "/var/lib/cni/enc-nws"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: enc-nws-ds
+  namespace: kube-system
+  labels:
+    tier: node
+    app: enc-nws
+    name: enc-nws
+spec:
+  selector:
+    matchLabels:
+      name: enc-nws
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        tier: node
+        app: enc-nws
+        name: enc-nws
+    spec:
+      serviceAccountName: enc-nws
+      initContainers:
+      - name: enc-nws-cni-init
+        image: {{ index .Values "enc_nws_cni" "images" "enc_nws_cni" "registry" }}/{{ index .Values "enc_nws_cni" "images" "enc_nws_cni" "repository" }}:{{ index .Values "enc_nws_cni" "images" "enc_nws_cni" "tag" }}
+        imagePullPolicy: {{ index .Values "enc_nws_cni" "images" "enc_nws_cni" "pullPolicy" }}
+        command: ["/entrypoint.sh"]
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "50Mi"
+          limits:
+            cpu: "100m"
+            memory: "50Mi"
+        securityContext:
+          privileged: true # Required to be able write to the mounted hostPath volumes
+        volumeMounts:
+        - name: cniconf
+          mountPath: /host/etc/cni/net.d
+        - name: cnibin
+          mountPath: /host/opt/cni/bin
+        - name: enc-nwsconf
+          mountPath: /tmp/enc-nws-conf
+        - name: hostenc-nwsconf
+          mountPath: /host/tmp/enc-nws-conf
+      containers:
+      - name: enc-nws-cni
+        image: {{ index .Values "enc_nws_cni" "images" "enc_nws_cni" "registry" }}/{{ index .Values "enc_nws_cni" "images" "enc_nws_cni" "repository" }}:{{ index .Values "enc_nws_cni" "images" "enc_nws_cni" "tag" }}
+        command: ["sleep", "infinity"]
+        resources:
+          requests:
+            cpu: "1m"
+            memory: "30Mi"
+          limits:
+            cpu: "1m"
+            memory: "30Mi"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 62000
+          privileged: false
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: cniconf
+          hostPath:
+            path: /etc/cni/net.d
+        - name: cnibin
+          hostPath:
+            path: /opt/cni/bin
+        - name: enc-nwsconf
+          configMap:
+            name: enc-nws-config
+        - name: hostenc-nwsconf
+          hostPath:
+            path: /tmp/enc-nws-conf

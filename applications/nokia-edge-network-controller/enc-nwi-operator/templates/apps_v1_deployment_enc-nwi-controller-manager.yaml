@@ -1,0 +1,73 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: enc-nwi-controller-manager
+  namespace: enc-nwi-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - command:
+        - /manager
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: IMAGE
+          value: {{ index .Values "enc_nwi_operator" "images" "enc_nwi_operator" "registry" }}/{{ index .Values "enc_nwi_operator" "images" "enc_nwi_operator" "repository" }}:{{ index .Values "enc_nwi_operator" "images" "enc_nwi_operator" "tag" }}
+        image: {{ index .Values "enc_nwi_operator" "images" "enc_nwi_operator" "registry" }}/{{ index .Values "enc_nwi_operator" "images" "enc_nwi_operator" "repository" }}:{{ index .Values "enc_nwi_operator" "images" "enc_nwi_operator" "tag" }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8082
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        - containerPort: 8080
+          name: metrics
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8082
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 1000Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+      serviceAccountName: enc-nwi-controller-manager
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert

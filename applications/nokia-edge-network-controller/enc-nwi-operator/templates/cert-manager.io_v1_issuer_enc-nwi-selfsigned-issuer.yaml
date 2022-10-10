@@ -1,0 +1,10 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: enc-nwi-selfsigned-issuer
+  namespace: enc-nwi-system
+spec:
+  selfSigned: {}

@@ -1,0 +1,9 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: v2
+appVersion: 22.6-20220630020526
+description: A Helm chart for deploying ENC Network Scaler (NwS) Operator
+name: enc-nws-operator
+type: application
+version: 22.6-20220630020526

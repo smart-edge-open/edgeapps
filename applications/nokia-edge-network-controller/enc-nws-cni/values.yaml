@@ -1,0 +1,12 @@
+# Copyright (c) 2022 Nokia Corporation
+# Licensed under the Apache License 2.0
+# SPDX-License-Identifier: Apache-2.0
+enc_nws_cni:
+  images:
+    enc_nws_cni:
+      registry: <YOUR_DOCKER_REGISTRY>
+      repository: enc-nws-cni
+      pullPolicy: Always
+      tag: "22.6-20220629082610"
+#imagePullSecrets:
+# - name: "<YOUR_SECRET_NAME>"
