@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.smf.service.annotations }}
+  annotations:
+{{ toYaml .Values.smf.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "smf.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.smf.service.type }}
+{{- if .Values.smf.service.clusterIP }}
+  clusterIP: {{ .Values.smf.service.clusterIP }}
+{{- end }}
+{{- if .Values.smf.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.smf.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.smf.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.smf.service.loadBalancerIP }}
+{{- end }}
+{{- if .Values.smf.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{- range $cidr := .Values.smf.service.loadBalancerSourceRanges }}
+    - {{ $cidr }}
+  {{- end }}
+{{- end }}
+  ports:
+    - name: {{ .Values.smf.service.name_n11 }}
+      port: {{ .Values.smf.service.servicePort_n11 }}
+      targetPort: {{ .Values.smf.service.servicePort_n11 }}
+      protocol: TCP
+    - name: {{ .Values.smf.service.name_n7 }}
+      port: {{ .Values.smf.service.servicePort_n7 }}
+      targetPort: {{ .Values.smf.service.servicePort_n7 }}
+      protocol: TCP
+    - name: {{ .Values.smf.service.name_n10 }}
+      port: {{ .Values.smf.service.servicePort_n10 }}
+      targetPort: {{ .Values.smf.service.servicePort_n10 }}
+      protocol: TCP
+  selector:
+    app: smf

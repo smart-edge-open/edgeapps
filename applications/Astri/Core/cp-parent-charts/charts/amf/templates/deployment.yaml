@@ -1,0 +1,96 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "amf.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.amf.replicaCount }}
+  selector: 
+    matchLabels:
+      app: amf
+  template:
+    metadata:
+      annotations:
+      {{- if .Values.amf.networks.enabled }}
+         k8s.v1.cni.cncf.io/networks: {{ .Values.amf.networks.name }}
+      {{- end }}
+      labels:
+        app: amf
+    spec:
+      {{- if eq (include "globalEnabled" .) "true" }}
+      nodeSelector: {{- .Values.global.nodeSelector | toYaml | nindent 8 }}
+      {{- else }}
+      nodeSelector: {{- .Values.amf.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "amf.fullname" . }}
+          image: "{{ .Values.amf.image.repository }}:{{ .Values.amf.image.tag }}"
+          imagePullPolicy: {{ .Values.amf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c" ]
+          args: [ "sudo cp /tmp/config/..data/amf.conf /etc/amf/config/amf.conf; sudo cp /tmp/config/..data/asn.log.properties /etc/amf/config/asn.log.properties; amfip=`ip addr | grep eth0 | sed -n 2p | awk '{print $2}'`; sctpip=`echo ${amfip%/*}` ; sed -i -r 's/sctpserverip/'$sctpip'/g' /etc/amf/config/amf.conf; sudo /usr/local/bin/amf -s -c /etc/amf/config/amf.conf -l /etc/amf/config/asn.log.properties -t" ]
+          volumeMounts:
+            - name: amf-log
+              mountPath: /var/log/amf
+            - name: amf-xml
+              mountPath: /etc/amf/xml
+            - name: secret-license
+              mountPath: /etc/amf/licensefile
+            - name: devmem
+              mountPath: /dev/mem
+            - name: amf-conf
+              mountPath: /tmp/config
+          ports:
+            - containerPort: 38412
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep amf
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep amf
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+          resources:
+            {{ toYaml .Values.amf.resources | nindent 12 }}
+      {{- if .Values.amf.tolerations }}
+        tolerations:
+          {{ toYaml .Values.amf.tolerations | indent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.amf.terminationGracePeriodSeconds }}
+
+      volumes:
+       - name: amf-log
+         hostPath:
+           path: /var/log/amf
+       - name: devmem
+         hostPath:
+           path: /dev/mem
+       - name: amf-conf
+         configMap:
+           name: amf-conf
+       - name: amf-xml
+         configMap:
+           name: amf-xml           
+       - name: secret-license
+         secret:
+           {{- if eq (include "globalEnabled" .) "true" }}
+           secretName: {{ .Values.global.licenseSecret }}
+           {{- else }}
+           secretName: {{ .Values.amf.licenseSecret }}
+           {{- end }}
+

@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.pcf.service.annotations }}
+  annotations:
+{{ toYaml .Values.pcf.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "pcf.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.pcf.service.type }}
+{{- if .Values.pcf.service.clusterIP }}
+  clusterIP: {{ .Values.pcf.service.clusterIP }}
+{{- end }}
+{{- if .Values.pcf.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.pcf.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.pcf.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.pcf.service.loadBalancerIP }}
+{{- end }}
+{{- if .Values.pcf.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{- range $cidr := .Values.pcf.service.loadBalancerSourceRanges }}
+    - {{ $cidr }}
+  {{- end }}
+{{- end }}
+  ports:
+    - name: {{ .Values.pcf.service.name_n7 }}
+      port: {{ .Values.pcf.service.servicePort_n7 }}
+      targetPort: {{ .Values.pcf.service.servicePort_n7 }}
+      protocol: TCP
+    - name: {{ .Values.pcf.service.name_n15 }}
+      port: {{ .Values.pcf.service.servicePort_n15 }}
+      targetPort: {{ .Values.pcf.service.servicePort_n15 }}
+      protocol: TCP
+  selector:
+    app: pcf

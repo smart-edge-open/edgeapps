@@ -1,0 +1,126 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+# Default values for 5g_charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+amf:
+  ## If false, amf will not be installed
+  enabled: true
+
+  ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
+  replicaCount: 1
+
+  ## amf container name
+  name: amf
+  
+  #  annotations: k8s.v1.cni.cncf.io/networks: amf-n1, amf-nn
+  annotations: {}
+
+  ## amf container image
+  image:
+    repository: astri.org/5g/amf
+    tag: v22.03-rc0
+    pullPolicy: IfNotPresent
+  
+  ## networks configures the network resources to be used, set enabled: false to use default CNI option (e.g. calico, flannel)
+  networks:
+    enabled: false
+    name: ""
+
+  # podIP is used to configure the IP address of Pod's calico network interface 
+  podIP: 10.245.216.128
+
+  ## network interfaces configurations for AMF
+  networkInterfaces:
+    ngapSctpServer: 10.245.216.128
+    ngapSctpPort: 38412
+
+    n11Http2Server: 10.245.216.128
+    n11Http2ServerPort: 81
+    n11Http2Client: 10.245.216.128
+    n11Http2ClientPort: 8011
+
+    n12Http2Client: 10.245.216.128
+    n12Http2ClientPort: 8012
+
+    n8Http2Server: 10.245.216.128
+    n8Http2ServerPort: 88
+    n8Http2Client: 10.245.216.128
+    n8Http2ClientPort: 8008
+
+    n15Http2Server: 10.245.216.128
+    n15Http2ServerPort: 85
+    n15Http2Client: 10.245.216.128
+    n15Http2ClientPort: 8015
+
+    nrfHttp2Server: 192.168.120.29
+    nrfHttp2ServerPort: 8016
+    nrfHttp2Client: 192.168.120.29
+    nrfHttp2ClientPort: 8017
+
+    n22Http2Server: 192.168.120.28
+    n22Http2ServerPort: 8012
+    n22Http2Client: 192.168.120.28
+    n22Http2ClientPort: 8009
+
+  ## nfProfiles defines local NF profiles for AMF without NRF integration
+  nfProfiles:
+    ausfIP: 10.245.216.101
+    smfIP: 10.245.216.130
+    udmIP: 10.245.216.131
+    pcfIP: 10.245.216.129
+
+  ## AMF Node selector for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  nodeSelector: 
+    kubernetes.io/hostname: controller
+
+  ## Node tolerations for server scheduling to nodes with taints
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations: []
+    #- key: "key"
+    #  operator: "Equal|Exists"
+    #  value: "value"
+    #  effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+  ## Annotations to be added to configcontroller pods
+  podAnnotations: {}
+    # iam.amazonaws.com/role: worker
+
+  ## amf service
+  service:
+    annotations: {}
+    labels: {}
+    clusterIP: 
+
+    ## List of IP addresses at which the configcontroller service is available
+    ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+    externalIPs: [ 192.168.23.3 ]
+
+    name_n2: n2
+    servicePort_n2: 38412
+    name_n11: n11
+    servicePort_n11: 81  
+    name_n8: n8
+    servicePort_n8: 88
+    name_n15: n15
+    servicePort_n15: 85   
+
+    type: ClusterIP
+
+  #   # We usually recommend not to specify default resources and to leave this as a conscious
+  #   # choice for the user. This also increases chances charts run on environments with little
+  #   # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  #   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+
+  ## Amf server pod termination grace period
+  terminationGracePeriodSeconds: 30
+  licenseSecret: license-controller

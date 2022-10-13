@@ -1,0 +1,288 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "udr.fullname" . }}
+  name: udr-conf
+data:
+  udrcfg.yaml: |
+    info:
+      version: 1.0.0
+      description: UDR initial local configuration
+
+    configuration:
+      sbi: # Service-based interface information
+        scheme: {{ .Values.udr.networkConfigurations.sbi.scheme }} # the protocol for sbi (http or https)
+        registerIPv4: {{ .Values.udr.networkConfigurations.sbi.registerIPv4 }} # IP used to register to NRF
+        bindingIPv4: 0.0.0.0 # IP used to bind the service
+        port: {{ .Values.udr.networkConfigurations.sbi.port }} # port used to bind the service
+      redisdb:
+        url: "{{ .Values.udr.networkConfigurations.redisdb.url }}" # URL of RedisDB
+      nrfUri: {{ .Values.udr.networkConfigurations.nrfUri }} # a valid URI of NRF
+      configFiles:
+        udr-operator-path: /etc/udr/config/json/udr-operator.json
+        udr-ue-info-path: /etc/udr/config/json/udr-ue-info.json
+        udr-am-data-path: /etc/udr/config/json/udr-am-data.json
+        udr-sm-data-path: /etc/udr/config/json/udr-sm-data.json
+        udr-snssai-path: /etc/udr/config/json/udr-snssai.json
+      instanceid: "{{ .Values.udr.networkConfigurations.instanceid }}"
+      grpcserver: "{{ .Values.udr.networkConfigurations.grpcserver }}"  
+
+    # the kind of log output
+      # debugLevel: how detailed to output, value: trace, debug, info, warn, error, fatal, panic
+      # ReportCaller: enable the caller report or not, value: true or false
+    logger:
+      UDR:
+        debugLevel: trace
+        ReportCaller: true
+      RedisDBLibrary:
+        debugLevel: trace
+        ReportCaller: true
+      PathUtil:
+        debugLevel: trace
+        ReportCaller: true
+      OpenApi:
+        debugLevel: trace
+        ReportCaller: true
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "udr.fullname" . }}
+  name: udr-json
+data:
+  udr-am-data.json: |
+    [
+    {
+        "id": 1,
+        "accessAndMobilitySubscriptionData": {
+            "subscribedUeAmbr": {
+                "uplink": 100000,
+                "downlink": 100000
+            },
+            "ratRestrictions": [],
+            "forbiddenAreas": [],
+            "serviceAreaRestriction": {
+                "areas": []
+            },
+            "subsRegTimer": 60,
+            "mpsPriority": false,
+            "micoAllowed": true,
+            "subscribedDnnList": []
+        }
+    }
+    ]
+
+  udr-sm-data.json: |
+    [
+    {
+        "id": 1,
+        "sessionManagementSubscriptionData": {
+            "singleNssai": {
+                "sst": 1,
+                "sd": ""
+            },
+            "dnnConfigurations": {
+                "default": {
+                    "pduSessionTypes": {
+                        "defaultSessionType": "IPv4",
+                        "allowedSessionTypes": [
+                            "IPv4"
+                        ]
+                    },
+                    "sscModes": {
+                        "defaultSscMode": "SSC_MODE_1",
+                        "allowedSscModes": [
+                            "SSC_MODE_1",
+                            "SSC_MODE_2",
+                            "SSC_MODE_3"
+                        ]
+                    },
+                    "iwkEpsInd": false,
+                    "_5gQosProfile": {
+                        "_5qi": 0,
+                        "arp": {
+                            "priorityLevel": 0,
+                            "preemptCap": "PREEMPTABLE",
+                            "preemptVuln": "PREEMPTABLE"
+                        }
+                    },
+                    "sessionAmbr": {
+                        "uplink": 200,
+                        "downlink": 200
+                    },
+                    "staticIpAddress": [],
+                    "dnn": "default"
+                }
+            }
+        }
+    }
+    ]
+
+  udr-snssai.json: |
+    [
+    {
+        "id": 1,
+        "snssaiInfo": {
+            "singleNssai": {
+                "sst": 1,
+                "sd": ""
+            },
+            "dnnInfos": [
+                {
+                    "dnn": "default",
+                    "defaultDnnIndicator": true,
+                    "lboRoamingAllowed": true
+                }
+            ]
+        }
+    }
+    ]
+
+  udr-operator.json: |
+    {
+    "mcc": "466",
+    "mnc": "92",
+    "amf": "80 00",
+    "protection-param-id": "1",
+    "op": "12 34 56 78 90 12 34 56 12 34 56 78 90 12 34 56"
+    }
+
+  udr-ue-info.json: |
+    [
+      {
+        "supi": "imsi-466920100001101",
+        "authenticationMethod": "0",
+        "ki": "12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12",
+        "algorithmId": "1",
+        "defaultSnssaiIndexList": [
+          1
+        ],
+        "nondefaultSnssaiIndexList": [
+          1
+        ],
+        "amDataIndex": 1,
+        "sessionManagementDataIndexList": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "staticIpAddress": "",
+        "smfSelectDataInfoList": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "supi": "imsi-466920100001102",
+        "authenticationMethod": "0",
+        "ki": "12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12",
+        "algorithmId": "1",
+        "defaultSnssaiIndexList": [
+          1
+        ],
+        "nondefaultSnssaiIndexList": [
+          1
+        ],
+        "amDataIndex": 1,
+        "sessionManagementDataIndexList": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "staticIpAddress": "",
+        "smfSelectDataInfoList": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "supi": "imsi-466920100001103",
+        "authenticationMethod": "0",
+        "ki": "12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12",
+        "algorithmId": "1",
+        "defaultSnssaiIndexList": [
+          1
+        ],
+        "nondefaultSnssaiIndexList": [
+          1
+        ],
+        "amDataIndex": 1,
+        "sessionManagementDataIndexList": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "staticIpAddress": "",
+        "smfSelectDataInfoList": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "supi": "imsi-466920100001104",
+        "authenticationMethod": "0",
+        "ki": "12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12",
+        "algorithmId": "1",
+        "defaultSnssaiIndexList": [
+          1
+        ],
+        "nondefaultSnssaiIndexList": [
+          1
+        ],
+        "amDataIndex": 1,
+        "sessionManagementDataIndexList": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "staticIpAddress": "",
+        "smfSelectDataInfoList": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "supi": "imsi-466920100001105",
+        "authenticationMethod": "0",
+        "ki": "12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12",
+        "algorithmId": "1",
+        "defaultSnssaiIndexList": [
+          1
+        ],
+        "nondefaultSnssaiIndexList": [
+          1
+        ],
+        "amDataIndex": 1,
+        "sessionManagementDataIndexList": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "staticIpAddress": "",
+        "smfSelectDataInfoList": [
+          1,
+          2,
+          3
+        ]
+      }
+    ]

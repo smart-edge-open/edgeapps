@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.udr.service.annotations }}
+  annotations:
+{{ toYaml .Values.udr.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "udr.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.udr.service.type }}
+{{- if .Values.udr.service.clusterIP }}
+  clusterIP: {{ .Values.udr.service.clusterIP }}
+{{- end }}
+{{- if .Values.udr.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.udr.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.udr.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.udr.service.loadBalancerIP }}
+{{- end }}
+{{- if .Values.udr.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{- range $cidr := .Values.udr.service.loadBalancerSourceRanges }}
+    - {{ $cidr }}
+  {{- end }}
+{{- end }}
+  ports:
+    - name: {{ .Values.udr.service.name }}
+      port: {{ .Values.udr.service.servicePort }}
+      targetPort: {{ .Values.udr.service.servicePort }}
+      protocol: TCP
+  selector:
+    app: udr

@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+# Default values for udr_charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+udr:
+  ## If false, udr will not be installed
+  enabled: true
+
+  ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
+  replicaCount: 1
+
+  ## udr container name
+  name: udr
+
+  #  annotations: k8s.v1.cni.cncf.io/networks: udr-n1, udr-nn
+  annotations: {}
+
+  # podIP is used to configure the IP address of Pod's calico network interface
+  podIP: 10.245.216.111
+
+  networkConfigurations:
+    sbi:
+      scheme: http
+      registerIPv4: 127.0.0.4
+      bindingIPv4: 10.245.216.111
+      port: 8866
+
+    redisdb:
+      url: "127.0.0.1:6379"
+
+    nrfUri: ""
+    instanceid: "udr1.astri.udr.5gc.3gppnetwork.org"
+    #grpcserver: "mp.default.svc.cluster.local:8081"
+
+  ## udr container image
+  image:
+    repository: astri.org/5g/udr
+    tag: v22.03-rc0
+    pullPolicy: IfNotPresent
+
+
+  ## UDR Node selector for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  nodeSelector: 
+    kubernetes.io/hostname: controller
+
+  ## Node tolerations for server scheduling to nodes with taints
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations: []
+    #- key: "key"
+    #  operator: "Equal|Exists"
+    #  value: "value"
+    #  effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+  ## Annotations to be added to configcontroller pods
+  podAnnotations: {}
+    # iam.amazonaws.com/role: worker
+
+  ## udr service
+  service:
+    annotations: {}
+    labels: {}
+    clusterIP: ""
+
+    ## List of IP addresses at which the configcontroller service is available
+    ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+    externalIPs: []
+
+    name: nudr
+    type: ClusterIP
+    servicePort: 8866
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+
+  terminationGracePeriodSeconds: 30
+  licenseSecret: license-controller
