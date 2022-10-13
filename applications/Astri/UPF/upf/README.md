@@ -51,11 +51,11 @@ sriovnetworks.sriovnetwork.openshift.io
 
 **5. The Helm Charts of UPF & UPF Agent Should be Copied to the Kubernetes Controller for Deployment.**
 
-# Prerequisites - Installing OpenNESS
+# Prerequisites - Installing Smart Edge
 
 | Configuration      | Description |
 | -----------        | ----------- |
-| OpenNESS Version   | 22.01       |
+| Smart Edge Version | 22.01       |
 | network_edge.yml   | Comment out 'import_playbook' of  Provision target infrastructure, Provision Kubernetes cluster, Applications    |
 | edgenode_group.yml |   ptp_sync_enable: false      |
 | edgenode_group.yml |   CPUs to be isolated:  isolcpus: "1-31,33-63,65-95,97-127"      CPUs not to be isolated: os_cpu_affinity_cpus: "0,32,64,96"     |
