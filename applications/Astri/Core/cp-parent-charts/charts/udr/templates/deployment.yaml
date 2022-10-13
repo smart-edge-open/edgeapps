@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "udr.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.udr.replicaCount }}
+  selector:
+    matchLabels:
+      app: udr
+  template:
+    metadata:
+      labels:
+        app: udr
+    spec:
+      {{- if eq (include "globalEnabled" .) "true" }}
+      nodeSelector: {{- .Values.global.nodeSelector | toYaml | nindent 8 }}
+      {{- else }}
+      nodeSelector: {{- .Values.udr.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "udr.fullname" . }}
+          image: "{{ .Values.udr.image.repository }}:{{ .Values.udr.image.tag }}"
+          imagePullPolicy: {{ .Values.udr.image.pullPolicy }}
+          command: [ "/bin/sh", "-c" ]
+          args: [ "sudo /usr/bin/redis-server /etc/redis/redis.conf & sudo /etc/udr/bin/udr" ]
+          volumeMounts:
+            - name: udr-log
+              mountPath: /etc/udr/log
+            - name: udr-json
+              mountPath: /etc/udr/config/json
+            - name: udr-conf
+              mountPath: /etc/udr/config 
+            - name: secret-license
+              mountPath: /etc/licensefile
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep udr
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep udr
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+          resources:
+            {{ toYaml .Values.udr.resources | nindent 12 }}
+      {{- if .Values.udr.tolerations }}
+        tolerations: 
+          {{ toYaml .Values.udr.tolerations | indent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.udr.terminationGracePeriodSeconds }}
+
+      volumes:
+        - name: udr-log
+          hostPath:
+            path: /var/log/udr
+        - name: udr-conf
+          configMap:
+            name: udr-conf
+        - name: udr-json
+          configMap:
+            name: udr-json
+        - name: secret-license
+          secret:
+            {{- if eq (include "globalEnabled" .) "true" }}
+            secretName: {{ .Values.global.licenseSecret }}
+            {{- else }}
+            secretName: {{ .Values.udr.licenseSecret }}
+            {{- end }}

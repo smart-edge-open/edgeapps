@@ -1,0 +1,246 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "amf.fullname" . }}
+  name: amf-conf
+data:
+  amf.conf: |
+    <ngc>
+      <fwcfg local-http-service-ip="0.0.0.0" local-http-service-port="9191"/>
+      
+      <!--AMFCfgComponent:
+            amf-name: The name of the AMF node.-->
+      <amfcfg amf-name="amf1.astri.amf.5gc.mnc092.mcc466.3gppnetwork.org" mico-support-indication="0" t3512="1" t3502="30" amf-apiroot="" unreachable-timer="20" implicit-deregister-timer="300" amf-capacity="100" amf-info-profile="./xml/amfInfo.xml" default-paging-profile-id="1" paging-policy-profile="./xml/paging-policy.xml" access-gnb-profile="./xml/accessGnb.xml"/>
+      
+      <!--NGAPComponent-Interface beteen AMF and RAN-->
+      {{- if eq (include "globalEnabled" .) "true" -}}
+      {{- printf "\n" }}
+      <ngap sctp-server-ip="sctpserverip" sctp-local-host="" sctp-server-port="{{ .Values.amf.networkInterfaces.ngapSctpPort }}"/>
+      {{- else }}
+      <ngap sctp-server-ip="{{ .Values.amf.networkInterfaces.ngapSctpServer }}" sctp-server-port="{{ .Values.amf.networkInterfaces.ngapSctpPort }}"/>
+      {{- end }}
+
+      <!--N11Component-Interface between AMF and SMF-->
+      <n11 N11-service-name="cp-amf.{{ .Release.Namespace }}" N11-http2-server-port="{{ .Values.amf.networkInterfaces.n11Http2ServerPort }}" N11-http2-local-host="localhost" N11-http2-client-port="{{ .Values.amf.networkInterfaces.n11Http2ClientPort }}" smf-apiroot=""/>        
+
+      <!--N12Component-Interface between AMF and AUSF-->
+      <n12 auth-enabled="1" cipher-alg-order="0,1,2,3" integrity-alg-order="2,3,0,1" N12-http2-client-ip="" N12-http2-local-host="localhost" N12-http2-client-port="{{ .Values.amf.networkInterfaces.n12Http2ClientPort }}" ausf-apiroot=""/>      
+          
+      <!--N8Component-Interface between AMF and UDM-->
+      <n8 local-subscription-enabled="0" udm-am-profile="./xml/udm-am-subscription-data.xml" udm-smf-sel-profile="./xml/udm-smf-selection.xml" udm-ue-profile="./xml/udm-ue.xml" N8-http2-service-name="cp-amf.{{ .Release.Namespace }}" N8-http2-server-port="{{ .Values.amf.networkInterfaces.n8Http2ServerPort }}" N8-http2-local-host="localhost" N8-http2-client-port="{{ .Values.amf.networkInterfaces.n8Http2ClientPort }}" udm-apiroot=""/>
+
+      <!--N15Component-Interface between AMF and PCF-->
+      <n15 local-policy-enabled="1" pcf-am-profile="./xml/pcf-am-policy-data.xml" pcf-ue-profile="./xml/pcf-ue.xml" N15-http2-service-name="cp-amf.{{ .Release.Namespace }}" N15-http2-server-port="{{ .Values.amf.networkInterfaces.n15Http2ServerPort }}" N15-http2-local-host="localhost" N15-http2-client-port="{{ .Values.amf.networkInterfaces.n15Http2ClientPort }}" pcf-apiroot=""/>
+
+      <!--NRFComponent-Interface between AMF and NRF
+          nf-selection-mode: only support 0.-->
+      <n27 nf-selection-mode="0" nf-sel-profile="./xml/nrf.xml" nrf-priority="1" nrf-capacity="200" nrf-heartBeat-Interval="20" N27-http2-service-name="cp-amf.{{ .Release.Namespace }}" N27-http2-server-port="8001" N27-http2-local-host="localhost" N27-http2-client-port="8009" nrf-apiroot="" N27-http2-notify-service-name="cp-amf.{{ .Release.Namespace }}" N27-http2-notify-server-port="8017"/>
+      
+      <!--N22Component-Interface between AMF and NSSF-->
+      <n22 local-NSSF-enabled="1" N27-http2-service-name="cp-amf.{{ .Release.Namespace }}" N22-http2-server-port="8012" N27-http2-local-host="localhost" N22-http2-client-port="8009" nssf-apiroot=""/>
+    </ngc>
+
+  asn.log.properties: |-
+    #
+    # Default Log Level is info
+    #
+    log4cplus.rootLogger=error, console, file
+    ####################################
+    # Subsystem Log Level Control
+    #log4cplus.logger.syslib=error, console, file
+    log4cplus.logger.framework=debug, console, file
+    log4cplus.logger.usrsctp.debug=debug,console,file
+    #log4cplus.logger.protocol=error, console, file
+    #log4cplus.logger.framework.service=error, console, file
+    #log4cplus.logger.framework.model=error, console, file
+    #log4cplus.logger.framework.stat=error, console, file
+    #log4cplus.logger.framework.adapter=error, console, file
+    #log4cplus.logger.framework.adapter.CompoundTLV=error, console, file
+    #log4cplus.logger.framework.session.UDPSession=error, console, file
+    #log4cplus.logger.framework.db=error, console, file
+    #log4cplus.logger.framework.dao=error, console, file
+    #log4cplus.logger.framework.serialization=error, console, file
+    #log4cplus.logger.framework.cprecovery=error, console, file
+    #log4cplus.logger.coreapp.asfa=error, console, file
+    #log4cplus.logger.db=error, console, file
+    log4cplus.logger.amf=debug, console, file
+    log4cplus.logger.systemdata=info, console, file
+    # Custom Log Level Control -
+    # Note: log4cplus.additivity.xxx=false will remove duplicated logs.
+    #
+    log4cplus.additivity.syslib=false
+    log4cplus.additivity.framework=false
+    log4cplus.additivity.db=false
+    log4cplus.additivity.protocol=false
+    log4cplus.additivity.amf=false
+    #
+    # Logging to Console
+    #
+    log4cplus.appender.console=log4cplus::ConsoleAppender
+    log4cplus.appender.console.layout=log4cplus::PatternLayout
+    log4cplus.appender.console.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n
+    #log4cplus.appender.console.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.console.filters.1.StringToMatch=90:90:00:00:00:01
+    #log4cplus.appender.console.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.console.filters.2=log4cplus::spi::DenyAllFilter
+    #
+    # Logging to Logfiles
+    #
+    log4cplus.appender.file=log4cplus::RollingFileAppender
+    log4cplus.appender.file.MaxFileSize=6000KB
+    log4cplus.appender.file.MaxBackupIndex=10
+    #log4cplus.appender.file.File=${WAGRMMROOT}/log/asn.log
+    log4cplus.appender.file.File=/var/log/amf/amf.log
+    log4cplus.appender.file.layout=log4cplus::PatternLayout
+    log4cplus.appender.file.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n
+    #log4cplus.appender.file.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.file.filters.1.StringToMatch=90:90:00:00:00:02
+    #log4cplus.appender.file.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.file.filters.2=log4cplus::spi::DenyAllFilter
+    ###  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "amf.fullname" . }}
+  name: amf-xml
+data:
+  nrf.xml: |    
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <nf-selection-profiles> 
+      <nf-selection-profile mcc="466" mnc="92" size="4">
+        <nf-entry nf-type="pcf" instance-id="pcf1" nf-name="cp-pcf.{{ .Release.Namespace }}" port="7080"/>
+        <nf-entry nf-type="udm" instance-id="udm1" nf-name="cp-udm.{{ .Release.Namespace }}" port="3123"/>
+        <nf-entry nf-type="ausf" instance-id="ausf1" nf-name="cp-ausf.{{ .Release.Namespace }}" port="2133"/>
+        <nf-entry nf-type="smf" instance-id="smf1" serving-area="string" snssai-sst="1" snssai-sd="" dnn="default" nf-name="cp-smf.{{ .Release.Namespace }}" port="3124"/>
+      </nf-selection-profile>
+    </nf-selection-profiles>
+
+  udm-smf-selection.xml: | 
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <udm-profile nf-type="2"> 
+      <smf-select-subscription-list size="1">
+        <subscribed-snssai-info-entry index="1" snssai-sst="1" snssai-sd="" dnn-size="1">
+          <dnn-info-entry dnn-index="11" dnn-name="default" default-dnn-ind="1" lbo-roaming-allowed="1"/>
+        </subscribed-snssai-info-entry>
+      </smf-select-subscription-list>
+    </udm-profile>
+
+  pcf-am-policy-data.xml: | 
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <pcf-profiles> 
+      <am-policy size="2">
+        <am-policy-entry index="1001" rfsp-index="123" service-area-type="allowed" tai-size="1">
+          <tai-entry tai-mcc="466" tai-mnc="92" tai-tac="81"/>
+        </am-policy-entry>
+        <am-policy-entry index="6001" rfsp-index="123" service-area-type="allowed" tai-size="0"/>
+      </am-policy>
+    </pcf-profiles>
+
+  udm-ue.xml: | 
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <udm-profile nf-type="2"> 
+      <user-profile name="user-profile" size="2">
+        <user-subscription ue-supi="imsi-466920100001104" am-subscription-index="1" subscribed-snssai-info-index-list="1"/>
+        <user-subscription ue-supi="imsi-466920100001106" am-subscription-index="1" subscribed-snssai-info-index-list="1"/>
+      </user-profile>
+    </udm-profile>
+
+  guami.xml: | 
+    <guami-profiles>
+      <guami-profile name="amf-guami-profile" size="1">
+        <!--Guami : plmnid + amfid(AMF Region ID(16bits), AMF Set ID(4bits), AMF Pointer(4bits), 6 hexadecimal charaters)-->
+          <guami-entry index="1" mcc="466" mnc="92" amf-regionid="1111" amf-setid="11" amf-pointer="12"/>
+      </guami-profile>
+    </guami-profiles>
+
+  pcf-ue.xml: | 
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <pcf-profiles> 
+      <user-list size="2">
+        <ue-policy-data ue-supi="imsi-466920100001104" am-policy-index="1001"/>
+        <ue-policy-data ue-supi="imsi-466920100001106" am-policy-index="1001"/>
+      </user-list>
+    </pcf-profiles>
+
+  ausf.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <op-profile> 
+      <!--ueid; aka-method : 5G_AKA_CONFIRMATION is 1, EAP AKA PRIME is 2; _links: array; 5gAuthData: AV5GAka EaPayload;    AV5gAka: rand xresStar auth kausf;  ConfirmationData: resStar-->  
+      <ki-profile op="12 34 56 78 90 12 34 56 12 34 56 78 90 12 34 56" amf="80 00" vector-size="2" ue-size="2"> 
+        <ue-ki ue-supi="imsi-466920100001104" ue-usim-key="12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12" aka-algorithm="1" aka-method="1"/>
+        <ue-ki ue-supi="imsi-466920100001106" ue-usim-key="ddd" aka-algorithm="1" aka-method="1"/>
+      </ki-profile> 
+    </op-profile>  
+
+  paging-policy.xml: |
+    <paging-profiles>
+      <paging-policy-profile name="paging-policy-proflie" size="6">
+        <paging-profile id="1" paging-strategy="1" paging-interval="0"/>
+        <paging-profile id="2" paging-strategy="2" paging-interval="0"/>
+        <paging-profile id="3" paging-strategy="3" paging-interval="0"/>
+        <paging-profile id="4" paging-strategy="4" paging-interval="0"/>
+        <paging-profile id="5" paging-strategy="2,4" paging-interval="600"/>
+        <paging-profile id="6" paging-strategy="4,4,4" paging-interval="600"/>
+      </paging-policy-profile>
+    </paging-profiles>
+
+  udm-am-subscription-data.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <udm-profile nf-type="2"> 
+      <am-subscription name="am-subscription" size="1">
+        <am-entry index="1" subscribed-ue-ambr-ul="100000" subscribed-ue-ambr-dl="100000" rat-restriction="" periodic-registrate-timer="60" priority-service-ind="0">
+          <area-restriction-list size="0"/>
+        </am-entry>
+      </am-subscription>
+    </udm-profile>
+
+  amfInfo.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <amfInfo-profiles> 
+      <amfInfo-profile name="amfInfo-profile" size="1"> 
+        <!--Guami : mcc(3digtis) + mnc(2digits) + reginId(8bits,0-255) + setId(10bits, 0-1023 ) + point(6bits, 0-63), in decimal)-->  
+        <amfInfo-entry guami-index="1" mcc="466" mnc="92" regionId="1" setId="1" pointer="1"> 
+          <snssai-list-entry snssai-list-size="1">
+            <snssai-entry index="eMBB" snssai-sst="1" snssai-sd=""/>
+          </snssai-list-entry>
+          <tac-list-entry tac-list-size="2">
+            <tac-entry tac="81" snssai-index-list="eMBB"/>
+            <tac-entry tac="82" snssai-index-list="eMBB"/>
+          </tac-list-entry>
+          <tracking-area-list-entry list-size="1">
+            <tac-list-entry index="1" tac-list="81"/>
+          </tracking-area-list-entry>
+        </amfInfo-entry> 
+      </amfInfo-profile> 
+    </amfInfo-profiles>
+
+  accessGnb.xml: |
+    <access-gnb-profiles>
+  
+      <access-gnb-profile size="4">
+    
+        <access-gnb-entry gnbId="12345" ranNodeName="gnb1.spirent.com" mcc="466" mnc="92"/>
+    
+        <access-gnb-entry gnbId="12346" ranNodeName="gnb2.spirent.com" mcc="466" mnc="92"/>
+    
+        <access-gnb-entry gnbId="3" ranNodeName="gnbId3" mcc="466" mnc="92"/>
+    
+        <access-gnb-entry gnbId="4" ranNodeName="gnbId4" mcc="466" mnc="92"/>
+    
+      </access-gnb-profile>
+  
+    </access-gnb-profiles>

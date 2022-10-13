@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v2
+name: udm
+version: 1.0.0
+description: the Unified Data Management (UDM) is a 5G network function to manage data for access authorization, user registration, and data network profiles. 
+maintainers:
+  - name: Xue Feng
+    email: xuefeng@astri.org
+  - name: Lawrence Luo
+    email: lawrenceluo@astri.org
+type: application

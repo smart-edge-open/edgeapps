@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v2
+name: upf
+version: 1.0.0
+description: UPF is a user plane function in the 5G core network.
+maintainers:
+  - name: Liang DONG
+    email: liangdong@astri.org
+  - name: Xue FENG
+    email: xuefeng@astri.org
+  - name: Zhicheng LUO
+    email: zhichengluo@astri.org
+type: application
+

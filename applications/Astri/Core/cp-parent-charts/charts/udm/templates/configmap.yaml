@@ -1,0 +1,216 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "udm.fullname" . }}
+  name: udm-conf
+data:
+  udm.conf: |
+    <ngc>
+ 
+      <fwcfg local-http-service-ip="0.0.0.0" local-http-service-port="9191"/>
+
+      <!--udmCfgComponent: Load udm Configuration besides interfaces
+            udm-name:     The name of the udm node.-->
+
+      <udmcfg udm-name="ASTRI EPC UDM" auth-enabled="1" local-udr-enabled="1" local-xml-enabled="1" udm-ue-key-profile="./xml/udm-ue-key.xml" udm-am-profile="./xml/udm-am-subscription-data.xml" udm-smf-sel-profile="./xml/udm-smf-selection.xml" udm-sm-data-profile="./xml/udm-session-management-subscription-data.xml" udm-snssai-profile="./xml/udm-snssai.xml" udm-ue-profile="./xml/udm-ue.xml"/>
+
+      <!--Http2Component - N11 interface component
+            bind-port: Bind port for listening Http2 messages.-->
+
+      <http2 http2-service-name="cp-udm.{{ .Release.Namespace }}" http2-server-port="{{ .Values.udm.networkInterfaces.Http2ServerPort }}" http2-local-host="localhost" http2-client-port="{{ .Values.udm.networkInterfaces.Http2ClientPort }}" local-udr-enabled="0" http2-udr-local-host="localhost" http2-udr-client-port="{{ .Values.udm.networkInterfaces.udrClientPort }}" http2-udr-service-name="cp-udr.{{ .Release.Namespace }}" http2-udr-server-port="{{ .Values.udm.networkInterfaces.udrServerPort }}" http2-udr-notify-server-name="localhost" http2-udr-notify-server-port="{{ .Values.udm.networkInterfaces.udrNotiServerPort }}"/>
+
+      <!--ETComponent thread-pool-size : the size of thread pool
+                        dhcp-discover-timeout: the timeout for dhcp discover message after isf completed-->
+
+      <wfcomponent thread-pool-size="50" save-context-as-file="false"/>
+
+    </ngc>
+
+  asn.log.properties: |
+    # Default Log Level is info
+    #
+    log4cplus.rootLogger=debug, console, file
+
+    ####################################
+    # Subsystem Log Level Control
+    log4cplus.logger.syslib=error, console, file
+    log4cplus.logger.framework=debug, console, file
+    log4cplus.logger.framework.modal=error, console, file
+    log4cplus.logger.framework.model=error, console, file
+    log4cplus.logger.framework.stat=error, console, file
+    #log4cplus.logger.framework.adapter=error, console, file
+    #log4cplus.logger.framework.adapter.CompoundTLV=error, console, file
+    #log4cplus.logger.framework.session.UDPSession=error, console, file
+    #log4cplus.logger.framework.db=error, console, file
+    #log4cplus.logger.framework.dao=error, console, file
+    #log4cplus.logger.framework.serialization=error, console, file
+    log4cplus.logger.framework.cprecovery=error, console, file
+    #log4cplus.logger.coreapp.asfa=error, console, file
+    log4cplus.logger.db=error, console, file
+    log4cplus.logger.protocol=debug, console, file
+    log4cplus.logger.udm=debug, console, file
+    log4cplus.logger.syslib.security=debug, console, file
+
+    # Custom Log Level Control -
+    # Note: log4cplus.additivity.xxx=false will remove duplicated logs.
+    #
+    log4cplus.additivity.syslib=false
+    log4cplus.additivity.framework=false
+    log4cplus.additivity.db=false
+    log4cplus.additivity.protocol=false
+    log4cplus.additivity.udm=false
+
+    #
+    # Logging to Console
+    #
+    log4cplus.appender.console=log4cplus::ConsoleAppender
+    log4cplus.appender.console.layout=log4cplus::PatternLayout
+    log4cplus.appender.console.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n
+    #log4cplus.appender.console.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.console.filters.1.StringToMatch=90:90:00:00:00:01
+    #log4cplus.appender.console.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.console.filters.2=log4cplus::spi::DenyAllFilter
+
+    #
+    # Logging to Logfiles
+    #
+    log4cplus.appender.file=log4cplus::RollingFileAppender
+    log4cplus.appender.file.MaxFileSize=6000KB
+    log4cplus.appender.file.MaxBackupIndex=10
+    #log4cplus.appender.file.File=${WAGRMMROOT}/log/asn.log
+    log4cplus.appender.file.File=/var/log/udm/udm.log
+    log4cplus.appender.file.layout=log4cplus::PatternLayout
+    log4cplus.appender.file.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n
+    #log4cplus.appender.file.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.file.filters.1.StringToMatch=90:90:00:00:00:02
+    #log4cplus.appender.file.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.file.filters.2=log4cplus::spi::DenyAllFilter
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "udm.labels" . | indent 4 }}
+  name: udm-xml
+data:
+  udm-ue-key.xml: | 
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <op-profile> 
+      <ki-profile op="12 34 56 78 90 12 34 56 12 34 56 78 90 12 34 56" amf="80 00" vector-size="2" ue-size="2"> 
+        <ue-ki ue-supi="imsi-466920100001104" ue-usim-key="12 34 56 78 90 12 34 56 78 90 12 34 56 78 90 12" aka-algorithm="1" aka-method="1"/>
+        <ue-ki ue-supi="imsi-466920100001106" ue-usim-key="ddd" aka-algorithm="1" aka-method="1"/>
+      </ki-profile> 
+    </op-profile>
+    
+  udm-smf-selection.xml: | 
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <udm-profile nf-type="2">
+      <smf-select-subscription-list size="1">
+        <subscribed-snssai-info-entry index="1" snssai-sst="1" snssai-sd="" dnn-size="1">
+          <dnn-info-entry dnn-index="11" 
+           dnn-name="default" 
+           default-dnn-ind="1" 
+           lbo-roaming-allowed="1"/>
+        </subscribed-snssai-info-entry>
+      </smf-select-subscription-list>
+    </udm-profile>
+
+  pcf-am-policy-data.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <pcf-profiles> 
+      <am-policy size="1">
+        <am-policy-entry index="1001" rfsp-index="123" service-area-type="allowed" tai-size="1">
+          <tai-entry
+           tai-mcc="466" 
+           tai-mnc="92" 
+           tai-tac="81"/>
+        </am-policy-entry>
+      </am-policy>
+    </pcf-profiles>
+
+  udm-session-management-subscription-data.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <udm-profile nf-type="2">
+      <sm-data-list size="1">
+        <sm-data-entry index="1" snssai-sst="1" snssai-sd="" dnn-size="1">
+          <dnn-configuration-entry 
+           dnn-index="11" 
+           dnn-name="default" 
+           defaultSessionType="1" 
+           allowedSessionTypes="1" 
+           defaultSscModes="1,2,3" 
+           allowedSscModes="1,2,3" 
+           iwkEpsInd="0" 
+           landnIndicator="0"/>
+        </sm-data-entry>
+      </sm-data-list>
+    </udm-profile>
+
+  udm-ue.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <udm-profile nf-type="2">
+        <user-profile name="user-profile" size="2">
+          <user-subscription 
+           ue-supi="imsi-466920100001104" 
+           default-snssai-index-list="1" 
+           session-management-data-index-list="1" 
+           non-default-snssai-index-list="1" 
+           am-data-index="1" 
+           smf-selection-data-index-list="1"/>  
+          <user-subscription 
+           ue-supi="imsi-466920100001106" 
+           default-snssai-index-list="1" 
+           session-management-data-index-list="1" 
+           non-default-snssai-index-list="1" 
+           am-data-index="1" 
+           smf-selection-data-index-list="1"/>  
+        </user-profile>
+    </udm-profile>
+
+  guami.xml: |
+    <guami-profiles>
+      <guami-profile name="amf-guami-profile" size="1">
+        <!--Guami : plmnid + amfid(AMF Region ID(16bits), AMF Set ID(4bits), AMF Pointer(4bits), 6 hexadecimal charaters)-->
+          <guami-entry index="1" mcc="466" mnc="92" amf-regionid="10" amf-setid="11" amf-pointer="12"/>
+      </guami-profile>
+    </guami-profiles>
+
+  udm-snssai.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+        <udm-profile nf-type="2">
+          <snssai-list size="1">
+            <snssai-entry index="1" snssai-sst="1" snssai-sd="" plmn="46692"/>
+          </snssai-list>
+        </udm-profile>
+  pcf-ue.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+      <pcf-profiles>
+        <user-list size="2">
+          <ue-policy-data ue-supi="imsi-466920100001104" am-policy-index="1001"/>
+          <ue-policy-data ue-supi="imsi-466920100001106" am-policy-index="1001"/>
+        </user-list>
+      </pcf-profiles>
+  
+  udm-am-subscription-data.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+      <udm-profile nf-type="2">
+        <am-subscription name="am-subscription" size="1">
+          <am-entry index="1" subscribed-ue-ambr-ul="100000" subscribed-ue-ambr-dl="100000" rat-restriction="" periodic-registrate-timer="60" priority-service-ind="0">
+            <area-restriction-list size="0"/>
+          </am-entry>
+        </am-subscription>
+      </udm-profile>
+  

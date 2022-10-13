@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pcf.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.pcf.replicaCount }}
+  selector:
+    matchLabels:
+      app: pcf
+  template:
+    metadata:
+      labels:
+        app: pcf
+    spec:
+      {{- if eq (include "globalEnabled" .) "true" }}
+      nodeSelector: {{- .Values.global.nodeSelector | toYaml | nindent 8 }}
+      {{- else }}
+      nodeSelector: {{- .Values.pcf.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "pcf.fullname" . }}
+          image: "{{ .Values.pcf.image.repository }}:{{ .Values.pcf.image.tag }}"
+          imagePullPolicy: {{ .Values.pcf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c" ]
+          args: [ "sudo /usr/local/bin/pcf -s -c /etc/pcf/config/pcf.conf -l /etc/pcf/config/asn.log.properties -t" ]
+          volumeMounts:
+            - name: pcf-log
+              mountPath: /var/log/pcf
+            - name: pcf-xml
+              mountPath: /etc/pcf/xml
+            - name: pcf-conf
+              mountPath: /etc/pcf/config  
+            - name: secret-license
+              mountPath: /etc/pcf/licensefile
+            - name: devmem
+              mountPath: /dev/mem
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep pcf
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - ps -ef | pgrep pcf
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+          resources:
+            {{ toYaml .Values.pcf.resources | nindent 12 }}
+      {{- if .Values.pcf.tolerations }}
+        tolerations:
+          {{ toYaml .Values.pcf.tolerations | indent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.pcf.terminationGracePeriodSeconds }}
+
+      volumes:
+       - name: pcf-log
+         hostPath:
+           path: /var/log/pcf
+       - name: pcf-conf
+         configMap:
+           name: pcf-conf
+       - name: pcf-xml
+         configMap:
+           name: pcf-xml
+       - name: devmem
+         hostPath:
+           path: /dev/mem
+       - name: secret-license
+         secret:
+           {{- if eq (include "globalEnabled" .) "true" }}
+           secretName: {{ .Values.global.licenseSecret }}
+           {{- else }}
+           secretName: {{ .Values.pcf.licenseSecret }}
+           {{- end }}

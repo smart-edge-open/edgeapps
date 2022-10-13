@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.udm.service.annotations }}
+  annotations:
+{{ toYaml .Values.udm.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "udm.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.udm.service.type }}
+{{- if .Values.udm.service.clusterIP }}
+  clusterIP: {{ .Values.udm.service.clusterIP }}
+{{- end }}
+{{- if .Values.udm.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.udm.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.udm.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.udm.service.loadBalancerIP }}
+{{- end }}
+{{- if .Values.udm.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{- range $cidr := .Values.udm.service.loadBalancerSourceRanges }}
+    - {{ $cidr }}
+  {{- end }}
+{{- end }}
+  ports:
+    - name: {{.Values.udm.service.name }}
+      port: {{ .Values.udm.service.servicePort }}
+      targetPort: {{ .Values.udm.service.servicePort }}
+      protocol: TCP
+  selector:
+    app: udm

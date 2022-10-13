@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v2
+name: 5g-cp-nfs
+description: A Parent Helm chart for 5G Control Plane Network Functions
+type: application
+version: 1.0.0
+dependencies:
+- name: amf
+  repository: file://charts/amf
+  version: 1.0.0
+  condition: amf.enabled
+
+- name: ausf
+  repository: file://charts/ausf
+  version: 1.0.0
+  condition: ausf.enabled
+
+- name: pcf
+  repository: file://charts/pcf
+  version: 1.0.0
+  condition: pcf.enabled
+
+- name: smf
+  repository: file://charts/smf
+  version: 1.0.0
+  condition: smf.enabled
+
+- name: udm
+  repository: file://charts/udm
+  version: 1.0.0
+  condition: udm.enabled
+
+- name: udr
+  repository: file://charts/udr
+  version: 1.0.0
+  condition: udr.enabled

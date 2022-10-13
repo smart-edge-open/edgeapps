@@ -1,0 +1,401 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "smf.fullname" . }}
+  name: smf-conf
+data:
+  smf.conf: |
+    <ngc>
+      <!--SMF thread number configuration-->
+      <wf thread-num="8"/>
+      <smf nfInstanceId="smf1.astri.smf.5gc.mnc092.mcc466.3gppnetwork.org" supporting-dnn-size="3" supporting-dnn-name-1="default" supporting-dnn-name-2="public" supporting-dnn-name-3="internet" supporting-mcc="466" supporting-mnc="92" supporting-tac="81" supporting-sst="1" supporting-sd="" supporting-fqdn="smf1.astri.smf.5gc.mnc092.mcc466.3gppnetwork.org.test" nrf-priority="5" nrf-capacity="10" nrf-heartBeat-Interval="40" event-notification="enable"/>
+      <fwcfg local-http-service-ip="0.0.0.0" local-http-service-port="9191"/>
+
+      <!--ICFGComponent - External interfaces of SMF
+            local-amf-client-ipv4:     SMF-AMF network client ipv4 address
+            local-amf-client-port:     SMF-AMF network client port
+            local-udm-client-ipv4:     SMF-UDM network client ipv4 address
+            local-udm-client-port:     SMF-UDM network client port
+            local-pcf-client-ipv4:     SMF-PCF network client ipv4 address
+            local-pcf-client-port:     SMF-PCF network client port
+            local-amf-server-ipv4:     SMF-AMF network server ipv4 address
+            local-amf-server-port:     SMF-AMF network server port
+            amf-ipv4:       	   AMF network ipv4 address
+            amf-port:     		   AMF network port
+            udm-ipv4:       	   AMF network ipv4 address
+            udm-port:     		   AMF network port
+            pcf-ipv4:       	   AMF network ipv4 address
+            pcf-port:     		   AMF network port
+
+            urr-report-period:		URR report period in seconds
+            local-sm-policy-filename Local SM policy filesname
+            local-pfd-filename		Local pfd filename
+            local-dnn-filename		Local dnn configuration filename
+            local-upf-filename		Local upf mapping filename-->
+
+      <ifcfg  local-amf-local-host="localhost"
+              local-amf-client-port="{{ .Values.smf.networkInterfaces.n11Http2ClientPort }}"
+              local-udm-local-host="localhost"
+              local-udm-client-port="{{ .Values.smf.networkInterfaces.n10Http2ClientPort }}"
+              local-pcf-local-host="localhost"
+              local-pcf-client-port="{{ .Values.smf.networkInterfaces.n7Http2ClientPort }}"
+              local-amf-service-name="cp-smf.{{ .Release.Namespace }}"
+              local-amf-server-port="{{ .Values.smf.networkInterfaces.n11Http2ServerPort }}"
+              local-pcf-notifServer-name="localhost"
+              local-pcf-notifServer-port="{{ .Values.smf.networkInterfaces.pcfNotiPort }}"
+              local-udm-notifServer-name="localhost"
+              local-udm-notifServer-port="{{ .Values.smf.networkInterfaces.udmNotiPort }}" local-nrf-notifServer-name="localhost" local-nrf-client-port="2133"
+              amf-service-name="cp-amf.{{ .Release.Namespace }}"
+              amf-port="{{ .Values.smf.networkInterfaces.amfPort }}"
+              udm-service-name="cp-udm.{{ .Release.Namespace }}"
+              udm-port="{{ .Values.smf.networkInterfaces.udmPort }}"
+              pcf-service-name="cp-pcf.{{ .Release.Namespace }}"
+              pcf-port="{{ .Values.smf.networkInterfaces.pcfPort }}" nrf-ipv4="" nrf-port="" charging-func="DISABLE" user-inactivity-timer="0" drop-when-idle="0" start-time-enabled="0" stop-time-enabled="0" oad-control="0" overload-control="0" urr-report-period="0" volume-threshold-ul="3000000" volume-threshold-dl="4000000" volume-threshold-total="5000000" pfcp-heart-beat-interval="5" dscp-qci-index-9="14" metrics-folder="./data/" metrics-start-cellId="1" metrics-start-ip="192.168.120.231" primaryChfAddress="192.168.120.53" secondaryChfAddress="192.168.120.53" local-sm-policy-filename="./xml/sm-policy-data.xml" local-pfd-filename="./xml/pfd.xml" local-dnn-filename="./xml/dnn.xml" local-upf-filename="./xml/upf.xml" local-udm-filename="./xml/udm.xml" local-fr-filename="" local-chgChr-filename="./xml/sm-charge.xml" smf-apiroot="" amf-apiroot="" udm-apiroot="" pcf-apiroot="" nrf-apiroot=""/>
+    </ngc>
+
+  asn.log.properties: |-
+    #
+    # Default Log Level is info
+    #
+    log4cplus.rootLogger=error, console, file
+
+    ####################################
+    # Subsystem Log Level Control
+    #log4cplus.logger.framework.workflow=debug, console, file
+    #log4cplus.logger.framework.session.UDPSession=debug, console, file
+    log4cplus.logger.framework=error, console, file
+    #log4cplus.logger.framework=debug, console, file
+    log4cplus.logger.framework.service=debug, console, file
+    #log4cplus.logger.framework.service.UDPConn=error, console, file
+    #log4cplus.logger.framework.service.PfcpMsgHandler=error, console, file
+    #log4cplus.logger.framework.service.PfcpCustodian=debug, console, file
+    #log4cplus.logger.syslib.BaseJson=debug, console, file
+    #log4cplus.logger.syslib.thread.ThreadPool=debug, console, file
+    log4cplus.logger.syslib=debug, console, file
+    #log4cplus.logger.syslib=error, console, file
+    #log4cplus.logger.lte.adapter=debug, console, file
+    #log4cplus.logger.smf=debug, console, file
+    log4cplus.logger.smf=debug, console, file
+    #log4cplus.logger.smf.workflow=info, console, file
+    #log4cplus.logger.smf.workflow.PfcpPfdManagementWorkFlow=debug, console, file
+    #log4cplus.logger.smf.workflow.create=error, console, file
+    #log4cplus.logger.smf.workflow.update=error, console, file
+    #log4cplus.logger.smf.workflow.release=error, console, file
+    #log4cplus.logger.smf.workflow.create=info, console, file
+    #log4cplus.logger.smf.workflow.update=info, console, file
+    #log4cplus.logger.smf.workflow.release=info, console, file
+    #log4cplus.logger.smf.handler=debug, console, file
+    #log4cplus.logger.smf.utils=debug, console, file
+    #log4cplus.logger.protocol.ngap=debug, console, file
+    #log4cplus.logger.protocol.nas=debug, console, file
+    #log4cplus.logger.smf.ifconfig.ICFGComponent=debug, console, file
+    #log4cplus.logger.protocol.sba.QosRules=debug, console, file
+    #log4cplus.logger.smf.workflow=error, console, file
+    #log4cplus.logger.smf.adapter=error, console, file
+    #log4cplus.logger.smf.handler=error, console, file
+    log4cplus.logger.systemdata=info, console, file
+
+    # Custom Log Level Control -
+    # Note: log4cplus.additivity.xxx=false will remove duplicated logs.
+    #
+    log4cplus.additivity.syslib=false
+    log4cplus.additivity.framework.service=false
+    log4cplus.additivity.lte=false
+    log4cplus.additivity.framework=false
+    log4cplus.additivity.workflow=false
+    log4cplus.additivity.smf=false
+    log4cplus.additivity.protocol=false
+
+    #
+    # Logging to Console
+    #
+    log4cplus.appender.console=log4cplus::ConsoleAppender
+    log4cplus.appender.console.layout=log4cplus::PatternLayout
+    log4cplus.appender.console.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n [%t]
+    #log4cplus.appender.console.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.console.filters.1.StringToMatch=90:90:00:00:00:01
+    #log4cplus.appender.console.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.console.filters.2=log4cplus::spi::DenyAllFilter
+
+    #
+    # Logging to Logfiles
+    #
+    log4cplus.appender.file=log4cplus::RollingFileAppender
+    log4cplus.appender.file.MaxFileSize=60000KB
+    log4cplus.appender.file.MaxBackupIndex=5
+    #log4cplus.appender.file.File=${WAGRMMROOT}/log/asn.log
+    log4cplus.appender.file.File=/var/log/smf/smf.log
+    log4cplus.appender.file.layout=log4cplus::PatternLayout
+    log4cplus.appender.file.layout.ConversionPattern=%D{%Y-%m-%d %T,%q} %5p %c: %m%n [%t]
+    #log4cplus.appender.file.filters.1=log4cplus::spi::StringMatchFilter
+    #log4cplus.appender.file.filters.1.StringToMatch=90:90:00:00:00:02
+    #log4cplus.appender.file.filters.1.AcceptOnMatch=true
+    #log4cplus.appender.file.filters.2=log4cplus::spi::DenyAllFilt
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: {{ template "smf.fullname" . }}
+  name: smf-xml
+data:
+  cfgChr.xml: |
+    <chgChr-profiles>
+
+      <umDatas size="2">
+        <umData umId="1" volumeThreshold="1000000"/>
+        <umData umId="2" timeThreshold="300" inactivityTime="5"/>
+      </umDatas>
+
+      <chgDatas size="2">
+        <chgData chgId="1" meteringMethod="VOL" ratingGroup="1" serviceId="1"/>
+        <chgData chgId="2" meteringMethod="DUR" ratingGroup="2" serviceId="2"/>
+      </chgDatas>
+
+      <chgChr defaultVolumeQuota="1000" defaultTimeQuota="360" defaultMeasurementPeriod="60" defaultInactivityDetectionTime="20" defaultChgId="2" defaultUmId="2" defaultOnlineEnable="false" defaultOfflineEnable="true" defaultSessionChargingEnable="false" defaultReportingTriggers="256" enableLIUSA="true"/>
+
+      <pccRules size="4">
+        <pccRule pccRuleId="pcc1" size="1">
+          <urr urrId="2" dir="3" chgId="1" umId="1" reportingTriggers="512"/>
+        </pccRule>
+
+        <pccRule pccRuleId="pcc2" size="1">
+          <urr urrId="3" dir="3" chgId="2" umId="2" reportingTriggers="512"/>
+        </pccRule>
+
+        <pccRule pccRuleId="pre_pcc11" size="1">
+          <urr urrId="2200000000" dir="3" chgId="1" umId="1" reportingTriggers="4096" numOfLinkedUrrId="1">
+            <linkedUrrId id="1"/>
+          </urr>
+        </pccRule>
+
+        <pccRule pccRuleId="pre_pcc10" size="1">
+          <urr urrId="2200000001" dir="3" chgId="2" umId="2" reportingTriggers="4096" numOfLinkedUrrId="1">
+            <linkedUrrId id="1"/>
+          </urr>
+        </pccRule>
+      </pccRules>
+    </chgChr-profiles>
+
+  sm-charge.xml: |
+    <chgChr-profiles>
+
+      <umDatas size="2">
+        <umData umId="1" volumeThreshold="1000000"/>
+        <umData umId="2" timeThreshold="300" inactivityTime="5"/>
+      </umDatas>
+
+      <chgDatas size="2">
+        <chgData chgId="1" meteringMethod="VOL" ratingGroup="1" serviceId="1"/>
+        <chgData chgId="2" meteringMethod="DUR" ratingGroup="2" serviceId="2"/>
+      </chgDatas>
+
+      <chgChr defaultVolumeQuota="1000" defaultTimeQuota="360" defaultMeasurementPeriod="60" defaultInactivityDetectionTime="20" defaultChgId="2" defaultUmId="2" defaultOnlineEnable="false" defaultOfflineEnable="true" defaultSessionChargingEnable="false" defaultReportingTriggers="256" enableLIUSA="true"/>
+
+      <pccRules size="4">
+        <pccRule pccRuleId="pcc1" size="1">
+          <urr urrId="2" dir="3" chgId="1" umId="1" reportingTriggers="512"/>
+        </pccRule>
+
+        <pccRule pccRuleId="pcc2" size="1">
+          <urr urrId="3" dir="3" chgId="2" umId="2" reportingTriggers="512"/>
+        </pccRule>
+
+        <pccRule pccRuleId="pre_pcc11" size="1">
+          <urr urrId="2200000000" dir="3" chgId="1" umId="1" reportingTriggers="4096" numOfLinkedUrrId="1">
+            <linkedUrrId id="1"/>
+          </urr>
+        </pccRule>
+
+        <pccRule pccRuleId="pre_pcc10" size="1">
+          <urr urrId="2200000001" dir="3" chgId="2" umId="2" reportingTriggers="4096" numOfLinkedUrrId="1">
+            <linkedUrrId id="1"/>
+          </urr>
+        </pccRule>
+      </pccRules>
+    </chgChr-profiles>
+
+  smf-charge.xml: |
+    <chgChr-profiles>
+
+      <umDatas size="2">
+        <umData umId="1" volumeThreshold="1000000"/>
+        <umData umId="2" timeThreshold="300" inactivityTime="5"/>
+      </umDatas>
+
+      <chgDatas size="2">
+        <chgData chgId="1" meteringMethod="VOL" ratingGroup="1" serviceId="1"/>
+        <chgData chgId="2" meteringMethod="DUR" ratingGroup="2" serviceId="2"/>
+      </chgDatas>
+
+      <chgChr defaultVolumeQuota="1000" defaultTimeQuota="360" defaultMeasurementPeriod="60" defaultInactivityDetectionTime="20" defaultChgId="2" defaultUmId="2" defaultOnlineEnable="false" defaultOfflineEnable="true" defaultSessionChargingEnable="false" defaultReportingTriggers="256" enableLIUSA="true"/>
+
+      <pccRules size="4">
+        <pccRule pccRuleId="pcc1" size="1">
+          <urr urrId="2" dir="3" chgId="1" umId="1" reportingTriggers="512"/>
+        </pccRule>
+
+        <pccRule pccRuleId="pcc2" size="1">
+          <urr urrId="3" dir="3" chgId="2" umId="2" reportingTriggers="512"/>
+        </pccRule>
+
+        <pccRule pccRuleId="pre_pcc11" size="1">
+          <urr urrId="2200000000" dir="3" chgId="1" umId="1" reportingTriggers="4096" numOfLinkedUrrId="1">
+            <linkedUrrId id="1"/>
+          </urr>
+        </pccRule>
+
+        <pccRule pccRuleId="pre_pcc10" size="1">
+          <urr urrId="2200000001" dir="3" chgId="2" umId="2" reportingTriggers="4096" numOfLinkedUrrId="1">
+            <linkedUrrId id="1"/>
+          </urr>
+        </pccRule>
+      </pccRules>
+    </chgChr-profiles>
+  pfd.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+      <PfdDataForApp>
+        <application-profile size="0"/>
+      </PfdDataForApp>
+
+  sm-policy-data.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+      <pcf-decision>
+        <TcData size="3">
+          <tc tcId="tc1"/>
+          <tc tcId="tc2"/>
+          <tc tcId="tc3"/>
+        </TcData>
+        <TcIds size="3">
+          <list tcListId="tcList1" size="1">
+            <tcId value="tc1"/>
+          </list>
+          <list tcListId="tcList2" size="1">
+            <tcId value="tc2"/>
+          </list>
+          <list tcListId="tcList3" size="1">
+            <tcId value="tc3"/>
+          </list>
+        </TcIds>
+        <QosData size="0"/>
+        <FlowInfos size="0"/>
+        <QosIds size="0"/>
+        <PccRule size="0"/>
+        <PccIds size="1">
+          <list pccListId="pccList1" size="0"/>
+        </PccIds>
+        <SessionRule size="1">
+          <session sessionRuleId="11" sessionAmbrUl="200" sessionAmbrDl="200" def5qi="9" priorityLevel="8" preemptCap="PREEMPTABLE" preemptVuln="PREEMPTABLE"/>
+        </SessionRule>
+        <SmPolicyDecision size="6">
+          <decision tac="0x51" dnn="default" ssc="1" sessionRuleId="11"/>
+          <decision tac="any" dnn="default" ssc="1" sessionRuleId="11"/>
+          <decision tac="0x51" dnn="default" ssc="2" sessionRuleId="11"/>
+          <decision tac="any" dnn="default" ssc="2" sessionRuleId="11"/>
+          <decision tac="0x51" dnn="default" ssc="3" sessionRuleId="11"/>
+          <decision tac="any" dnn="default" ssc="3" sessionRuleId="11"/>
+        </SmPolicyDecision>
+      </pcf-decision>
+
+  dnn.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <dnn-profiles>
+      <dnn-profile-list size="1">
+        <dnn-profile niIndex="1" niName="epc">
+          <dnn name="smf-dnn" size="1">
+            <dnn-entry corr-id="1" mcc="466" mnc="92" dnn="default" pdu-type="IPv4" pool-index="1" dnn-restriction="1" domain-name="astri.org" change-reporting-action="0"/>
+          </dnn>
+          <ue-ip-pool name="smf-pool" size="1" dns-pri-ip="8.8.8.8" sec-dns-v4="8.8.4.4" subnet-mask="255.255.255.0" pri-dns-v6="2001:4860:4860::8888" sec-dns-v6="2001:4860:4860::8844" prefix-len="64">
+            <ue-ip-entry index="1" ip-type="IPv4" ip-from="172.20.232.1" ip-to="172.20.254.254" dns-pri-ip="210.0.128.250" dns-sec-ip="210.0.128.251" subnet-mask="255.255.0.0"/>
+          </ue-ip-pool>
+        </dnn-profile>
+      </dnn-profile-list>
+    </dnn-profiles>
+
+  udm.xml: |
+    <udm-profiles>
+
+      <udm-profile name="udm-profile" size="2" sst="1" sd="" dnn="default">
+        <ue-entry supi="0" fqi="8" defaultSscMode="SSC_MODE_1" defaultSessionType="IPV4" iwkEpsInd="true" ladnIndicator="true" arpPriorityLevel="3" arpPreemptionCap="NOT_PREEMPT" arpPreemptionVul="NOT_PREEMPT" d5qiResourceType="type" d5qiPacketDelayBudget="32" d5qiPacketErrRate="32" d5qiPriorityLevel="32" d5qiAverWindow="32" d5qMaxDataBurstVol="32" nd5qiPriorityLevel="32" nd5qiAverWindow="32" nd5qiMaxDataBurstVol="32" sessionAmbrUL="25" sessionAmbrDL="25" _3GppChargingCharacteristics="charging" staticIpv4Addr="" staticIpv6Addr="" staticIpv6Prefix="1:::::1" upIntegr="upI" upConfid="upC">
+          <allowedPduSessionTypeList size="2">
+            <pduSessionType type="IPV4"/>
+            <pduSessionType type="IPV6"/>
+          </allowedPduSessionTypeList>
+          <allowedSscModeList size="2">
+            <sscMode mode="SSC_MODE_1"/>
+            <sscMode mode="SSC_MODE_2"/>
+          </allowedSscModeList>
+        </ue-entry>
+
+        <ue-entry supi="466920100001101" fqi="9" defaultSscMode="SSC_MODE_1" defaultSessionType="IPV4" iwkEpsInd="true" ladnIndicator="true" arpPriorityLevel="3" arpPreemptionCap="MAY_PREEMPT" arpPreemptionVul="PREEMPTABLE" d5qiResourceType="type" d5qiPacketDelayBudget="32" d5qiPacketErrRate="32" d5qiPriorityLevel="32" d5qiAverWindow="32" d5qMaxDataBurstVol="32" nd5qiPriorityLevel="32" nd5qiAverWindow="32" nd5qiMaxDataBurstVol="32" sessionAmbrUL="40" sessionAmbrDL="20" _3GppChargingCharacteristics="charging" staticIpv4Addr="" staticIpv6Addr="" staticIpv6Prefix="1:::::1" upIntegr="upI" upConfid="upC">
+          <allowedPduSessionTypeList size="2">
+            <pduSessionType type="IPV4"/>
+            <pduSessionType type="ipv6"/>
+          </allowedPduSessionTypeList>
+          <allowedSscModeList size="2">
+            <sscMode mode="SSC_MODE_1"/>
+            <sscMode mode="SSC_MODE_2"/>
+          </allowedSscModeList>
+        </ue-entry>
+      </udm-profile>
+    </udm-profiles>
+
+  upf.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <upf-profiles>
+      <networkinstance-list size="1">
+        <networkinstance index="1" nwiName="epc"/>
+      </networkinstance-list>
+      <nssai-list size="1">
+        <nssai index="1" sst="1" intfnwi-size="3">
+          <intf-nwi intf="n3" srcIntf="access" nwiIndex="1"/>
+          <intf-nwi intf="n4" srcIntf="cp-function" nwiIndex="1"/>
+          <intf-nwi intf="n6" srcIntf="n6lan" nwiIndex="1"/>
+        </nssai>
+      </nssai-list>      
+      <upentry-list local-port="{{ .Values.smf.networkInterfaces.n4PfcpServerPort }}" local-host="" size="1">
+      {{- if .Values.global.upfN4IP }}
+      <upentry upinstanceid="upf1" service-name="{{ .Values.global.upfN4IP }}" location="central"/>
+      {{- else }}
+      <upentry upinstanceid="upf1" service-name="upf-service.{{ .Release.Namespace }}" location="central"/>
+      {{- end }}
+      </upentry-list>
+      <uparea-list size="1">
+        <uparea areaName="area1" mcc="466" mnc="92">
+          <tac-list size="1">
+            <tac-entry tac="81"/>
+          </tac-list>
+        </uparea>
+      </uparea-list>
+      <smfservingarea-list size="1">
+        <smfservingarea upinstanceid="upf1" areaName="area1"/>
+      </smfservingarea-list>
+      <dnn-list size="1">
+        <dnn name="default">
+          <ssc-list size="3">
+            <ssc value="ssc1"/>
+            <ssc value="ssc2"/>
+            <ssc value="ssc3"/>
+          </ssc-list>
+          <dnai-list size="1">
+            <dnai value="dnai1">
+              <up-list size="1">
+                <up upinstanceid="upf1"/>
+              </up-list>
+            </dnai>
+          </dnai-list>
+        </dnn>
+      </dnn-list>
+      <updnn-list size="1">
+        <updnn upinstanceid="upf1" dnn="default" nsindex="1" n6NwiIndex="1"/>
+      </updnn-list>
+      <route-list size="0"/>
+    </upf-profiles>

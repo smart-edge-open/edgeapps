@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+# Default values for ausf_charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+ausf:
+  ## If false, ausf will not be installed
+  enabled: true
+
+  ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
+  replicaCount: 1
+
+  ## ausf container name
+  name: ausf
+
+  #  annotations: k8s.v1.cni.cncf.io/networks: ausf-n1, ausf-nn
+  annotations: {}
+
+  # podIP is used to configure the IP address of Pod's calico network interface
+  podIP: 10.245.216.101
+
+  ## network interfaces configurations for AUSF 
+  networkInterfaces:
+    http2Server: 10.245.216.101
+    http2ServerPort: 2133
+    http2Client: 10.245.216.101
+    http2ClientPort: 2132
+    http2Udm: 10.245.216.131
+    http2UdmPort: 3123
+
+  ## ausf container image
+  image:
+    repository: astri.org/5g/ausf
+    tag: v22.03-rc0
+    pullPolicy: IfNotPresent
+
+  ## AUSF Node selector for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  nodeSelector: 
+    kubernetes.io/hostname: controller
+
+  ## Node tolerations for server scheduling to nodes with taints
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations: []
+    #- key: "key"
+    #  operator: "Equal|Exists"
+    #  value: "value"
+    #  effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+  ## Annotations to be added to configcontroller pods
+  podAnnotations: {}
+    # iam.amazonaws.com/role: worker
+
+  ## ausf service
+  service:
+    annotations: {}
+    labels: {}
+    clusterIP: ""
+
+    ## List of IP addresses at which the configcontroller service is available
+    ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+    externalIPs: []
+
+    name: n12
+    type: ClusterIP
+    servicePort: 2133
+
+
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m  
+
+  terminationGracePeriodSeconds: 30
+  licenseSecret: license-controller

@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Astri Corporation
+
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.ausf.service.annotations }}
+  annotations:
+{{ toYaml .Values.ausf.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "ausf.fullname" . }}
+  labels:
+    app: 5g
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.ausf.service.type }}
+{{- if .Values.ausf.service.clusterIP }}
+  clusterIP: {{ .Values.ausf.service.clusterIP }}
+{{- end }}
+{{- if .Values.ausf.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.ausf.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.ausf.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.ausf.service.loadBalancerIP }}
+{{- end }}
+{{- if .Values.ausf.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{- range $cidr := .Values.ausf.service.loadBalancerSourceRanges }}
+    - {{ $cidr }}
+  {{- end }}
+{{- end }}
+  ports:
+    - name: {{ .Values.ausf.service.name }}
+      port: {{ .Values.ausf.service.servicePort }}
+      targetPort: {{ .Values.ausf.service.servicePort }}
+      protocol: TCP
+  selector:
+    app: ausf
