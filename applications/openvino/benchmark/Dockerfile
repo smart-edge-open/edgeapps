@@ -51,7 +51,7 @@ RUN wget $OPENVINO_LINK && \
         rm -rf /tmp/l_openvino_toolkit* && \
         ln --symbolic /opt/intel/openvino_"$YEAR"/ /opt/intel/openvino
 
-RUN pip3 install networkx==2.3
+RUN pip3 install --no-cache-dir networkx==2.3
 WORKDIR /opt/intel/openvino_$YEAR/deployment_tools/demo
 RUN /bin/bash -c "source $INSTALL_DIR/bin/setupvars.sh && ./demo_squeezenet_download_convert_run.sh"
 WORKDIR /root/inference_engine_samples_build
@@ -70,7 +70,7 @@ USER openvino
 #Download OpenVINO pre-trained models
 
 WORKDIR /opt/intel/openvino_$YEAR/deployment_tools/open_model_zoo/tools/downloader
-RUN pip3 install pyyaml requests
+RUN pip3 install --no-cache-dir pyyaml requests
 RUN ./downloader.py  --name face-detection-retail-0004
 RUN ./downloader.py  --name squeezenet1.1
 RUN ./downloader.py  --name semantic-segmentation-adas-0001
