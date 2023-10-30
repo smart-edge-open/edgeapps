@@ -26,3 +26,4 @@ The OpenNESS community abides by the [Contributor Covenant](CODE_OF_CONDUCT.md).
 
 ## License
 The OpenNESS project is open-source and released under [Apache License, Version 2.0](LICENSE).
+
