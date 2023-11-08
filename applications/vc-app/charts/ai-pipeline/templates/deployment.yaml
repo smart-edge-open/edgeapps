@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ai-pipeline.fullname" . }}
+  labels:
+    {{- include "ai-pipeline.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "ai-pipeline.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ai-pipeline.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ai-pipeline.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: config-map-volume
+        configMap:
+          name: config-json-volume
+      - name: gallery-map-volume  
+        hostPath:
+          path: /home/vedge/gallery
+          type: Directory
+      - name: media-map-volume
+        hostPath:
+          path: /home/vedge/videos
+          type: Directory
+      - name: models-volume 
+        hostPath:
+          path: /home/vedge/models
+          type: Directory
+      - name: x11-vol
+        hostPath:
+          path: /tmp
+          type: Directory
+      - name: var-temp
+        hostPath:
+          path: /var/tmp
+          type: Directory
+      - name: var-dev
+        hostPath:
+          path: /dev
+          type: Directory
+      hostNetwork: true
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: 
+          - python3
+          - /home/vedge/ai-pipeline/main.py
+          - -c
+          - /home/vedge/config/config.json
+          - -id
+          - camerap-1
+          env:
+          - name: DISPLAY
+            value: "{{ .Values.display.displayName }}"
+          - name: PYTHONUNBUFFERED
+            value: "{{ .Values.display.pythonVar }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - mountPath: /home/vedge/config
+            name: config-map-volume
+          - mountPath: /home/vedge/gallery
+            name: gallery-map-volume
+          - mountPath: /home/vedge/videos
+            name: media-map-volume
+          - mountPath: /home/vedge/models
+            name: models-volume
+          - mountPath: /tmp
+            name: x11-vol
+          - mountPath: /var/tmp
+            name: var-temp
+          - mountPath: /dev
+            name: var-dev
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

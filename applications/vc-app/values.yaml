@@ -1,0 +1,27 @@
+ai-pipeline:
+  enabled: true
+  image:
+    repository: vsblty.azurecr.io/vedge/ai-pipeline
+    pullPolicy: IfNotPresent
+    tag: "1.2.75"
+  display:
+    displayName: unix:0
+    pythonVar: 1
+  device:
+    accessToken: ""
+  camera:
+    rtsp: ""
+  vcapp:
+    dns: "localhost"
+    port: 5051
+
+vclite:
+  enabled: true
+  image:
+    repository: vsblty.azurecr.io/vsblty/vclight
+    pullPolicy: IfNotPresent
+    tag: "1.7.26"
+  display:
+    displayName: unix:0
+    EndpointId: 
+    BaseCmsUrl: ""

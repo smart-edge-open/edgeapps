@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-json-volume
+data:
+  config.json: |-
+    {
+    "default": {
+        "logLevel": "INFO",
+        "pipeline": {
+            "template": [
+                "rtspsrc location={input} ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw,format=BGRx !",
+                "gvadetect model={personDetection[model]} threshold=0.8 model_proc={personDetection[proc]} device={personDetection[device]} ! queue !",
+                "gvadetect model={faceDetection[model]} threshold=0.8 reshape=true reshape-width=600 reshape-height=600 model-proc={faceDetection[proc]} device={faceDetection[device]} ! gvatrack ! queue !",
+                "gvaclassify reclassify-interval=5 model={landmark[model]} model-proc={landmark[proc]} device={landmark[device]} batch-size=1 pre-process-backend=opencv object-class=face ! queue !",
+                "gvaclassify reclassify-interval=5 model={faceReidentification[model]} model-proc={faceReidentification[proc]} device={faceReidentification[device]} batch-size=1 pre-process-backend=opencv object-class=face ! queue !",
+                "gvaidentify cosine-distance-threshold={reidThreshold} gallery=/home/vedge/gallery/gallery.json ! queue name=frame-process !",
+                "videoconvert ! video/x-raw,format=NV12 ! fpsdisplaysink"
+            ],
+            "params": {
+                "reidThreshold": 0.6,
+                "faceDetection": {
+                    "model": "/home/vedge/models/face-detection-adas-0001/FP32/face-detection-adas-0001.xml",
+                    "proc": "/home/vedge/models/face-detection-adas-0001/PROC/face-detection-adas-0001.json",
+                    "device": "CPU"
+                },
+                "personDetection": {
+                    "model": "/home/vedge/models/person-detection-0201/FP32/person-detection-0201.xml",
+                    "proc": "/home/vedge/models/person-detection-0201/PROC/person-detection-0201.json",
+                    "device": "CPU"
+                },
+                "landmark": {
+                    "model": "/home/vedge/models/landmarks-regression-retail-0009/FP32/landmarks-regression-retail-0009.xml",
+                    "proc": "/home/vedge/models/landmarks-regression-retail-0009/PROC/landmarks-regression-retail-0009.json",
+                    "device": "CPU"
+                },
+                "faceReidentification": {
+                    "model": "/home/vedge/models/face-reidentification-retail-0095/FP32/face-reidentification-retail-0095.xml",
+                    "proc": "/home/vedge/models/face-reidentification-retail-0095/PROC/face-reidentification-retail-0095.json",
+                    "device": "CPU"
+                }
+            }
+        }
+    },
+    "cameras": {
+        "camerap-1": {
+            "logLevel": "DEBUG",
+            "cloudCredential": "{{ .Values.device.accessToken }}",
+            "cloudEnv": "DEV",
+            "pipeline": {
+                "params": {
+                    "input": "{{ .Values.camera.rtsp }}"
+                }
+            },
+            "services": [
+                {
+                    "type": "face-recognition",
+                    "pipelineElement": "frame-process",
+                    "objectType": "face",
+                    "outputImageSize": [
+                        240,
+                        180
+                    ],
+                    "trackedFaceDuration": 10
+                }
+            ]
+        }
+    }
+    }
