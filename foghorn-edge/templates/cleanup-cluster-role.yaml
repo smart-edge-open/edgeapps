@@ -1,0 +1,41 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  annotations:
+    "helm.sh/hook": "post-delete"
+    "helm.sh/hook-weight": "11"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    edge.foghorn.io/created-for: cleanup
+  name: {{ .Release.Namespace }}-cleanup-cluster-role
+rules:
+  - apiGroups:
+      - ""
+      - "apps"
+      - "batch"
+      - "rbac.authorization.k8s.io"
+      - "extensions"
+    resources:
+      - deployments
+      - pods
+      - jobs
+      - daemonsets
+      - secrets
+      - configmaps
+      - persistentvolumeclaims
+      - persistentvolumes
+      - services
+      - namespaces
+      - serviceaccounts
+      - clusterrolebindings
+      - clusterroles
+      - rolebindings
+      - roles
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - delete

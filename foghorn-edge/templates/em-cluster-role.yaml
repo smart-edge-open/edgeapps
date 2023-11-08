@@ -1,0 +1,17 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "-9"
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    edge.foghorn.io/created-for: edgemanager
+  name: {{ .Release.Namespace }}-em-pods-metrics-reader-role
+rules:
+  - apiGroups: [ metrics.k8s.io ]
+    resources: [ pods, nodes ]
+    verbs: [ get, list ]
+  - apiGroups: [ "" ]
+    resources: [ nodes ]
+    verbs: [ get, list ]

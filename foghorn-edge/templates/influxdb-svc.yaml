@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    service.name: {{ .Values.influxdb.serviceName }}
+  name: {{ .Values.influxdb.serviceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+{{- if .Values.openPorts }}
+  type: LoadBalancer
+  externalIPs:
+  - {{ .Values.service.loadBalancerIP }}
+{{ end }}
+  ports:
+  - name: "{{ .Values.influxdb.port }}"
+    port: {{ .Values.influxdb.port }}
+    targetPort: {{ .Values.influxdb.port }}
+  selector:
+    service.name: {{ .Values.influxdb.serviceName }}

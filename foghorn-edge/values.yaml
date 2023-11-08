@@ -1,0 +1,29 @@
+# valued to be defaulted for foghorn edge helm chart
+image:
+  imagePullPolicy: ""
+  tag: 2.6.0-GA
+  pullSecret: "foghorn-registry-secret"
+  arch: ""
+
+storageClassName: "longhorn"
+
+mode: PROD
+
+edgeName: edgeName
+fhm:
+  endpoint: 10.10.10.10
+
+containerPlatform:
+  type: "KUBERNETES"
+
+volume:
+  foghorn:
+    name: foghorn
+  influx:
+    name: influx-data
+  hostAudio:
+    name: host-audio
+    path: /opt/audio
+  hostVideo:
+    name: host-video
+    path: /opt/video

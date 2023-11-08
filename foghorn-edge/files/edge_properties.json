@@ -1,0 +1,12 @@
+{
+    "edgeProductVersion": "{{ .Values.image.tag }}",
+    "initiator": "{{ required "FHM endpoint is required" .Values.fhm.endpoint }}/ecm",
+    "registration": {
+        "edgeName": "{{ required "Edge name is required" .Values.edgeName }}"
+    },
+    "perpetual": {
+        "edgeType": "{{ if eq .Values.edgeml.type "NONE"}}CEP{{ else }}STANDARD{{ end }}",
+        "edgeMLType": "{{ required "EdgeML type is required" .Values.edgeml.type }}",
+        "containerPlatform": "{{ required "ContainerPlatform type is required" .Values.containerPlatform.type }}"
+    }
+}

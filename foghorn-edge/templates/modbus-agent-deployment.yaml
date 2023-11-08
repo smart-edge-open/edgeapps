@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    service.name: {{ .Values.modbusAgent.serviceName }}
+  name: {{ .Values.modbusAgent.serviceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.modbusAgent.replicaCount }}
+  selector:
+    matchLabels:
+      service.name: {{ .Values.modbusAgent.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "foghorn-edge.labels" . | nindent 8 }}
+        service.name: {{ .Values.modbusAgent.serviceName }}
+        edge.foghorn.io/app-name: {{ .Values.modbusAgent.serviceName }}
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: edge.foghorn.io/app-name
+                operator: In
+                values:
+                - {{ .Values.messageBus.serviceName }}
+            topologyKey: "kubernetes.io/hostname"     
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecret }}
+      containers:
+      - env:
+        - name: COMPONENT_NAME
+          value: {{ .Values.modbusAgent.componentName }}
+        - name: FOGHORN_MODBUS_AGENT_OPTS
+          value: -Demhost={{ .Values.edgemanager.componentName }} -Ddbushost={{ .Values.messageBus.componentName }} -Demport={{ .Values.edgemanager.port }} -DretryExitOnError=true
+            -Dlog4j.configuration=file:/fh_vol/fh/configs/logger/modbus-agent-log4j.properties
+            -Dlogback.configurationFile=file:/fh_vol/fh/configs/logger/modbus-agent-logback.xml
+        - name: JAVA_OPTS
+          value: -Xmx200m -XX:+ExitOnOutOfMemoryError
+        image: {{ .Values.image.repository }}/{{ .Values.image.releasesSubRepository }}{{ .Values.modbusAgent.imageName }}{{ .Values.image.arch }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        name: {{ .Values.modbusAgent.componentName }}
+        resources: {}
+        volumeMounts:
+        - mountPath: /fh_vol
+          name: {{ .Values.volume.foghorn.name }}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: {{ .Values.volume.foghorn.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumeClaim.foghorn.name }}
+status: {}

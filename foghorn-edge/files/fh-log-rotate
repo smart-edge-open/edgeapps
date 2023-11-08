@@ -1,0 +1,14 @@
+/fh_vol/fh/logs/*log
+/fh_vol/fh/apps/*/logs/*
+/fh_vol/fh/apps/*/log/*
+{
+    rotate 2
+    size 2M
+    compress
+    dateext
+    dateformat -%Y%m%d-%s
+    notifempty
+    copytruncate
+    missingok
+    su root root
+}

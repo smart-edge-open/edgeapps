@@ -1,0 +1,6 @@
+apiVersion: v2
+appVersion: 2.6.0-GA
+description: A helm-chart for deploying FogHorn Lightning Edge
+name: foghorn-edge
+type: application
+version: 2.6.0-GA

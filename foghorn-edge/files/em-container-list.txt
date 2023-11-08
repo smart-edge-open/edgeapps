@@ -1,0 +1,15 @@
+message-bus
+edgemanager
+mqtt-agent
+mqtt-client
+opc-agent
+av-agent
+modbus-agent
+data-publisher
+analytics-engine
+logger
+influxdb
+opcda-agent
+{{ if not (eq .Values.edgeml.type "NONE") }}
+edgeml
+{{ end }}

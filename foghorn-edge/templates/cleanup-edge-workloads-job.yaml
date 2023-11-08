@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    "helm.sh/hook": "post-delete"
+    "helm.sh/hook-weight": "15"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation,hook-failed"
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    edge.foghorn.io/created-for: cleanup
+  name: "cleanup-edge-workloads"
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "foghorn-edge.labels" . | nindent 8 }}
+        edge.foghorn.io/created-for: cleanup
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecret }}
+      serviceAccountName: cleanup-sa
+      containers:
+      - name: "cleanup-edge-workloads"
+        image: {{ .Values.kubectl.image }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command: [ 'kubectl' ]
+        args: [ 'delete', 'service,deployment,job,pod', '-ledge.foghorn.io/managed-by={{ .Release.Name }},edge.foghorn.io/created-for!=cleanup', '--ignore-not-found' ]
+        resources: {}
+      restartPolicy: Never
+status: {}

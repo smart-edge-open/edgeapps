@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "foghorn-edge.labels" . | nindent 4 }}
+    service.name: {{ .Values.messageBus.serviceName }}
+  name: {{ .Values.messageBus.serviceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+{{- if .Values.openPorts }}
+  type: LoadBalancer
+  externalIPs:
+  - {{ .Values.service.loadBalancerIP }}
+{{ end }}
+  ports:
+  - name: "{{ .Values.messageBus.port.pub }}"
+    port: {{ .Values.messageBus.port.pub }}
+    targetPort: {{ .Values.messageBus.port.pub }}
+  - name: "{{ .Values.messageBus.port.sub }}"
+    port: {{ .Values.messageBus.port.sub }}
+    targetPort: {{ .Values.messageBus.port.sub }}
+  selector:
+    service.name: {{ .Values.messageBus.serviceName }}
+status:
+  loadBalancer: {}
